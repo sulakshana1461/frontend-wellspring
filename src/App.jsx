@@ -113,8 +113,7 @@ const HomePage = () => {
   const {
     currentTime,
     doctorOnline,
-    counterOnline,
-    tilesVisible
+    counterOnline
   } = useDashboardLogic();
 
   return (
@@ -127,7 +126,7 @@ const HomePage = () => {
         toggleTheme={toggleTheme}
       />
 
-      {/* ================= HERO SECTION (CLEAN MEDICAL GRADIENT CANVAS) ================= */}
+      {/* ================= HERO SECTION (WELLSPRING AS THE MAIN ATTRACTION) ================= */}
       <section id="hero" className="hero-section">
         <div className="hero-content">
           <div className="medical-pill-tag">
@@ -137,28 +136,22 @@ const HomePage = () => {
             <span>Private Medical Practice &amp; In-House Dispensary</span>
           </div>
 
-          {/* Wellspring Title (Tangerine Font Preserved) */}
+          {/* Undisputed Main Centerpiece Attraction */}
           <h1 className="wellspring-title">Wellspring</h1>
           <p className="healthcare-subtitle">HEALTH CARE CENTER</p>
-
-          <p className="hero-mission-statement">
-            Personalized primary medical care, dedicated physician consultations, and direct pharmacy dispensing under one roof.
-          </p>
         </div>
       </section>
 
-      {/* ================= 4 CLINICAL WORKSTATIONS (ELEVATED FOR FAST ACCESS) ================= */}
+      {/* ================= 4 CLINICAL WORKSTATIONS (ELEVATED WITH CLEAN TEAL TITLE) ================= */}
       <section id="modules" className="modules-section">
         <div className="modules-container">
-          <div className={`section-header ${tilesVisible ? 'visible' : ''}`}>
-            <div className="section-eyebrow">PRACTICE MANAGEMENT</div>
-            <h2>Clinical Workstations &amp; Portals</h2>
-            <p>Authorized access points for medical consultation, dispensary counter, inventory intake, and administration.</p>
+          <div className="terminals-header">
+            <h2 className="terminals-section-title">Clinical Practice Terminals</h2>
           </div>
 
           <div className="tiles-grid">
             {/* 1. DOCTOR SUITE */}
-            <Link to="/doctor" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
+            <Link to="/doctor" className="module-tile">
               <div className="tile-accent-line"></div>
               <div className="tile-top-row">
                 <div className="tile-icon-box">
@@ -172,7 +165,7 @@ const HomePage = () => {
               </div>
               <h3 className="tile-title">Doctor Consultation</h3>
               <p className="tile-desc">
-                Patient examinations, diagnostic records, allergy alerts, past visit histories, and instant digital prescriptions.
+                Patient examinations, diagnostic records, and instant digital prescriptions.
               </p>
               <div className="tile-footer">
                 <span>Launch Consultation</span>
@@ -181,7 +174,7 @@ const HomePage = () => {
             </Link>
 
             {/* 2. DISPENSARY COUNTER */}
-            <Link to="/counter" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
+            <Link to="/counter" className="module-tile">
               <div className="tile-accent-line"></div>
               <div className="tile-top-row">
                 <div className="tile-icon-box">
@@ -196,7 +189,7 @@ const HomePage = () => {
               </div>
               <h3 className="tile-title">Counter &amp; Pharmacy</h3>
               <p className="tile-desc">
-                Walk-in patient registration, ticketing queue control, multi-tab prescription dispensing, and POS billing.
+                Patient registration, live token queue, medicine dispensing, and POS billing.
               </p>
               <div className="tile-footer">
                 <span>Launch Counter</span>
@@ -205,7 +198,7 @@ const HomePage = () => {
             </Link>
 
             {/* 3. STOCK & GRN */}
-            <Link to="/grn" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
+            <Link to="/grn" className="module-tile">
               <div className="tile-accent-line"></div>
               <div className="tile-top-row">
                 <div className="tile-icon-box">
@@ -219,7 +212,7 @@ const HomePage = () => {
               </div>
               <h3 className="tile-title">Stock &amp; GRN</h3>
               <p className="tile-desc">
-                Goods Received Notes, batch intake verification, manufacturer expiry tracking, and medicine master cataloging.
+                Goods Received Notes, batch intake verification, and medicine inventory logs.
               </p>
               <div className="tile-footer">
                 <span>Launch Inventory</span>
@@ -228,7 +221,7 @@ const HomePage = () => {
             </Link>
 
             {/* 4. PRACTICE ADMIN */}
-            <Link to="/admin" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
+            <Link to="/admin" className="module-tile">
               <div className="tile-accent-line"></div>
               <div className="tile-top-row">
                 <div className="tile-icon-box">
@@ -241,7 +234,7 @@ const HomePage = () => {
               </div>
               <h3 className="tile-title">Administration</h3>
               <p className="tile-desc">
-                Practice revenue analytics, daily financial logs, patient demographic reports, and clinical staff credentials.
+                Practice revenue analytics, daily financial logs, and clinical staff management.
               </p>
               <div className="tile-footer">
                 <span>Launch Admin</span>
@@ -258,7 +251,7 @@ const HomePage = () => {
           <div className="section-header visible">
             <div className="section-eyebrow">ABOUT WELLSPRING</div>
             <h2>Private Clinical Care &amp; Dedicated Dispensary</h2>
-            <p>Built upon the standard of traditional family medicine combined with streamlined modern dispensary operations.</p>
+            <p>Traditional family medicine standards combined with integrated modern dispensary operations.</p>
           </div>
 
           <div className="about-grid">
@@ -270,7 +263,7 @@ const HomePage = () => {
               </div>
               <h3>Patient-Centered Practice</h3>
               <p>
-                Every consultation is conducted with thorough clinical attention. We maintain comprehensive longitudinal medical records to ensure consistent care across every visit.
+                Thorough clinical attention with comprehensive longitudinal medical records across every consultation.
               </p>
             </div>
 
@@ -283,7 +276,7 @@ const HomePage = () => {
               </div>
               <h3>Direct On-Site Dispensary</h3>
               <p>
-                Prescribed medications are dispensed directly by dispensary staff immediately following the consultation, ensuring pharmaceutical authenticity and precise dosage guidance.
+                Prescribed medications dispensed directly by clinic staff immediately following consultation for exact dosage guidance.
               </p>
             </div>
 
@@ -294,9 +287,9 @@ const HomePage = () => {
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
               </div>
-              <h3>Real-Time Queue Transparency</h3>
+              <h3>Real-Time Queue System</h3>
               <p>
-                Patients receive immediate sequential queue tokens upon arrival. Live waiting room displays keep patient flow orderly, calm, and free of unnecessary waiting anxiety.
+                Sequential queue tokens and synchronized waiting lounge displays for orderly, stress-free patient flow.
               </p>
             </div>
           </div>

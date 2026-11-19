@@ -1,6 +1,6 @@
 /* ============================================================================
    WELLSPRING HEALTH CARE - PRIVATE DISPENSARY & MEDICAL PRACTICE
-   Clean Medical Gradient Architecture with Fast Terminal Access
+   Clean, Streamlined Medical Architecture
    ============================================================================ */
 
 /* Google Fonts: 'Tangerine' for Wellspring title, 'Plus Jakarta Sans' & 'Inter' for medical typography */
@@ -217,13 +217,13 @@ html, body, #root {
 }
 
 /* ============================================================================
-   2. HERO SECTION (COMPACT MEDICAL GRADIENT CANVAS)
+   2. HERO SECTION - WELLSPRING AS THE CROWN ATTRACTION
    ============================================================================ */
 .hero-section {
   position: relative;
   width: 100%;
-  padding-top: 108px;
-  padding-bottom: 24px;
+  padding-top: 104px;
+  padding-bottom: 12px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -245,12 +245,13 @@ html, body, #root {
   justify-content: center;
 }
 
+/* Pill Tag with generous breathing room above Wellspring */
 .medical-pill-tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 6px 18px;
-  margin-bottom: 10px;
+  margin-bottom: 26px; /* Generous breathing space above big Wellspring */
   border-radius: 999px;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.74rem;
@@ -260,46 +261,38 @@ html, body, #root {
   transition: all 0.3s ease;
 }
 
-/* PRESERVED: Tangerine font strictly applied to Wellspring */
+/* PRESERVED: Tangerine font strictly applied to Wellspring - MAIN ATTRACTION */
 .wellspring-title {
   font-family: 'Tangerine', cursive;
   font-weight: 700;
-  font-size: clamp(5.8rem, 12vw, 11rem);
+  font-size: clamp(6.2rem, 14vw, 12rem);
   line-height: 0.88;
   letter-spacing: 1px;
-  padding: 2px 20px;
-  margin-bottom: 2px;
+  padding: 4px 20px;
+  margin-top: 4px;
+  margin-bottom: 4px;
   user-select: none;
   transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
 .healthcare-subtitle {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(0.9rem, 1.6vw, 1.25rem);
+  font-size: clamp(0.92rem, 1.7vw, 1.28rem);
   font-weight: 800;
   letter-spacing: 8px;
   text-transform: uppercase;
-  margin-bottom: 12px;
-  transition: color 0.3s ease;
-}
-
-.hero-mission-statement {
-  max-width: 660px;
-  font-size: 1rem;
-  line-height: 1.55;
-  margin-bottom: 14px;
-  font-weight: 400;
+  margin-bottom: 8px;
   transition: color 0.3s ease;
 }
 
 /* ============================================================================
-   3. CLINICAL WORKSTATIONS (ELEVATED FOR FAST ACCESS)
+   3. CLINICAL WORKSTATIONS (FAST ACCESS WITH CLINICAL TEAL TITLE)
    ============================================================================ */
 .modules-section {
   position: relative;
   z-index: 10;
   width: 100%;
-  padding: 24px 24px 70px 24px;
+  padding: 18px 24px 60px 24px;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -308,36 +301,32 @@ html, body, #root {
   margin: 0 auto;
 }
 
-.section-header {
+.terminals-header {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 22px;
 }
 
-.section-eyebrow {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-  transition: color 0.3s ease;
-}
-
-.section-header h2 {
+/* Single elegant title for the 4 tiles in clinical teal */
+.terminals-section-title {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.85rem;
-  font-weight: 800;
-  letter-spacing: 0.2px;
-  margin-bottom: 8px;
+  font-size: 1.22rem;
+  font-weight: 700;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   transition: color 0.3s ease;
 }
 
-.section-header p {
-  font-size: 0.95rem;
-  max-width: 640px;
-  margin: 0 auto;
-  line-height: 1.5;
-  transition: color 0.3s ease;
+.terminals-section-title::before,
+.terminals-section-title::after {
+  content: '';
+  height: 1px;
+  width: 36px;
+  background: currentColor;
+  opacity: 0.4;
 }
 
 .tiles-grid {
@@ -418,7 +407,7 @@ html, body, #root {
 .tile-desc {
   font-size: 0.88rem;
   color: #94a3b8;
-  line-height: 1.55;
+  line-height: 1.5;
   margin-bottom: 22px;
   flex-grow: 1;
 }
@@ -456,6 +445,38 @@ html, body, #root {
 .info-container {
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  transition: color 0.3s ease;
+}
+
+.section-header h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+.section-header p {
+  font-size: 0.95rem;
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.5;
+  transition: color 0.3s ease;
 }
 
 .about-grid {
@@ -729,12 +750,12 @@ html, body, #root {
   color: #0f172a;
 }
 
-.theme-light .hero-mission-statement {
-  color: #475569;
-}
-
 .theme-light .modules-section {
   background-color: #f8fafc;
+}
+
+.theme-light .terminals-section-title {
+  color: #0d9488;
 }
 
 .theme-light .section-eyebrow {
@@ -783,12 +804,12 @@ html, body, #root {
   color: #cbd5e1;
 }
 
-.theme-dark .hero-mission-statement {
-  color: #94a3b8;
-}
-
 .theme-dark .modules-section {
   background-color: #07111e;
+}
+
+.theme-dark .terminals-section-title {
+  color: #2dd4bf;
 }
 
 .theme-dark .section-eyebrow {
