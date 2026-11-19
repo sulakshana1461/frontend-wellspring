@@ -344,8 +344,8 @@ const HomePage = () => {
                 </svg>
               </div>
               <h4>Dispensary &amp; Telephone</h4>
-              <a href="tel:+94714347804" className="phone-number-link">
-                +94 71 4347804
+              <a href="tel:+94 312 262 462" className="phone-number-link">
+                +94 312 262 462
               </a>
               <p className="dim" style={{ marginTop: '6px' }}>Direct phone line for patient inquiries, doctor appointments &amp; medication stock.</p>
             </div>
