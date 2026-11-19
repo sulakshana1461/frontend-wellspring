@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { SLIDER_IMAGES, useDashboardLogic } from './dashboardLogic';
 import './App.css';
@@ -7,8 +8,8 @@ import AdminPortal from './AdminPortal';
 import GRNPortal from './GRNPortal';
 import QueueDisplay from './QueueDisplay';
 
-// Top Navigation Bar (Clean Light Medical Theme)
-const TopNavbar = ({ currentTime, doctorOnline, counterOnline }) => (
+// Top Navigation Bar (Deep Medical Blue with Theme Switcher)
+const TopNavbar = ({ currentTime, doctorOnline, counterOnline, theme, toggleTheme }) => (
   <header className="top-navbar">
     <Link to="/" className="nav-brand">
       <div className="brand-cross">
@@ -32,6 +33,38 @@ const TopNavbar = ({ currentTime, doctorOnline, counterOnline }) => (
     </nav>
 
     <div className="nav-telemetry">
+      {/* Light / Dark Mode Switcher */}
+      <button 
+        onClick={toggleTheme} 
+        className="theme-toggle-btn"
+        title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+        aria-label={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+      >
+        {theme === 'light' ? (
+          <>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <span className="theme-toggle-label">Dark</span>
+          </>
+        ) : (
+          <>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+            <span className="theme-toggle-label">Light</span>
+          </>
+        )}
+      </button>
+
       <div className="staff-status-group">
         <div className="staff-badge" title="Physician consultation availability">
           <span className={`status-dot ${doctorOnline ? 'online' : 'standby'}`}></span>
@@ -58,6 +91,25 @@ const TopNavbar = ({ currentTime, doctorOnline, counterOnline }) => (
 
 // Main Front Page
 const HomePage = () => {
+  // Theme mode toggle ('light' or 'dark', saved in localStorage)
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('wellspring_theme') || 'light';
+    } catch {
+      return 'light';
+    }
+  });
+
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const next = prev === 'light' ? 'dark' : 'light';
+      try {
+        localStorage.setItem('wellspring_theme', next);
+      } catch {}
+      return next;
+    });
+  };
+
   const {
     currentSlide,
     setCurrentSlide,
@@ -70,8 +122,14 @@ const HomePage = () => {
   } = useDashboardLogic();
 
   return (
-    <div className="homepage-wrapper">
-      <TopNavbar currentTime={currentTime} doctorOnline={doctorOnline} counterOnline={counterOnline} />
+    <div className={`homepage-wrapper theme-${theme}`}>
+      <TopNavbar
+        currentTime={currentTime}
+        doctorOnline={doctorOnline}
+        counterOnline={counterOnline}
+        theme={theme}
+        toggleTheme={toggleTheme}
+      />
 
       {/* ================= HERO SECTION ================= */}
       <section id="hero" className="hero-section">
@@ -93,7 +151,7 @@ const HomePage = () => {
             <span>Private Medical Practice &amp; In-House Dispensary</span>
           </div>
 
-          {/* Deep Medical Blue applied to Wellspring title (Tangerine Font Preserved) */}
+          {/* Wellspring Title (Tangerine Font Preserved) */}
           <h1 className="wellspring-title">Wellspring</h1>
           <p className="healthcare-subtitle">HEALTH CARE CENTER</p>
 
@@ -101,7 +159,7 @@ const HomePage = () => {
             Personalized primary medical care, dedicated physician consultations, and direct pharmacy dispensing under one roof.
           </p>
 
-          {/* Elegant Clinical Practice Plaque (Status Overview) */}
+          {/* Clinical Status Plaque (Preserved in Deep Blue in both themes) */}
           <div className="clinic-status-plaque">
             <div className="plaque-item">
               <div className="plaque-icon-wrap">

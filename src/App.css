@@ -1,6 +1,6 @@
 /* ============================================================================
    WELLSPRING HEALTH CARE - PRIVATE DISPENSARY & MEDICAL PRACTICE
-   Elegant Light Medical Theme (Porcelain White, Clinical Teal & Deep Navy)
+   Light & Dark Clinical Medical Themes
    ============================================================================ */
 
 /* Google Fonts: 'Tangerine' for Wellspring title, 'Plus Jakarta Sans' & 'Inter' for medical typography */
@@ -17,8 +17,6 @@ html, body, #root {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  background-color: #f8fafc;
-  color: #0f172a;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow-x: hidden;
   scroll-behavior: smooth;
@@ -28,11 +26,11 @@ html, body, #root {
 .homepage-wrapper {
   position: relative;
   width: 100%;
-  background: #f8fafc;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ============================================================================
-   1. TOP NAVIGATION BAR (Crisp Light Clinical Theme)
+   1. TOP NAVIGATION BAR (PRESERVED IN DEEP MEDICAL BLUE IN BOTH THEMES)
    ============================================================================ */
 .top-navbar {
   position: fixed;
@@ -44,12 +42,12 @@ html, body, #root {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(7, 17, 30, 0.94);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 1000;
-  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .nav-brand {
@@ -57,7 +55,7 @@ html, body, #root {
   align-items: center;
   gap: 12px;
   text-decoration: none;
-  color: #0f172a;
+  color: #ffffff;
 }
 
 .brand-cross {
@@ -69,7 +67,7 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.28);
+  box-shadow: 0 2px 10px rgba(13, 148, 136, 0.35);
   flex-shrink: 0;
 }
 
@@ -82,15 +80,15 @@ html, body, #root {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
-  letter-spacing: 0.2px;
-  color: #0f172a;
+  letter-spacing: 0.3px;
+  color: #f8fafc;
   line-height: 1.2;
 }
 
 .brand-sub {
   font-size: 0.72rem;
-  font-weight: 600;
-  color: #64748b;
+  font-weight: 500;
+  color: #94a3b8;
   letter-spacing: 0.8px;
   text-transform: uppercase;
 }
@@ -102,18 +100,18 @@ html, body, #root {
 }
 
 .nav-item {
-  color: #334155;
+  color: #cbd5e1;
   text-decoration: none;
   font-size: 0.88rem;
-  font-weight: 600;
-  letter-spacing: 0.2px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
   transition: color 0.2s ease;
   position: relative;
   padding: 4px 0;
 }
 
 .nav-item:hover {
-  color: #0d9488;
+  color: #ffffff;
 }
 
 .nav-item::after {
@@ -134,7 +132,31 @@ html, body, #root {
 .nav-telemetry {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+}
+
+/* Light / Dark Mode Switcher Button */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: rgba(15, 30, 52, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(13, 148, 136, 0.2);
+  border-color: rgba(45, 212, 191, 0.4);
+  color: #2dd4bf;
+  transform: translateY(-1px);
 }
 
 .staff-status-group {
@@ -149,19 +171,18 @@ html, body, #root {
   padding: 5px 12px;
   border-radius: 6px;
   font-size: 0.74rem;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  background: rgba(15, 30, 52, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .staff-label {
-  color: #64748b;
+  color: #94a3b8;
   font-weight: 500;
 }
 
 .staff-val {
-  color: #0f172a;
-  font-weight: 700;
+  color: #e2e8f0;
+  font-weight: 600;
 }
 
 .status-dot {
@@ -173,12 +194,12 @@ html, body, #root {
 
 .status-dot.online {
   background-color: #10b981;
-  box-shadow: 0 0 5px rgba(16, 185, 129, 0.7);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
 }
 
 .status-dot.standby {
   background-color: #f59e0b;
-  box-shadow: 0 0 5px rgba(245, 158, 11, 0.6);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
 }
 
 .clock-display {
@@ -186,17 +207,17 @@ html, body, #root {
   font-variant-numeric: tabular-nums;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #0f172a;
-  background: #f1f5f9;
+  color: #e2e8f0;
+  background: rgba(15, 30, 52, 0.85);
   padding: 6px 12px;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
 }
 
 /* ============================================================================
-   2. HERO SECTION - DEEP MEDICAL BLUE TEXT ON ELEGANT WHITE
+   2. HERO SECTION & TYPOGRAPHY
    ============================================================================ */
 .hero-section {
   position: relative;
@@ -210,7 +231,7 @@ html, body, #root {
   align-items: center;
   text-align: center;
   overflow: hidden;
-  background: #f8fafc;
+  transition: background-color 0.3s ease;
 }
 
 .slider-bg {
@@ -219,24 +240,16 @@ html, body, #root {
   background-size: cover;
   background-position: center;
   opacity: 0;
-  transform: scale(1.03);
+  transform: scale(1.04);
   transition: opacity 2s ease-in-out, transform 8s ease-out;
   z-index: 1;
 }
 
-.slider-bg.active {
-  opacity: 0.22;
-  transform: scale(1);
-}
-
-/* Soft luminous clinical veil */
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: 
-    radial-gradient(ellipse at 50% 38%, rgba(255, 255, 255, 0.72) 0%, rgba(248, 250, 252, 0.94) 85%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, #f8fafc 100%);
   z-index: 2;
+  transition: background 0.3s ease;
 }
 
 .hero-content {
@@ -259,17 +272,15 @@ html, body, #root {
   padding: 6px 18px;
   margin-bottom: 12px;
   border-radius: 999px;
-  background: rgba(13, 148, 136, 0.08);
-  border: 1px solid rgba(13, 148, 136, 0.26);
-  color: #0f766e;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 1.2px;
   text-transform: uppercase;
+  transition: all 0.3s ease;
 }
 
-/* PRESERVED: Tangerine font - SWAPPED TO LUXURY MEDICAL BLUE */
+/* PRESERVED: Tangerine font strictly applied to Wellspring */
 .wellspring-title {
   font-family: 'Tangerine', cursive;
   font-weight: 700;
@@ -277,34 +288,32 @@ html, body, #root {
   line-height: 0.88;
   letter-spacing: 1px;
   padding: 4px 20px;
-  color: #0b2847;
-  text-shadow: 0 4px 18px rgba(11, 40, 71, 0.12);
   margin-bottom: 2px;
   user-select: none;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
-/* Subtitle in Crisp Dark Slate / Black */
 .healthcare-subtitle {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: clamp(0.95rem, 1.8vw, 1.35rem);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 8px;
-  color: #0f172a;
   text-transform: uppercase;
   margin-bottom: 16px;
+  transition: color 0.3s ease;
 }
 
 .hero-mission-statement {
   max-width: 680px;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   line-height: 1.6;
-  color: #475569;
   margin-bottom: 32px;
   font-weight: 400;
+  transition: color 0.3s ease;
 }
 
 /* ============================================================================
-   3. CLINICAL STATUS PLAQUE (Crisp Porcelain Plaque)
+   3. CLINICAL STATUS PLAQUE (PRESERVED IN DEEP MEDICAL BLUE IN BOTH THEMES)
    ============================================================================ */
 .clinic-status-plaque {
   display: flex;
@@ -315,9 +324,9 @@ html, body, #root {
   padding: 16px 28px;
   margin-bottom: 28px;
   border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+  background: #0c1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .plaque-item {
@@ -331,12 +340,12 @@ html, body, #root {
   width: 38px;
   height: 38px;
   border-radius: 8px;
-  background: rgba(13, 148, 136, 0.09);
-  border: 1px solid rgba(13, 148, 136, 0.2);
+  background: rgba(13, 148, 136, 0.14);
+  border: 1px solid rgba(13, 148, 136, 0.28);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0d9488;
+  color: #2dd4bf;
   flex-shrink: 0;
 }
 
@@ -351,7 +360,7 @@ html, body, #root {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: #64748b;
+  color: #94a3b8;
   margin-bottom: 2px;
 }
 
@@ -359,7 +368,7 @@ html, body, #root {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #f8fafc;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -377,7 +386,7 @@ html, body, #root {
 .plaque-divider {
   width: 1px;
   height: 30px;
-  background: #e2e8f0;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Minimalist Slider Indicators */
@@ -391,14 +400,12 @@ html, body, #root {
   width: 22px;
   height: 3px;
   border-radius: 2px;
-  background: #cbd5e1;
   cursor: pointer;
   border: none;
   transition: all 0.3s ease;
 }
 
 .slider-dot.active {
-  background: #0d9488;
   width: 36px;
 }
 
@@ -409,7 +416,6 @@ html, body, #root {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #64748b;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 1px;
@@ -419,12 +425,11 @@ html, body, #root {
 }
 
 .scroll-prompt:hover {
-  color: #0d9488;
   transform: translateY(2px);
 }
 
 /* ============================================================================
-   4. CLINICAL WORKSTATIONS (PRESERVED IN DEEP BLUE)
+   4. CLINICAL WORKSTATIONS (PRESERVED IN DEEP MEDICAL BLUE IN BOTH THEMES)
    ============================================================================ */
 .modules-section {
   position: relative;
@@ -432,6 +437,7 @@ html, body, #root {
   max-width: 1240px;
   margin: 0 auto;
   padding: 60px 24px 80px 24px;
+  transition: background-color 0.3s ease;
 }
 
 .section-header {
@@ -445,8 +451,8 @@ html, body, #root {
   font-weight: 800;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: #0d9488;
   margin-bottom: 8px;
+  transition: color 0.3s ease;
 }
 
 .section-header h2 {
@@ -454,16 +460,16 @@ html, body, #root {
   font-size: 1.95rem;
   font-weight: 800;
   letter-spacing: 0.2px;
-  color: #0f172a;
   margin-bottom: 10px;
+  transition: color 0.3s ease;
 }
 
 .section-header p {
-  color: #475569;
   font-size: 0.98rem;
   max-width: 640px;
   margin: 0 auto;
   line-height: 1.55;
+  transition: color 0.3s ease;
 }
 
 .tiles-grid {
@@ -472,7 +478,6 @@ html, body, #root {
   gap: 22px;
 }
 
-/* PRESERVED IN DEEP MEDICAL BLUE: Outstanding contrast on white */
 .module-tile {
   position: relative;
   text-decoration: none;
@@ -482,7 +487,7 @@ html, body, #root {
   border-radius: 12px;
   padding: 30px 24px;
   overflow: hidden;
-  box-shadow: 0 10px 28px rgba(12, 26, 46, 0.22);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
@@ -491,7 +496,7 @@ html, body, #root {
 .module-tile:hover {
   transform: translateY(-5px);
   border-color: rgba(45, 212, 191, 0.45);
-  box-shadow: 0 16px 36px rgba(12, 26, 46, 0.32);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
 }
 
 .tile-accent-line {
@@ -569,19 +574,14 @@ html, body, #root {
 }
 
 /* ============================================================================
-   5. ABOUT THE PRACTICE SECTION (Soft Medical Alabaster)
+   5. ABOUT THE PRACTICE (TILES PRESERVED IN DEEP BLUE IN BOTH THEMES)
    ============================================================================ */
 .info-section {
   position: relative;
   z-index: 5;
   width: 100%;
   padding: 70px 24px;
-  background: #f1f5f9;
-  border-top: 1px solid #e2e8f0;
-}
-
-.info-section.alt-bg {
-  background: #f8fafc;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .info-container {
@@ -596,25 +596,27 @@ html, body, #root {
   margin-top: 20px;
 }
 
+/* ABOUT TILES: DEEP MEDICAL BLUE WITH LIGHT TEXT IN BOTH THEMES */
 .about-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: #0c1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 30px 26px;
   text-align: left;
-  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  color: #cbd5e1;
 }
 
 .about-card-icon {
   width: 44px;
   height: 44px;
   border-radius: 10px;
-  background: rgba(13, 148, 136, 0.09);
-  border: 1px solid rgba(13, 148, 136, 0.22);
+  background: rgba(13, 148, 136, 0.16);
+  border: 1px solid rgba(13, 148, 136, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0d9488;
+  color: #2dd4bf;
   margin-bottom: 18px;
 }
 
@@ -622,18 +624,18 @@ html, body, #root {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.15rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #f8fafc;
   margin-bottom: 10px;
 }
 
 .about-card p {
-  color: #475569;
+  color: #94a3b8;
   font-size: 0.92rem;
   line-height: 1.6;
 }
 
 /* ============================================================================
-   6. REAL PRACTICE CONTACT & DETAILS SECTION
+   6. CONTACT DETAILS (TILES PRESERVED IN DEEP BLUE IN BOTH THEMES)
    ============================================================================ */
 .contact-grid {
   display: grid;
@@ -642,31 +644,32 @@ html, body, #root {
   margin-top: 20px;
 }
 
+/* CONTACT TILES: DEEP MEDICAL BLUE WITH LIGHT TEXT IN BOTH THEMES */
 .contact-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: #0c1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 26px 22px;
   text-align: left;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
 }
 
 .contact-card.highlight {
-  border-color: rgba(13, 148, 136, 0.4);
-  background: #f0fdfa;
+  border-color: rgba(13, 148, 136, 0.45);
+  background: #0f2238;
 }
 
 .contact-icon {
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: rgba(13, 148, 136, 0.09);
+  background: rgba(13, 148, 136, 0.16);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0d9488;
+  color: #2dd4bf;
   margin-bottom: 14px;
 }
 
@@ -674,19 +677,20 @@ html, body, #root {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #f8fafc;
   margin-bottom: 8px;
 }
 
 .contact-bold {
   font-weight: 700;
-  color: #0f172a;
+  color: #f8fafc;
   font-size: 0.94rem;
 }
 
 .location-address {
   margin-top: 4px;
   line-height: 1.5;
+  color: #94a3b8;
 }
 
 .map-action-link {
@@ -696,9 +700,9 @@ html, body, #root {
   margin-top: 14px;
   padding: 7px 14px;
   border-radius: 6px;
-  background: rgba(2, 132, 199, 0.08);
-  border: 1px solid rgba(2, 132, 199, 0.28);
-  color: #0284c7;
+  background: rgba(2, 132, 199, 0.2);
+  border: 1px solid rgba(2, 132, 199, 0.4);
+  color: #7dd3fc;
   font-weight: 700;
   font-size: 0.82rem;
   text-decoration: none;
@@ -715,9 +719,9 @@ html, body, #root {
 .phone-number-link {
   display: inline-block;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.22rem;
+  font-size: 1.25rem;
   font-weight: 800;
-  color: #0284c7;
+  color: #38bdf8;
   text-decoration: none;
   margin: 4px 0;
   letter-spacing: 0.3px;
@@ -725,7 +729,7 @@ html, body, #root {
 }
 
 .phone-number-link:hover {
-  color: #0d9488;
+  color: #2dd4bf;
 }
 
 .hours-block {
@@ -739,30 +743,30 @@ html, body, #root {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #0d9488;
+  color: #2dd4bf;
 }
 
 .hours-time {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #f1f5f9;
 }
 
 .contact-card p {
-  color: #475569;
+  color: #cbd5e1;
   font-size: 0.88rem;
   line-height: 1.5;
 }
 
 .contact-card p.dim {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 0.82rem;
 }
 
 .queue-quick-link {
   display: inline-block;
   margin-top: 12px;
-  color: #0f766e;
+  color: #2dd4bf;
   text-decoration: none;
   font-size: 0.86rem;
   font-weight: 700;
@@ -775,14 +779,14 @@ html, body, #root {
 }
 
 /* ============================================================================
-   7. CLINICAL FOOTER (Prestigious Deep Navy Signature Anchor)
+   7. CLINICAL FOOTER (PRESERVED IN DEEP BLUE IN BOTH THEMES)
    ============================================================================ */
 .clinical-footer {
   position: relative;
   z-index: 5;
   width: 100%;
   padding: 38px 24px;
-  background: #0a182b;
+  background: #07111e;
   color: #ffffff;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -828,7 +832,165 @@ html, body, #root {
 }
 
 /* ============================================================================
-   8. RESPONSIVE ADJUSTMENTS
+   8. THEME-SPECIFIC BACKGROUNDS & EXTERNAL TEXT COLORS
+   ============================================================================ */
+
+/* ---------- A. LIGHT THEME (White Variant Background) ---------- */
+.theme-light {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.theme-light .hero-section {
+  background-color: #f8fafc;
+}
+
+.theme-light .slider-bg.active {
+  opacity: 0.22;
+}
+
+.theme-light .hero-overlay {
+  background: 
+    radial-gradient(ellipse at 50% 38%, rgba(255, 255, 255, 0.72) 0%, rgba(248, 250, 252, 0.94) 85%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, #f8fafc 100%);
+}
+
+.theme-light .medical-pill-tag {
+  background: rgba(13, 148, 136, 0.08);
+  border: 1px solid rgba(13, 148, 136, 0.26);
+  color: #0f766e;
+}
+
+/* In Light Mode: Blue color in background applied to Wellspring title */
+.theme-light .wellspring-title {
+  color: #0b2847;
+  text-shadow: 0 4px 18px rgba(11, 40, 71, 0.12);
+}
+
+.theme-light .healthcare-subtitle {
+  color: #0f172a;
+}
+
+.theme-light .hero-mission-statement {
+  color: #475569;
+}
+
+.theme-light .slider-dot {
+  background: #cbd5e1;
+}
+
+.theme-light .slider-dot.active {
+  background: #0d9488;
+}
+
+.theme-light .scroll-prompt {
+  color: #64748b;
+}
+
+.theme-light .scroll-prompt:hover {
+  color: #0d9488;
+}
+
+.theme-light .section-eyebrow {
+  color: #0d9488;
+}
+
+.theme-light .section-header h2 {
+  color: #0f172a;
+}
+
+.theme-light .section-header p {
+  color: #475569;
+}
+
+.theme-light .info-section {
+  background: #f1f5f9;
+  border-top: 1px solid #e2e8f0;
+}
+
+.theme-light .info-section.alt-bg {
+  background: #f8fafc;
+}
+
+/* ---------- B. DARK THEME (Identical to Previous Version) ---------- */
+.theme-dark {
+  background-color: #07111e;
+  color: #f1f5f9;
+}
+
+.theme-dark .hero-section {
+  background-color: #07111e;
+}
+
+.theme-dark .slider-bg.active {
+  opacity: 0.38;
+}
+
+.theme-dark .hero-overlay {
+  background: 
+    radial-gradient(ellipse at 50% 38%, rgba(13, 30, 54, 0.55) 0%, rgba(7, 17, 30, 0.92) 80%),
+    linear-gradient(180deg, rgba(7, 17, 30, 0.45) 0%, #07111e 100%);
+}
+
+.theme-dark .medical-pill-tag {
+  background: rgba(13, 148, 136, 0.12);
+  border: 1px solid rgba(13, 148, 136, 0.3);
+  color: #5eead4;
+}
+
+/* In Dark Mode: Exactly as previous pearl white */
+.theme-dark .wellspring-title {
+  color: #ffffff;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+}
+
+.theme-dark .healthcare-subtitle {
+  color: #cbd5e1;
+}
+
+.theme-dark .hero-mission-statement {
+  color: #94a3b8;
+}
+
+.theme-dark .slider-dot {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.theme-dark .slider-dot.active {
+  background: #2dd4bf;
+}
+
+.theme-dark .scroll-prompt {
+  color: #94a3b8;
+}
+
+.theme-dark .scroll-prompt:hover {
+  color: #2dd4bf;
+}
+
+.theme-dark .section-eyebrow {
+  color: #2dd4bf;
+}
+
+.theme-dark .section-header h2 {
+  color: #f8fafc;
+}
+
+.theme-dark .section-header p {
+  color: #94a3b8;
+}
+
+.theme-dark .info-section {
+  background: #081423;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.theme-dark .info-section.alt-bg {
+  background: #07111e;
+}
+
+/* ============================================================================
+   9. RESPONSIVE ADJUSTMENTS
    ============================================================================ */
 @media (max-width: 1024px) {
   .top-navbar {
