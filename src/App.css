@@ -159,49 +159,6 @@ html, body, #root {
   transform: translateY(-1px);
 }
 
-.staff-status-group {
-  display: flex;
-  gap: 8px;
-}
-
-.staff-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 0.74rem;
-  background: rgba(15, 30, 52, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.staff-label {
-  color: #94a3b8;
-  font-weight: 500;
-}
-
-.staff-val {
-  color: #e2e8f0;
-  font-weight: 600;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.status-dot.online {
-  background-color: #10b981;
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
-}
-
-.status-dot.standby {
-  background-color: #f59e0b;
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
-}
-
 .clock-display {
   font-family: 'Inter', sans-serif;
   font-variant-numeric: tabular-nums;

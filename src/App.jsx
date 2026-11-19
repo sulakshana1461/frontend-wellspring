@@ -9,7 +9,7 @@ import GRNPortal from './GRNPortal';
 import QueueDisplay from './QueueDisplay';
 
 // Top Navigation Bar (Deep Medical Blue with Theme Switcher)
-const TopNavbar = ({ currentTime, doctorOnline, counterOnline, theme, toggleTheme }) => (
+const TopNavbar = ({ currentTime, theme, toggleTheme }) => (
   <header className="top-navbar">
     <Link to="/" className="nav-brand">
       <div className="brand-cross">
@@ -65,19 +65,6 @@ const TopNavbar = ({ currentTime, doctorOnline, counterOnline, theme, toggleThem
         )}
       </button>
 
-      <div className="staff-status-group">
-        <div className="staff-badge" title="Physician consultation availability">
-          <span className={`status-dot ${doctorOnline ? 'online' : 'standby'}`}></span>
-          <span className="staff-label">Doctor:</span>
-          <span className="staff-val">{doctorOnline ? 'In Attendance' : 'On Call'}</span>
-        </div>
-        <div className="staff-badge" title="Dispensary and reception status">
-          <span className={`status-dot ${counterOnline ? 'online' : 'standby'}`}></span>
-          <span className="staff-label">Dispensary:</span>
-          <span className="staff-val">{counterOnline ? 'Open' : 'Standby'}</span>
-        </div>
-      </div>
-
       <div className="clock-display" title="Clinic Time">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', opacity: 0.7 }}>
           <circle cx="12" cy="12" r="10" />
@@ -111,17 +98,13 @@ const HomePage = () => {
   };
 
   const {
-    currentTime,
-    doctorOnline,
-    counterOnline
+    currentTime
   } = useDashboardLogic();
 
   return (
     <div className={`homepage-wrapper theme-${theme}`}>
       <TopNavbar
         currentTime={currentTime}
-        doctorOnline={doctorOnline}
-        counterOnline={counterOnline}
         theme={theme}
         toggleTheme={toggleTheme}
       />

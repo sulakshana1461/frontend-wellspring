@@ -264,19 +264,10 @@ export default function CounterPortal() {
 
             <button
               type="button"
-              className={`counter-nav-btn ${activePage === 'today_log' ? 'active' : ''}`}
-              onClick={() => setActivePage('today_log')}
-            >
-              <span>2. Today&apos;s Log</span>
-              <span className="nav-badge-pill">{todayLogList.length} Today</span>
-            </button>
-
-            <button
-              type="button"
               className={`counter-nav-btn ${activePage === 'queue' ? 'active' : ''}`}
               onClick={() => setActivePage('queue')}
             >
-              <span>3. Active Queue</span>
+              <span>2. Active Queue</span>
               <span className="nav-badge-pill">{activeWaitingQueue.length} In Queue</span>
             </button>
 
@@ -285,8 +276,17 @@ export default function CounterPortal() {
               className={`counter-nav-btn ${activePage === 'registration' ? 'active' : ''}`}
               onClick={() => setActivePage('registration')}
             >
-              <span>4. Registration</span>
+              <span>3. Registration</span>
               <span className="nav-badge-pill">+ New</span>
+            </button>
+
+            <button
+              type="button"
+              className={`counter-nav-btn ${activePage === 'today_log' ? 'active' : ''}`}
+              onClick={() => setActivePage('today_log')}
+            >
+              <span>4. Today&apos;s Log</span>
+              <span className="nav-badge-pill">{todayLogList.length} Today</span>
             </button>
           </nav>
 
