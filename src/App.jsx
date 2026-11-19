@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { SLIDER_IMAGES, useDashboardLogic } from './dashboardLogic';
+import { useDashboardLogic } from './dashboardLogic';
 import './App.css';
 import DoctorPortal from './DoctorPortal';
 import CounterPortal from './CounterPortal';
@@ -111,13 +111,9 @@ const HomePage = () => {
   };
 
   const {
-    currentSlide,
-    setCurrentSlide,
     currentTime,
     doctorOnline,
     counterOnline,
-    telemetry,
-    heroStyle,
     tilesVisible
   } = useDashboardLogic();
 
@@ -131,19 +127,9 @@ const HomePage = () => {
         toggleTheme={toggleTheme}
       />
 
-      {/* ================= HERO SECTION (SLIDESHOW CLEARLY IN FRONT) ================= */}
+      {/* ================= HERO SECTION (CLEAN MEDICAL GRADIENT CANVAS) ================= */}
       <section id="hero" className="hero-section">
-        {/* Crisp Clinical Photography Slider */}
-        {SLIDER_IMAGES.map((imgUrl, index) => (
-          <div
-            key={index}
-            className={`slider-bg ${index === currentSlide ? 'active' : ''}`}
-            style={{ backgroundImage: `url(${imgUrl})` }}
-          />
-        ))}
-        <div className="hero-overlay"></div>
-
-        <div className="hero-content" style={heroStyle}>
+        <div className="hero-content">
           <div className="medical-pill-tag">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2v20M2 12h20" />
@@ -158,95 +144,10 @@ const HomePage = () => {
           <p className="hero-mission-statement">
             Personalized primary medical care, dedicated physician consultations, and direct pharmacy dispensing under one roof.
           </p>
-
-          {/* Clinical Status Plaque (Preserved in Deep Blue in both themes) */}
-          <div className="clinic-status-plaque">
-            <div className="plaque-item">
-              <div className="plaque-icon-wrap">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-              </div>
-              <div className="plaque-details">
-                <span className="plaque-label">Patient Waiting Queue</span>
-                <span className="plaque-value">
-                  <span className="live-dot"></span>
-                  {telemetry.activeQueue} Waiting
-                </span>
-              </div>
-            </div>
-
-            <div className="plaque-divider"></div>
-
-            <div className="plaque-item">
-              <div className="plaque-icon-wrap">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                </svg>
-              </div>
-              <div className="plaque-details">
-                <span className="plaque-label">Consultation Room</span>
-                <span className="plaque-value">{telemetry.roomStatus}</span>
-              </div>
-            </div>
-
-            <div className="plaque-divider"></div>
-
-            <div className="plaque-item">
-              <div className="plaque-icon-wrap">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                </svg>
-              </div>
-              <div className="plaque-details">
-                <span className="plaque-label">Dispensary Activity</span>
-                <span className="plaque-value">{telemetry.servedToday} Dispensed Today</span>
-              </div>
-            </div>
-
-            <div className="plaque-divider"></div>
-
-            <div className="plaque-item">
-              <div className="plaque-icon-wrap">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-              </div>
-              <div className="plaque-details">
-                <span className="plaque-label">Daily Sessions</span>
-                <span className="plaque-value">7–8 AM &amp; 5:30–8:30 PM</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Minimalist Slider Indicators */}
-          <div className="slider-indicators">
-            {SLIDER_IMAGES.map((_, index) => (
-              <button
-                key={index}
-                className={`slider-dot ${index === currentSlide ? 'active' : ''}`}
-                onClick={() => setCurrentSlide(index)}
-                aria-label={`Show slide ${index + 1}`}
-              />
-            ))}
-          </div>
         </div>
-
-        <a href="#modules" className="scroll-prompt" aria-label="Scroll to clinical terminals">
-          <span>Clinical Workstations</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <polyline points="19 12 12 19 5 12" />
-          </svg>
-        </a>
       </section>
 
-      {/* ================= 4 CLINICAL WORKSTATIONS (SOLID BACKGROUND ON BOTTOM) ================= */}
+      {/* ================= 4 CLINICAL WORKSTATIONS (ELEVATED FOR FAST ACCESS) ================= */}
       <section id="modules" className="modules-section">
         <div className="modules-container">
           <div className={`section-header ${tilesVisible ? 'visible' : ''}`}>
@@ -351,7 +252,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ================= ABOUT THE PRACTICE (SOLID BACKGROUND ON BOTTOM) ================= */}
+      {/* ================= ABOUT THE PRACTICE ================= */}
       <section id="about" className="info-section">
         <div className="info-container">
           <div className="section-header visible">
@@ -468,8 +369,8 @@ const HomePage = () => {
               </div>
               <h4>Dispensary &amp; Telephone</h4>
               <a href="tel:+94714347804" className="phone-number-link">
-                +94 312 262 462
-              </a>          
+                +94 71 4347804
+              </a>
               <p className="dim" style={{ marginTop: '6px' }}>Direct phone line for patient inquiries, doctor appointments &amp; medication stock.</p>
             </div>
 
