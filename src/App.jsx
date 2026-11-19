@@ -6,15 +6,21 @@ import CounterPortal from './CounterPortal';
 import AdminPortal from './AdminPortal';
 import GRNPortal from './GRNPortal';
 import QueueDisplay from './QueueDisplay';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
 
 // Top Navigation Bar
 const TopNavbar = ({ currentTime, doctorOnline, counterOnline }) => (
   <header className="top-navbar">
     <Link to="/" className="nav-brand">
-      <div className="brand-cross">+</div>
-      <span className="brand-name">Wellspring Health Care</span>
+      <div className="brand-cross">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="12" y1="4" x2="12" y2="20" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+        </svg>
+      </div>
+      <div className="brand-text-col">
+        <span className="brand-name">Wellspring Health Care</span>
+        <span className="brand-sub">Private Clinic &amp; Dispensary</span>
+      </div>
     </Link>
 
     <nav className="nav-links">
@@ -23,33 +29,36 @@ const TopNavbar = ({ currentTime, doctorOnline, counterOnline }) => (
       <Link to="/queue" className="nav-item">Queue</Link>
       <a href="#about" className="nav-item">About</a>
       <a href="#contact" className="nav-item">Contact Us</a>
-      <span className="nav-portal-btn">Online Booking (Soon)</span>
     </nav>
 
     <div className="nav-telemetry">
       <div className="staff-status-group">
-        <div className="staff-badge">
-          <span className={`status-dot ${doctorOnline ? 'online' : 'offline'}`}></span>
-          <span>Doctor</span>
+        <div className="staff-badge" title="Physician consultation availability">
+          <span className={`status-dot ${doctorOnline ? 'online' : 'standby'}`}></span>
+          <span className="staff-label">Doctor:</span>
+          <span className="staff-val">{doctorOnline ? 'In Attendance' : 'On Call'}</span>
         </div>
-        <div className="staff-badge">
-          <span className={`status-dot ${counterOnline ? 'online' : 'offline'}`}></span>
-          <span>Counter</span>
+        <div className="staff-badge" title="Dispensary and reception status">
+          <span className={`status-dot ${counterOnline ? 'online' : 'standby'}`}></span>
+          <span className="staff-label">Dispensary:</span>
+          <span className="staff-val">{counterOnline ? 'Open' : 'Standby'}</span>
         </div>
       </div>
-      <div className="clock-display">
+
+      <div className="clock-display" title="Clinic Time">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', opacity: 0.7 }}>
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
         {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
       </div>
     </div>
   </header>
 );
 
-
-
 // Main Front Page
 const HomePage = () => {
   const {
-    canvasRef,
     currentSlide,
     setCurrentSlide,
     currentTime,
@@ -61,11 +70,12 @@ const HomePage = () => {
   } = useDashboardLogic();
 
   return (
-    <div>
+    <div className="homepage-wrapper">
       <TopNavbar currentTime={currentTime} doctorOnline={doctorOnline} counterOnline={counterOnline} />
 
-      {/* HERO SECTION WITH SLIDER, MOLECULAR PARTICLES & TELEMETRY */}
+      {/* ================= HERO SECTION ================= */}
       <section id="hero" className="hero-section">
+        {/* Subtle Dignified Clinical Photography Slider */}
         {SLIDER_IMAGES.map((imgUrl, index) => (
           <div
             key={index}
@@ -75,185 +85,353 @@ const HomePage = () => {
         ))}
         <div className="hero-overlay"></div>
 
-        <canvas ref={canvasRef} className="particle-canvas" />
-
         <div className="hero-content" style={heroStyle}>
-          <span className="medical-pill-tag">Patient Care &amp; Dispensary Management</span>
+          <div className="medical-pill-tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v20M2 12h20" />
+            </svg>
+            <span>Private Medical Practice &amp; In-House Dispensary</span>
+          </div>
+
+          {/* PRESERVED: Center Wellspring text and font */}
           <h1 className="wellspring-title">Wellspring</h1>
-          <p className="healthcare-subtitle">Health Care Center</p>
+          <p className="healthcare-subtitle">HEALTH CARE CENTER</p>
 
-          {/* Live Clinic Telemetry ("Pulse" Board - Privacy Safe) */}
-          <div className="telemetry-hud-bar">
-            <div className="telemetry-metric">
-              <span className="metric-indicator emerald"></span>
-              <div className="metric-text">
-                <span className="metric-label">Current Queue</span>
-                <span className="metric-value">{telemetry.activeQueue} Waiting</span>
+          <p className="hero-mission-statement">
+            Personalized primary medical care, unhurried physician consultations, and direct pharmacy dispensing under one roof.
+          </p>
+
+          {/* Dignified Clinical Practice Plaque (Status Overview) */}
+          <div className="clinic-status-plaque">
+            <div className="plaque-item">
+              <div className="plaque-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <div className="plaque-details">
+                <span className="plaque-label">Patient Waiting Queue</span>
+                <span className="plaque-value">
+                  <span className="live-dot"></span>
+                  {telemetry.activeQueue} Waiting
+                </span>
               </div>
             </div>
 
-            <div className="telemetry-divider"></div>
+            <div className="plaque-divider"></div>
 
-            <div className="telemetry-metric">
-              <span className="metric-indicator"></span>
-              <div className="metric-text">
-                <span className="metric-label">Daily Traffic</span>
-                <span className="metric-value">{telemetry.servedToday} Served Today</span>
+            <div className="plaque-item">
+              <div className="plaque-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+              </div>
+              <div className="plaque-details">
+                <span className="plaque-label">Consultation Room</span>
+                <span className="plaque-value">{telemetry.roomStatus}</span>
               </div>
             </div>
 
-            <div className="telemetry-divider"></div>
+            <div className="plaque-divider"></div>
 
-            <div className="telemetry-metric">
-              <span className="metric-indicator emerald"></span>
-              <div className="metric-text">
-                <span className="metric-label">Consultation Status</span>
-                <span className="metric-value">{telemetry.roomStatus}</span>
+            <div className="plaque-item">
+              <div className="plaque-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                </svg>
+              </div>
+              <div className="plaque-details">
+                <span className="plaque-label">Dispensary Activity</span>
+                <span className="plaque-value">{telemetry.servedToday} Dispensed Today</span>
+              </div>
+            </div>
+
+            <div className="plaque-divider"></div>
+
+            <div className="plaque-item">
+              <div className="plaque-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </div>
+              <div className="plaque-details">
+                <span className="plaque-label">Dispensary Hours</span>
+                <span className="plaque-value">8:00 AM – 9:00 PM</span>
               </div>
             </div>
           </div>
 
+          {/* Minimalist Slider Indicators */}
           <div className="slider-indicators">
             {SLIDER_IMAGES.map((_, index) => (
               <button
                 key={index}
                 className={`slider-dot ${index === currentSlide ? 'active' : ''}`}
                 onClick={() => setCurrentSlide(index)}
-                aria-label={`Slide ${index + 1}`}
+                aria-label={`Show slide ${index + 1}`}
               />
             ))}
           </div>
         </div>
 
-        <a href="#modules" className="scroll-prompt">
-          <span>Scroll to Clinical Modules</span>
-          <span>↓</span>
+        <a href="#modules" className="scroll-prompt" aria-label="Scroll to clinical terminals">
+          <span>Clinical Workstations</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <polyline points="19 12 12 19 5 12" />
+          </svg>
         </a>
       </section>
 
-      {/* 4 MODULE TILES SECTION */}
+      {/* ================= 4 CLINICAL WORKSTATIONS ================= */}
       <section id="modules" className="modules-section">
         <div className={`section-header ${tilesVisible ? 'visible' : ''}`}>
-          <h2>Clinical Management Portal</h2>
-          <p>Select a department module to begin managing patient care and dispensary operations</p>
+          <div className="section-eyebrow">PRACTICE MANAGEMENT</div>
+          <h2>Clinical Workstations &amp; Portals</h2>
+          <p>Authorized access points for medical consultation, dispensary counter, inventory intake, and administration.</p>
         </div>
 
         <div className="tiles-grid">
-          {/* 1. ADMIN TILE */}
-          <Link to="/admin" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
-            <div className="tile-accent-line"></div>
-            <div className="tile-top-row">
-              <div className="tile-icon-box">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect width="18" height="18" x="3" y="3" rx="2" />
-                  <path d="M3 9h18" />
-                  <path d="m9 16 3-3 3 3" />
-                </svg>
-              </div>
-              <span className="tile-badge">Management</span>
-            </div>
-            <h3 className="tile-title">Admin</h3>
-            <p className="tile-desc">
-              System administration, clinic financial analytics, revenue tracking, and staff account management.
-            </p>
-            <div className="tile-footer">
-              <span>Open Admin Portal</span>
-              <span>→</span>
-            </div>
-          </Link>
-
-          {/* 2. DOCTOR TILE */}
+          {/* 1. DOCTOR SUITE */}
           <Link to="/doctor" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
             <div className="tile-accent-line"></div>
             <div className="tile-top-row">
               <div className="tile-icon-box">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
                   <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" />
                   <circle cx="20" cy="10" r="2" />
                 </svg>
               </div>
-              <span className="tile-badge">Consultation</span>
+              <span className="tile-badge">Physician Suite</span>
             </div>
-            <h3 className="tile-title">Doctor</h3>
+            <h3 className="tile-title">Doctor Consultation</h3>
             <p className="tile-desc">
-              Patient examinations, symptom and diagnosis records, medical history, and instant prescriptions.
+              Patient examinations, diagnostic records, allergy alerts, past visit histories, and instant digital prescriptions.
             </p>
             <div className="tile-footer">
-              <span>Open Consultation</span>
-              <span>→</span>
+              <span>Launch Consultation</span>
+              <span className="arrow">→</span>
             </div>
           </Link>
 
-          {/* 3. COUNTER TILE */}
+          {/* 2. DISPENSARY COUNTER */}
           <Link to="/counter" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
             <div className="tile-accent-line"></div>
             <div className="tile-top-row">
               <div className="tile-icon-box">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                   <circle cx="9" cy="7" r="4" />
                   <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
               </div>
-              <span className="tile-badge">Front Desk</span>
+              <span className="tile-badge">Dispensary Desk</span>
             </div>
-            <h3 className="tile-title">Counter</h3>
+            <h3 className="tile-title">Counter &amp; Pharmacy</h3>
             <p className="tile-desc">
-              Patient registration, appointment ticketing, multi-tab medicine dispensing, and live billing.
+              Walk-in patient registration, ticketing queue control, multi-tab prescription dispensing, and POS billing.
             </p>
             <div className="tile-footer">
-              <span>Open Counter</span>
-              <span>→</span>
+              <span>Launch Counter</span>
+              <span className="arrow">→</span>
             </div>
           </Link>
 
-          {/* 4. STOCK / GRN TILE */}
+          {/* 3. STOCK & GRN */}
           <Link to="/grn" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
             <div className="tile-accent-line"></div>
             <div className="tile-top-row">
               <div className="tile-icon-box">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
                   <path d="m3.3 7 8.7 5 8.7-5" />
                   <path d="M12 22V12" />
                 </svg>
               </div>
-              <span className="tile-badge">Inventory</span>
+              <span className="tile-badge">Pharmaceutical Stock</span>
             </div>
             <h3 className="tile-title">Stock &amp; GRN</h3>
             <p className="tile-desc">
-              Goods Received Notes, medicine batch intake, expiry tracking, and supplier inventory logs.
+              Goods Received Notes, batch intake verification, manufacturer expiry tracking, and medicine master cataloging.
             </p>
             <div className="tile-footer">
-              <span>Open Inventory</span>
-              <span>→</span>
+              <span>Launch Inventory</span>
+              <span className="arrow">→</span>
+            </div>
+          </Link>
+
+          {/* 4. PRACTICE ADMIN */}
+          <Link to="/admin" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
+            <div className="tile-accent-line"></div>
+            <div className="tile-top-row">
+              <div className="tile-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              </div>
+              <span className="tile-badge">Governance &amp; Audit</span>
+            </div>
+            <h3 className="tile-title">Administration</h3>
+            <p className="tile-desc">
+              Practice revenue analytics, daily financial logs, patient demographic reports, and clinical staff credentials.
+            </p>
+            <div className="tile-footer">
+              <span>Launch Admin</span>
+              <span className="arrow">→</span>
             </div>
           </Link>
         </div>
       </section>
+
+      {/* ================= ABOUT THE PRACTICE ================= */}
+      <section id="about" className="info-section">
+        <div className="info-container">
+          <div className="section-header visible">
+            <div className="section-eyebrow">ABOUT WELLSPRING</div>
+            <h2>Private Clinical Care &amp; Dedicated Dispensary</h2>
+            <p>Built upon the standard of traditional family medicine combined with streamlined modern dispensary operations.</p>
+          </div>
+
+          <div className="about-grid">
+            <div className="about-card">
+              <div className="about-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                </svg>
+              </div>
+              <h3>Patient-Centered Practice</h3>
+              <p>
+                Every consultation is conducted with thorough clinical attention. We maintain comprehensive longitudinal medical records to ensure consistent care across every visit.
+              </p>
+            </div>
+
+            <div className="about-card">
+              <div className="about-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                </svg>
+              </div>
+              <h3>Direct On-Site Dispensary</h3>
+              <p>
+                Prescribed medications are dispensed directly by dispensary staff immediately following the consultation, ensuring pharmaceutical authenticity and precise dosage guidance.
+              </p>
+            </div>
+
+            <div className="about-card">
+              <div className="about-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </div>
+              <h3>Real-Time Queue Transparency</h3>
+              <p>
+                Patients receive immediate sequential queue tokens upon arrival. Live waiting room displays keep patient flow orderly, calm, and free of unnecessary waiting anxiety.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= PRACTICE CONTACT & DETAILS ================= */}
+      <section id="contact" className="info-section alt-bg">
+        <div className="info-container">
+          <div className="section-header visible">
+            <div className="section-eyebrow">VISIT &amp; CONNECT</div>
+            <h2>Practice Information &amp; Hours</h2>
+            <p>Conveniently located for direct patient consultations, prescription refills, and clinical inquiries.</p>
+          </div>
+
+          <div className="contact-grid">
+            <div className="contact-card">
+              <div className="contact-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </div>
+              <h4>Clinic Location</h4>
+              <p>Wellspring Health Care Center</p>
+              <p className="dim">Main Medical Suite &amp; Dispensary</p>
+            </div>
+
+            <div className="contact-card">
+              <div className="contact-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </div>
+              <h4>Consultation Sessions</h4>
+              <p>Morning: 8:30 AM – 1:00 PM</p>
+              <p>Evening: 4:30 PM – 9:00 PM</p>
+              <p className="dim">Open Monday through Sunday</p>
+            </div>
+
+            <div className="contact-card">
+              <div className="contact-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+              </div>
+              <h4>Dispensary Inquiries</h4>
+              <p>Reception: +94 (0) 11 234 5678</p>
+              <p className="dim">Emergency triage directly at counter</p>
+            </div>
+
+            <div className="contact-card highlight">
+              <div className="contact-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+              </div>
+              <h4>Waiting Room Display</h4>
+              <p>Dedicated full-screen TV view for patient waiting lounges.</p>
+              <Link to="/queue" className="queue-quick-link">
+                Open Queue Display →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= REFINED CLINICAL FOOTER ================= */}
+      <footer className="clinical-footer">
+        <div className="footer-content">
+          <div className="footer-brand">
+            <span className="footer-title">Wellspring Health Care</span>
+            <span className="footer-subtitle">Private Dispensary &amp; Primary Care Center</span>
+          </div>
+          <div className="footer-meta">
+            <p>© {new Date().getFullYear()} Wellspring Health Care. All rights reserved.</p>
+            <p className="compliance-note">Confidential clinical system. Patient records strictly encrypted &amp; protected.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
-
-// Temporary Placeholders for Inner Pages
-const PlaceholderPage = ({ title }) => (
-  <div style={{ padding: '120px 40px', textAlign: 'center' }}>
-    <h1 style={{ color: '#38bdf8', marginBottom: '20px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{title}</h1>
-    <Link to="/" style={{ color: '#f8fafc', textDecoration: 'underline' }}>← Return to Wellspring Home</Link>
-  </div>
-);
 
 export default function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/admin" element={<AdminPortal/>} />
+        <Route path="/admin" element={<AdminPortal />} />
         <Route path="/doctor" element={<DoctorPortal />} />
         <Route path="/counter" element={<CounterPortal />} />
-        <Route path="/grn" element={<GRNPortal/>} />
+        <Route path="/grn" element={<GRNPortal />} />
         <Route path="/queue" element={<QueueDisplay />} />
       </Routes>
     </Router>
