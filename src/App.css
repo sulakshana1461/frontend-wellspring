@@ -1,6 +1,6 @@
 /* ============================================================================
    WELLSPRING HEALTH CARE - PRIVATE DISPENSARY & MEDICAL PRACTICE
-   Light & Dark Clinical Medical Themes
+   Light & Dark Clinical Medical Themes with Vivid Foreground Slideshow
    ============================================================================ */
 
 /* Google Fonts: 'Tangerine' for Wellspring title, 'Plus Jakarta Sans' & 'Inter' for medical typography */
@@ -217,7 +217,7 @@ html, body, #root {
 }
 
 /* ============================================================================
-   2. HERO SECTION & TYPOGRAPHY
+   2. HERO SECTION & VIVID FOREGROUND SLIDESHOW
    ============================================================================ */
 .hero-section {
   position: relative;
@@ -231,9 +231,10 @@ html, body, #root {
   align-items: center;
   text-align: center;
   overflow: hidden;
-  transition: background-color 0.3s ease;
+  background: transparent;
 }
 
+/* VIVID SLIDESHOW PHOTOGRAPHY (Opacity set high so it appears clearly in front) */
 .slider-bg {
   position: absolute;
   inset: 0;
@@ -241,14 +242,21 @@ html, body, #root {
   background-position: center;
   opacity: 0;
   transform: scale(1.04);
-  transition: opacity 2s ease-in-out, transform 8s ease-out;
+  transition: opacity 1.8s ease-in-out, transform 7s ease-out;
   z-index: 1;
 }
 
+.slider-bg.active {
+  opacity: 0.95;
+  transform: scale(1);
+}
+
+/* SUBTLE CONTRAST SCRIM (Lets slideshow appear clearly while protecting text legibility) */
 .hero-overlay {
   position: absolute;
   inset: 0;
   z-index: 2;
+  background: linear-gradient(180deg, rgba(7, 17, 30, 0.48) 0%, rgba(7, 17, 30, 0.18) 45%, rgba(7, 17, 30, 0.55) 100%);
   transition: background 0.3s ease;
 }
 
@@ -272,6 +280,10 @@ html, body, #root {
   padding: 6px 18px;
   margin-bottom: 12px;
   border-radius: 999px;
+  background: rgba(13, 148, 136, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
@@ -290,25 +302,31 @@ html, body, #root {
   padding: 4px 20px;
   margin-bottom: 2px;
   user-select: none;
+  color: #ffffff;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.85), 0 2px 8px rgba(0, 0, 0, 0.9);
   transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
 .healthcare-subtitle {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: clamp(0.95rem, 1.8vw, 1.35rem);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 8px;
   text-transform: uppercase;
   margin-bottom: 16px;
+  color: #f8fafc;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85);
   transition: color 0.3s ease;
 }
 
 .hero-mission-statement {
   max-width: 680px;
-  font-size: 1.02rem;
+  font-size: 1.05rem;
   line-height: 1.6;
   margin-bottom: 32px;
-  font-weight: 400;
+  font-weight: 500;
+  color: #f1f5f9;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
   transition: color 0.3s ease;
 }
 
@@ -325,8 +343,8 @@ html, body, #root {
   margin-bottom: 28px;
   border-radius: 12px;
   background: #0c1a2e;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
 }
 
 .plaque-item {
@@ -340,8 +358,8 @@ html, body, #root {
   width: 38px;
   height: 38px;
   border-radius: 8px;
-  background: rgba(13, 148, 136, 0.14);
-  border: 1px solid rgba(13, 148, 136, 0.28);
+  background: rgba(13, 148, 136, 0.16);
+  border: 1px solid rgba(13, 148, 136, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -402,10 +420,12 @@ html, body, #root {
   border-radius: 2px;
   cursor: pointer;
   border: none;
+  background: rgba(255, 255, 255, 0.35);
   transition: all 0.3s ease;
 }
 
 .slider-dot.active {
+  background: #2dd4bf;
   width: 36px;
 }
 
@@ -421,23 +441,30 @@ html, body, #root {
   letter-spacing: 1px;
   text-transform: uppercase;
   text-decoration: none;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .scroll-prompt:hover {
+  color: #2dd4bf;
   transform: translateY(2px);
 }
 
 /* ============================================================================
-   4. CLINICAL WORKSTATIONS (PRESERVED IN DEEP MEDICAL BLUE IN BOTH THEMES)
+   4. CLINICAL WORKSTATIONS (FULL WIDTH WITH SOLID BACKGROUND ON BOTTOM)
    ============================================================================ */
 .modules-section {
   position: relative;
-  z-index: 5;
+  z-index: 10;
+  width: 100%;
+  padding: 70px 24px 80px 24px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.modules-container {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 60px 24px 80px 24px;
-  transition: background-color 0.3s ease;
 }
 
 .section-header {
@@ -574,11 +601,11 @@ html, body, #root {
 }
 
 /* ============================================================================
-   5. ABOUT THE PRACTICE (TILES PRESERVED IN DEEP BLUE IN BOTH THEMES)
+   5. ABOUT THE PRACTICE (SOLID BACKGROUND ON BOTTOM)
    ============================================================================ */
 .info-section {
   position: relative;
-  z-index: 5;
+  z-index: 10;
   width: 100%;
   padding: 70px 24px;
   transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -596,7 +623,6 @@ html, body, #root {
   margin-top: 20px;
 }
 
-/* ABOUT TILES: DEEP MEDICAL BLUE WITH LIGHT TEXT IN BOTH THEMES */
 .about-card {
   background: #0c1a2e;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -635,7 +661,7 @@ html, body, #root {
 }
 
 /* ============================================================================
-   6. CONTACT DETAILS (TILES PRESERVED IN DEEP BLUE IN BOTH THEMES)
+   6. CONTACT DETAILS (SOLID BACKGROUND ON BOTTOM)
    ============================================================================ */
 .contact-grid {
   display: grid;
@@ -644,7 +670,6 @@ html, body, #root {
   margin-top: 20px;
 }
 
-/* CONTACT TILES: DEEP MEDICAL BLUE WITH LIGHT TEXT IN BOTH THEMES */
 .contact-card {
   background: #0c1a2e;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -783,7 +808,7 @@ html, body, #root {
    ============================================================================ */
 .clinical-footer {
   position: relative;
-  z-index: 5;
+  z-index: 10;
   width: 100%;
   padding: 38px 24px;
   background: #07111e;
@@ -832,63 +857,27 @@ html, body, #root {
 }
 
 /* ============================================================================
-   8. THEME-SPECIFIC BACKGROUNDS & EXTERNAL TEXT COLORS
+   8. THEME-SPECIFIC BACKGROUNDS & BOTTOM COLORS
    ============================================================================ */
 
-/* ---------- A. LIGHT THEME (White Variant Background) ---------- */
+/* ---------- A. LIGHT THEME (White Variant Bottom Backgrounds) ---------- */
 .theme-light {
   background-color: #f8fafc;
   color: #0f172a;
 }
 
 .theme-light .hero-section {
-  background-color: #f8fafc;
+  background: transparent;
 }
 
 .theme-light .slider-bg.active {
-  opacity: 0.22;
+  opacity: 0.95;
 }
 
-.theme-light .hero-overlay {
-  background: 
-    radial-gradient(ellipse at 50% 38%, rgba(255, 255, 255, 0.72) 0%, rgba(248, 250, 252, 0.94) 85%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, #f8fafc 100%);
-}
-
-.theme-light .medical-pill-tag {
-  background: rgba(13, 148, 136, 0.08);
-  border: 1px solid rgba(13, 148, 136, 0.26);
-  color: #0f766e;
-}
-
-/* In Light Mode: Blue color in background applied to Wellspring title */
-.theme-light .wellspring-title {
-  color: #0b2847;
-  text-shadow: 0 4px 18px rgba(11, 40, 71, 0.12);
-}
-
-.theme-light .healthcare-subtitle {
-  color: #0f172a;
-}
-
-.theme-light .hero-mission-statement {
-  color: #475569;
-}
-
-.theme-light .slider-dot {
-  background: #cbd5e1;
-}
-
-.theme-light .slider-dot.active {
-  background: #0d9488;
-}
-
-.theme-light .scroll-prompt {
-  color: #64748b;
-}
-
-.theme-light .scroll-prompt:hover {
-  color: #0d9488;
+/* Bottom parts retain their elegant white-variant backgrounds */
+.theme-light .modules-section {
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
 }
 
 .theme-light .section-eyebrow {
@@ -904,68 +893,32 @@ html, body, #root {
 }
 
 .theme-light .info-section {
-  background: #f1f5f9;
+  background-color: #f1f5f9;
   border-top: 1px solid #e2e8f0;
 }
 
 .theme-light .info-section.alt-bg {
-  background: #f8fafc;
+  background-color: #f8fafc;
 }
 
-/* ---------- B. DARK THEME (Identical to Previous Version) ---------- */
+/* ---------- B. DARK THEME (Dark Medical Bottom Backgrounds) ---------- */
 .theme-dark {
   background-color: #07111e;
   color: #f1f5f9;
 }
 
 .theme-dark .hero-section {
-  background-color: #07111e;
+  background: transparent;
 }
 
 .theme-dark .slider-bg.active {
-  opacity: 0.38;
+  opacity: 0.95;
 }
 
-.theme-dark .hero-overlay {
-  background: 
-    radial-gradient(ellipse at 50% 38%, rgba(13, 30, 54, 0.55) 0%, rgba(7, 17, 30, 0.92) 80%),
-    linear-gradient(180deg, rgba(7, 17, 30, 0.45) 0%, #07111e 100%);
-}
-
-.theme-dark .medical-pill-tag {
-  background: rgba(13, 148, 136, 0.12);
-  border: 1px solid rgba(13, 148, 136, 0.3);
-  color: #5eead4;
-}
-
-/* In Dark Mode: Exactly as previous pearl white */
-.theme-dark .wellspring-title {
-  color: #ffffff;
-  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
-}
-
-.theme-dark .healthcare-subtitle {
-  color: #cbd5e1;
-}
-
-.theme-dark .hero-mission-statement {
-  color: #94a3b8;
-}
-
-.theme-dark .slider-dot {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.theme-dark .slider-dot.active {
-  background: #2dd4bf;
-}
-
-.theme-dark .scroll-prompt {
-  color: #94a3b8;
-}
-
-.theme-dark .scroll-prompt:hover {
-  color: #2dd4bf;
+/* Bottom parts retain their dark medical backgrounds */
+.theme-dark .modules-section {
+  background-color: #07111e;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .theme-dark .section-eyebrow {
@@ -981,12 +934,12 @@ html, body, #root {
 }
 
 .theme-dark .info-section {
-  background: #081423;
+  background-color: #081423;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .theme-dark .info-section.alt-bg {
-  background: #07111e;
+  background-color: #07111e;
 }
 
 /* ============================================================================

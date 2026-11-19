@@ -131,9 +131,9 @@ const HomePage = () => {
         toggleTheme={toggleTheme}
       />
 
-      {/* ================= HERO SECTION ================= */}
+      {/* ================= HERO SECTION (SLIDESHOW CLEARLY IN FRONT) ================= */}
       <section id="hero" className="hero-section">
-        {/* Soft Clinical Architectural Photography Slider */}
+        {/* Crisp Clinical Photography Slider */}
         {SLIDER_IMAGES.map((imgUrl, index) => (
           <div
             key={index}
@@ -246,110 +246,112 @@ const HomePage = () => {
         </a>
       </section>
 
-      {/* ================= 4 CLINICAL WORKSTATIONS (PRESERVED IN BLUE) ================= */}
+      {/* ================= 4 CLINICAL WORKSTATIONS (SOLID BACKGROUND ON BOTTOM) ================= */}
       <section id="modules" className="modules-section">
-        <div className={`section-header ${tilesVisible ? 'visible' : ''}`}>
-          <div className="section-eyebrow">PRACTICE MANAGEMENT</div>
-          <h2>Clinical Workstations &amp; Portals</h2>
-          <p>Authorized access points for medical consultation, dispensary counter, inventory intake, and administration.</p>
-        </div>
+        <div className="modules-container">
+          <div className={`section-header ${tilesVisible ? 'visible' : ''}`}>
+            <div className="section-eyebrow">PRACTICE MANAGEMENT</div>
+            <h2>Clinical Workstations &amp; Portals</h2>
+            <p>Authorized access points for medical consultation, dispensary counter, inventory intake, and administration.</p>
+          </div>
 
-        <div className="tiles-grid">
-          {/* 1. DOCTOR SUITE */}
-          <Link to="/doctor" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
-            <div className="tile-accent-line"></div>
-            <div className="tile-top-row">
-              <div className="tile-icon-box">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
-                  <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" />
-                  <circle cx="20" cy="10" r="2" />
-                </svg>
+          <div className="tiles-grid">
+            {/* 1. DOCTOR SUITE */}
+            <Link to="/doctor" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
+              <div className="tile-accent-line"></div>
+              <div className="tile-top-row">
+                <div className="tile-icon-box">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
+                    <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" />
+                    <circle cx="20" cy="10" r="2" />
+                  </svg>
+                </div>
+                <span className="tile-badge">Physician Suite</span>
               </div>
-              <span className="tile-badge">Physician Suite</span>
-            </div>
-            <h3 className="tile-title">Doctor Consultation</h3>
-            <p className="tile-desc">
-              Patient examinations, diagnostic records, allergy alerts, past visit histories, and instant digital prescriptions.
-            </p>
-            <div className="tile-footer">
-              <span>Launch Consultation</span>
-              <span className="arrow">→</span>
-            </div>
-          </Link>
+              <h3 className="tile-title">Doctor Consultation</h3>
+              <p className="tile-desc">
+                Patient examinations, diagnostic records, allergy alerts, past visit histories, and instant digital prescriptions.
+              </p>
+              <div className="tile-footer">
+                <span>Launch Consultation</span>
+                <span className="arrow">→</span>
+              </div>
+            </Link>
 
-          {/* 2. DISPENSARY COUNTER */}
-          <Link to="/counter" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
-            <div className="tile-accent-line"></div>
-            <div className="tile-top-row">
-              <div className="tile-icon-box">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
+            {/* 2. DISPENSARY COUNTER */}
+            <Link to="/counter" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
+              <div className="tile-accent-line"></div>
+              <div className="tile-top-row">
+                <div className="tile-icon-box">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                </div>
+                <span className="tile-badge">Dispensary Desk</span>
               </div>
-              <span className="tile-badge">Dispensary Desk</span>
-            </div>
-            <h3 className="tile-title">Counter &amp; Pharmacy</h3>
-            <p className="tile-desc">
-              Walk-in patient registration, ticketing queue control, multi-tab prescription dispensing, and POS billing.
-            </p>
-            <div className="tile-footer">
-              <span>Launch Counter</span>
-              <span className="arrow">→</span>
-            </div>
-          </Link>
+              <h3 className="tile-title">Counter &amp; Pharmacy</h3>
+              <p className="tile-desc">
+                Walk-in patient registration, ticketing queue control, multi-tab prescription dispensing, and POS billing.
+              </p>
+              <div className="tile-footer">
+                <span>Launch Counter</span>
+                <span className="arrow">→</span>
+              </div>
+            </Link>
 
-          {/* 3. STOCK & GRN */}
-          <Link to="/grn" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
-            <div className="tile-accent-line"></div>
-            <div className="tile-top-row">
-              <div className="tile-icon-box">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                  <path d="m3.3 7 8.7 5 8.7-5" />
-                  <path d="M12 22V12" />
-                </svg>
+            {/* 3. STOCK & GRN */}
+            <Link to="/grn" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
+              <div className="tile-accent-line"></div>
+              <div className="tile-top-row">
+                <div className="tile-icon-box">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                    <path d="m3.3 7 8.7 5 8.7-5" />
+                    <path d="M12 22V12" />
+                  </svg>
+                </div>
+                <span className="tile-badge">Pharmaceutical Stock</span>
               </div>
-              <span className="tile-badge">Pharmaceutical Stock</span>
-            </div>
-            <h3 className="tile-title">Stock &amp; GRN</h3>
-            <p className="tile-desc">
-              Goods Received Notes, batch intake verification, manufacturer expiry tracking, and medicine master cataloging.
-            </p>
-            <div className="tile-footer">
-              <span>Launch Inventory</span>
-              <span className="arrow">→</span>
-            </div>
-          </Link>
+              <h3 className="tile-title">Stock &amp; GRN</h3>
+              <p className="tile-desc">
+                Goods Received Notes, batch intake verification, manufacturer expiry tracking, and medicine master cataloging.
+              </p>
+              <div className="tile-footer">
+                <span>Launch Inventory</span>
+                <span className="arrow">→</span>
+              </div>
+            </Link>
 
-          {/* 4. PRACTICE ADMIN */}
-          <Link to="/admin" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
-            <div className="tile-accent-line"></div>
-            <div className="tile-top-row">
-              <div className="tile-icon-box">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-                  <path d="m9 12 2 2 4-4" />
-                </svg>
+            {/* 4. PRACTICE ADMIN */}
+            <Link to="/admin" className={`module-tile ${tilesVisible ? 'slide-in' : ''}`}>
+              <div className="tile-accent-line"></div>
+              <div className="tile-top-row">
+                <div className="tile-icon-box">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                </div>
+                <span className="tile-badge">Governance &amp; Audit</span>
               </div>
-              <span className="tile-badge">Governance &amp; Audit</span>
-            </div>
-            <h3 className="tile-title">Administration</h3>
-            <p className="tile-desc">
-              Practice revenue analytics, daily financial logs, patient demographic reports, and clinical staff credentials.
-            </p>
-            <div className="tile-footer">
-              <span>Launch Admin</span>
-              <span className="arrow">→</span>
-            </div>
-          </Link>
+              <h3 className="tile-title">Administration</h3>
+              <p className="tile-desc">
+                Practice revenue analytics, daily financial logs, patient demographic reports, and clinical staff credentials.
+              </p>
+              <div className="tile-footer">
+                <span>Launch Admin</span>
+                <span className="arrow">→</span>
+              </div>
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* ================= ABOUT THE PRACTICE ================= */}
+      {/* ================= ABOUT THE PRACTICE (SOLID BACKGROUND ON BOTTOM) ================= */}
       <section id="about" className="info-section">
         <div className="info-container">
           <div className="section-header visible">
