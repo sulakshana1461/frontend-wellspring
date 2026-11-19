@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useDashboardLogic } from './dashboardLogic';
 import './App.css';
 import DoctorPortal from './DoctorPortal';
@@ -386,9 +386,30 @@ const HomePage = () => {
   );
 };
 
+const ROUTE_TITLES = {
+  '/': 'Wellspring Health Care | Private Dispensary',
+  '/doctor': 'Doctor Consultation | Wellspring',
+  '/counter': 'Counter & Pharmacy | Wellspring',
+  '/grn': 'Stock & GRN Portal | Wellspring',
+  '/admin': 'Administration Portal | Wellspring',
+  '/queue': 'Patient Queue Display | Wellspring'
+};
+
+function PageMetadata() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const title = ROUTE_TITLES[location.pathname] || 'Wellspring Health Care';
+    document.title = title;
+  }, [location.pathname]);
+
+  return null;
+}
+
 export default function App() {
   return (
     <Router>
+      <PageMetadata />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/admin" element={<AdminPortal />} />
