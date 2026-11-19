@@ -7,7 +7,7 @@ import AdminPortal from './AdminPortal';
 import GRNPortal from './GRNPortal';
 import QueueDisplay from './QueueDisplay';
 
-// Top Navigation Bar
+// Top Navigation Bar (Clean Light Medical Theme)
 const TopNavbar = ({ currentTime, doctorOnline, counterOnline }) => (
   <header className="top-navbar">
     <Link to="/" className="nav-brand">
@@ -75,7 +75,7 @@ const HomePage = () => {
 
       {/* ================= HERO SECTION ================= */}
       <section id="hero" className="hero-section">
-        {/* Subtle Dignified Clinical Photography Slider */}
+        {/* Soft Clinical Architectural Photography Slider */}
         {SLIDER_IMAGES.map((imgUrl, index) => (
           <div
             key={index}
@@ -87,21 +87,21 @@ const HomePage = () => {
 
         <div className="hero-content" style={heroStyle}>
           <div className="medical-pill-tag">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2v20M2 12h20" />
             </svg>
             <span>Private Medical Practice &amp; In-House Dispensary</span>
           </div>
 
-          {/* PRESERVED: Center Wellspring text and font */}
+          {/* Deep Medical Blue applied to Wellspring title (Tangerine Font Preserved) */}
           <h1 className="wellspring-title">Wellspring</h1>
           <p className="healthcare-subtitle">HEALTH CARE CENTER</p>
 
           <p className="hero-mission-statement">
-            Personalized primary medical care, unhurried physician consultations, and direct pharmacy dispensing under one roof.
+            Personalized primary medical care, dedicated physician consultations, and direct pharmacy dispensing under one roof.
           </p>
 
-          {/* Dignified Clinical Practice Plaque (Status Overview) */}
+          {/* Elegant Clinical Practice Plaque (Status Overview) */}
           <div className="clinic-status-plaque">
             <div className="plaque-item">
               <div className="plaque-icon-wrap">
@@ -160,8 +160,8 @@ const HomePage = () => {
                 </svg>
               </div>
               <div className="plaque-details">
-                <span className="plaque-label">Dispensary Hours</span>
-                <span className="plaque-value">8:00 AM – 9:00 PM</span>
+                <span className="plaque-label">Daily Sessions</span>
+                <span className="plaque-value">7–8 AM &amp; 5:30–8:30 PM</span>
               </div>
             </div>
           </div>
@@ -188,7 +188,7 @@ const HomePage = () => {
         </a>
       </section>
 
-      {/* ================= 4 CLINICAL WORKSTATIONS ================= */}
+      {/* ================= 4 CLINICAL WORKSTATIONS (PRESERVED IN BLUE) ================= */}
       <section id="modules" className="modules-section">
         <div className={`section-header ${tilesVisible ? 'visible' : ''}`}>
           <div className="section-eyebrow">PRACTICE MANAGEMENT</div>
@@ -342,7 +342,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ================= PRACTICE CONTACT & DETAILS ================= */}
+      {/* ================= PRACTICE CONTACT & REAL CLINIC DETAILS ================= */}
       <section id="contact" className="info-section alt-bg">
         <div className="info-container">
           <div className="section-header visible">
@@ -352,6 +352,7 @@ const HomePage = () => {
           </div>
 
           <div className="contact-grid">
+            {/* 1. CLINIC LOCATION WITH GOOGLE MAPS LINK */}
             <div className="contact-card">
               <div className="contact-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -359,11 +360,25 @@ const HomePage = () => {
                   <circle cx="12" cy="10" r="3" />
                 </svg>
               </div>
-              <h4>Clinic Location</h4>
-              <p>Wellspring Health Care Center</p>
-              <p className="dim">Main Medical Suite &amp; Dispensary</p>
+              <h4>Dispensary Location</h4>
+              <p className="contact-bold">Wellspring Health Care Center</p>
+              <p className="dim location-address">9V2P+WV8, Deeparama Mawatha, Kirimatiyana Junction.</p>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=Wellspring+Health+Care+Center,+9V2P%2BWV8,+Deeparama+Mawatha,+Kirimatiyana+Junction"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="map-action-link"
+              >
+                <span>Open in Google Maps</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
             </div>
 
+            {/* 2. REAL CONSULTATION & OPENING TIMES */}
             <div className="contact-card">
               <div className="contact-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -371,23 +386,34 @@ const HomePage = () => {
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
               </div>
-              <h4>Consultation Sessions</h4>
-              <p>Morning: 8:30 AM – 1:00 PM</p>
-              <p>Evening: 4:30 PM – 9:00 PM</p>
-              <p className="dim">Open Monday through Sunday</p>
+              <h4>Opening &amp; Clinic Times</h4>
+              <div className="hours-block">
+                <span className="hours-label">Monday – Saturday:</span>
+                <span className="hours-time">7:00 AM – 8:00 AM</span>
+                <span className="hours-time">5:30 PM – 8:30 PM</span>
+              </div>
+              <div className="hours-block" style={{ marginTop: '8px' }}>
+                <span className="hours-label">Sunday Sessions:</span>
+                <span className="hours-time">7:00 AM – 10:00 AM</span>
+                <span className="hours-time">5:30 PM – 8:30 PM (Evening)</span>
+              </div>
             </div>
 
+            {/* 3. REAL DISPENSARY PHONE NUMBER */}
             <div className="contact-card">
               <div className="contact-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
               </div>
-              <h4>Dispensary Inquiries</h4>
-              <p>Reception: +94 (0) 11 234 5678</p>
-              <p className="dim">Emergency triage directly at counter</p>
+              <h4>Dispensary &amp; Telephone</h4>
+              <a href="tel:+94714347804" className="phone-number-link">
+                +94 71 4347804
+              </a>
+              <p className="dim" style={{ marginTop: '6px' }}>Direct phone line for patient inquiries, doctor appointments &amp; medication stock.</p>
             </div>
 
+            {/* 4. WAITING ROOM DISPLAY TV SHORTCUT */}
             <div className="contact-card highlight">
               <div className="contact-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -397,7 +423,7 @@ const HomePage = () => {
                 </svg>
               </div>
               <h4>Waiting Room Display</h4>
-              <p>Dedicated full-screen TV view for patient waiting lounges.</p>
+              <p>Dedicated live sequential TV view for patient waiting lounges.</p>
               <Link to="/queue" className="queue-quick-link">
                 Open Queue Display →
               </Link>
