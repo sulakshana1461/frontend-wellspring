@@ -1,6 +1,6 @@
 :root {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -16,14 +16,4 @@ html, body {
   padding: 0;
   width: 100%;
   min-height: 100%;
-}
-
-/* 
-  Calibrate desktop scale so the UI at 100% browser zoom 
-  renders cleanly at the compact 80% proportion.
-*/
-@media screen and (min-width: 1024px) {
-  body {
-    zoom: 0.8;
-  }
 }

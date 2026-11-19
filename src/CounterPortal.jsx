@@ -240,7 +240,7 @@ export default function CounterPortal() {
       )}
 
       {/* MAIN FULL-WINDOW WORKSPACE */}
-      <div className="counter-workspace-grid">
+      <div className={`counter-workspace-grid page-${activePage}`}>
         {/* ================= 1. LEFT SIDEBAR (4 SUB-PAGES) ================= */}
         <aside className="counter-sidebar-card">
           <div className="sidebar-brand-banner">

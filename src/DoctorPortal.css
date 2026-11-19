@@ -420,11 +420,19 @@
   max-width: 1920px;
   margin: 0 auto;
   display: grid;
-  /* Increased from 410px to 440px */
-  grid-template-columns: 440px minmax(0, 1fr) 460px;
-  gap: 26px;
-  padding: 28px 48px 22px 48px; 
+  grid-template-columns: clamp(320px, 25vw, 390px) minmax(0, 1fr) clamp(340px, 27vw, 420px);
+  gap: 18px;
+  padding: 20px 24px;
   align-items: start;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1440px) {
+  .doc-workspace-grid {
+    grid-template-columns: clamp(300px, 25vw, 360px) minmax(0, 1fr) clamp(320px, 27vw, 380px);
+    gap: 14px;
+    padding: 16px 20px;
+  }
 }
 
 /* ================= 1. WIDER LEFT SIDEBAR ================= */
