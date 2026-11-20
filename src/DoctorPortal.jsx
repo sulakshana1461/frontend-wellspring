@@ -42,6 +42,7 @@ export default function DoctorPortal() {
     selectPatientForConsultation,
     isEditingMarital, setIsEditingMarital, maritalValue, setMaritalValue, savingMarital, handleSaveMaritalStatus,
     isEditingGender, setIsEditingGender, genderValue, setGenderValue, savingGender, handleSaveGender,
+    isEditingPhone, setIsEditingPhone, phoneValue, setPhoneValue, savingPhone, handleSavePhone,
     commonText,
     setCommonText,
     isEditingCommon,
@@ -521,6 +522,63 @@ export default function DoctorPortal() {
                 <div className="stacked-field-value">
                   {formatClearDate(selectedPatient.birth_date)}
                 </div>
+              </div>
+
+              {/* PHONE NUMBER (EDITABLE) */}
+              <div className="stacked-field-block">
+                <div className="editable-header-row">
+                  <span className="stacked-field-label">Phone Number</span>
+
+                  {!isEditingPhone ? (
+                    <button
+                      type="button"
+                      className="edit-toggle-btn"
+                      onClick={() => {
+                        setPhoneValue(selectedPatient.phone || '');
+                        setIsEditingPhone(true);
+                      }}
+                      title="Edit phone number"
+                    >
+                      Edit
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={savingPhone}
+                      className="edit-toggle-btn done-mode"
+                      onClick={handleSavePhone}
+                    >
+                      {savingPhone ? 'Saving...' : 'Done'}
+                    </button>
+                  )}
+                </div>
+
+                {!isEditingPhone ? (
+                  <div className="stacked-field-value" style={{ marginTop: '4px' }}>
+                    {selectedPatient.phone ? (
+                      <a href={`tel:${selectedPatient.phone}`} style={{ color: 'inherit', textDecoration: 'none' }} title="Call patient">
+                        {selectedPatient.phone}
+                      </a>
+                    ) : (
+                      <span style={{ color: '#94a3b8', fontStyle: 'italic', fontWeight: 500, fontSize: '0.92rem' }}>
+                        No Phone Registered
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <input
+                    type="tel"
+                    className="clinical-edit-input"
+                    value={phoneValue}
+                    onChange={(e) => setPhoneValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSavePhone();
+                      if (e.key === 'Escape') setIsEditingPhone(false);
+                    }}
+                    placeholder="e.g. 0714347804"
+                    autoFocus
+                  />
+                )}
               </div>
 
               <div className="split-field-row">

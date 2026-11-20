@@ -78,6 +78,11 @@ export function useDoctorPortalLogic() {
   const [genderValue, setGenderValue] = useState('1');
   const [savingGender, setSavingGender] = useState(false);
 
+  // NEW: Editable Phone State
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [phoneValue, setPhoneValue] = useState('');
+  const [savingPhone, setSavingPhone] = useState(false);
+
   const [commonText, setCommonText] = useState('');
   const [isEditingCommon, setIsEditingCommon] = useState(false);
   const [savingCommon, setSavingCommon] = useState(false);
@@ -148,6 +153,7 @@ export function useDoctorPortalLogic() {
     setIsEditingAllergies(false);
     setIsEditingMarital(false);
     setIsEditingGender(false);
+    setIsEditingPhone(false);
     setActiveTicketId(ticketId);
 
     try {
@@ -157,6 +163,7 @@ export function useDoctorPortalLogic() {
       
       setMaritalValue(patient.married ? patient.married.toString() : '0');
       setGenderValue(patient.gender ? patient.gender.toString() : '1');
+      setPhoneValue(patient.phone || '');
       setCommonText(patient.common || '');
       setAllergiesText(allergiesAndReports || '');
       setPrescriptionHistory(history || []);
@@ -164,6 +171,7 @@ export function useDoctorPortalLogic() {
       setSelectedPatient(patientObj);
       setMaritalValue(patientObj.married ? patientObj.married.toString() : '0');
       setGenderValue(patientObj.gender ? patientObj.gender.toString() : '1');
+      setPhoneValue(patientObj.phone || '');
       setCommonText(patientObj.common || '');
       setAllergiesText('');
       setPrescriptionHistory([]);
@@ -247,6 +255,22 @@ export function useDoctorPortalLogic() {
     finally { setSavingGender(false); }
   };
 
+  const handleSavePhone = async () => {
+    if (!selectedPatient) return;
+    setSavingPhone(true);
+    try {
+      const cleanPhone = (phoneValue || '').trim();
+      await axios.put(`${API_BASE}/patients/${selectedPatient.id}/phone`, { phone: cleanPhone });
+      setSelectedPatient(prev => ({ ...prev, phone: cleanPhone }));
+      setIsEditingPhone(false);
+      showToast('Phone number updated successfully.');
+    } catch (err) {
+      showToast('Failed to update phone number.', 'error');
+    } finally {
+      setSavingPhone(false);
+    }
+  };
+
   const handleSaveCommonDetails = async () => {
     if (!selectedPatient) return;
     setSavingCommon(true);
@@ -321,6 +345,7 @@ export function useDoctorPortalLogic() {
     selectPatientForConsultation, 
     isEditingMarital, setIsEditingMarital, maritalValue, setMaritalValue, savingMarital, handleSaveMaritalStatus,
     isEditingGender, setIsEditingGender, genderValue, setGenderValue, savingGender, handleSaveGender,
+    isEditingPhone, setIsEditingPhone, phoneValue, setPhoneValue, savingPhone, handleSavePhone,
     commonText, setCommonText, isEditingCommon, setIsEditingCommon, savingCommon, handleSaveCommonDetails, 
     allergiesText, setAllergiesText, isEditingAllergies, setIsEditingAllergies, savingAllergies, handleSaveAllergiesReports, 
     prescriptionText, setPrescriptionText, remarksText, setRemarksText, submittingRx, handleSubmitPrescription, prescriptionHistory, 
