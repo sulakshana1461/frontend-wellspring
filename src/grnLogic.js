@@ -60,25 +60,40 @@ export function useGRNLogic() {
     if (!medForm.name.trim() || !medForm.unit_price) return;
     setSavingMed(true);
     try {
-      const res = await axios.post(`${API_BASE}/counter/medicines/upsert`, { // Reuse counter upsert
-        id: medForm.id,
-        name: medForm.name.trim(),
-        unit_price: parseFloat(medForm.unit_price)
-      });
+      const token = loggedInUser?.token || JSON.parse(sessionStorage.getItem('wellspring_grn_session') || '{}').token;
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      const res = await axios.post(
+        `${API_BASE}/counter/medicines/upsert`,
+        {
+          id: medForm.id,
+          name: medForm.name.trim(),
+          unit_price: parseFloat(medForm.unit_price)
+        },
+        config
+      );
       showToast(`Medicine ${res.data.name} saved successfully.`);
       setMedForm({ id: null, name: '', unit_price: '' });
       fetchMedicines();
-    } catch (err) { showToast('Failed to save medicine.', 'error'); }
-    finally { setSavingMed(false); }
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || 'Failed to save medicine.';
+      showToast(errorMsg, 'error');
+    } finally {
+      setSavingMed(false);
+    }
   };
 
   const handleDeleteMedicine = async (id, name) => {
     if (!window.confirm(`Are you sure you want to remove ${name} from the catalog?`)) return;
     try {
-      await axios.delete(`${API_BASE}/grn/medicines/${id}`);
-      showToast(`${name} removed.`);
+      const token = loggedInUser?.token || JSON.parse(sessionStorage.getItem('wellspring_grn_session') || '{}').token;
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      await axios.delete(`${API_BASE}/grn/medicines/${id}`, config);
+      showToast(`${name} removed successfully.`);
       fetchMedicines();
-    } catch (err) { showToast('Failed to delete.', 'error'); }
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || 'Failed to delete medicine.';
+      showToast(errorMsg, 'error');
+    }
   };
 
   const filteredMeds = medicines.filter(m => m.name.toLowerCase().includes(searchTerm.toLowerCase()));

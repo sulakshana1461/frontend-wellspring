@@ -30,9 +30,6 @@ export default function QueueDisplay() {
                 key={item.ticket_id} 
                 className={`queue-item-row ${isNextUp ? 'next-up' : ''}`}
               >
-                <div className="queue-item-number">
-                  #{item.ticket_number}
-                </div>
                 <div className="queue-item-name">
                   {item.patient.name}
                 </div>

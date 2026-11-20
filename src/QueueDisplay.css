@@ -46,9 +46,9 @@
 }
 
 .queue-item-row {
-  display: grid;
-  grid-template-columns: 200px 1fr;
+  display: flex;
   align-items: center;
+  justify-content: flex-start;
   background-color: #052e16;
   border: 3px solid #15803d;
   border-radius: 16px;

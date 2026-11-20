@@ -1220,7 +1220,7 @@ export default function CounterPortal() {
                   <span className="receipt-meta-value">{completedBillModal.patient_names}</span>
                 </div>
                 <div className="receipt-meta-row">
-                  <span className="receipt-meta-label">Consultant:</span>
+                  <span className="receipt-meta-label">Doctor:</span>
                   <span className="receipt-meta-value">{completedBillModal.doctor_name}</span>
                 </div>
               </div>

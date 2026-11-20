@@ -98,7 +98,19 @@ export function printReceiptDocument(billObj, format = 'thermal') {
   const isThermal = format === 'thermal';
   const displayReceiptNo = billObj.daily_bill_no || billObj.bill_id || 1;
 
-  const printWindow = window.open('', '_blank', 'width=450,height=650');
+  // Open wide, centered window instead of a thin portrait slit
+  const width = 850;
+  const height = 800;
+  const screenW = typeof window !== 'undefined' && window.screen ? window.screen.width : 1024;
+  const screenH = typeof window !== 'undefined' && window.screen ? window.screen.height : 768;
+  const left = Math.max(0, Math.round((screenW - width) / 2));
+  const top = Math.max(0, Math.round((screenH - height) / 2));
+
+  const printWindow = window.open(
+    '',
+    '_blank',
+    `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+  );
   if (!printWindow) {
     alert('Please allow pop-ups in your browser to print receipts.');
     return;
@@ -106,11 +118,11 @@ export function printReceiptDocument(billObj, format = 'thermal') {
 
   const pageSizeRule = isThermal
     ? '@page { size: 80mm auto; margin: 0mm; }'
-    : '@page { size: A4 portrait; margin: 18mm; }';
+    : '@page { size: auto; margin: 12mm; }';
 
   const bodyStyles = isThermal
     ? `width: 72mm; margin: 0 auto; padding: 4mm 2mm; font-family: 'Courier New', monospace; color: #000;`
-    : `width: 100%; max-width: 680px; margin: 0 auto; padding: 24px; font-family: 'Segoe UI', Arial, sans-serif; color: #000; border: 1.5px solid #000; border-radius: 8px;`;
+    : `width: 100%; max-width: 720px; margin: 24px auto; padding: 28px 32px; font-family: 'Segoe UI', Arial, sans-serif; color: #000; border: 1.5px solid #000; border-radius: 8px;`;
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -148,7 +160,7 @@ export function printReceiptDocument(billObj, format = 'thermal') {
           <span class="meta-val">${billObj.patient_names}</span>
         </div>
         <div class="meta-row">
-          <span class="meta-label">Consultant:</span>
+          <span class="meta-label">Doctor:</span>
           <span class="meta-val">${billObj.doctor_name}</span>
         </div>
 
