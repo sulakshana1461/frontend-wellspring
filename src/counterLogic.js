@@ -765,6 +765,9 @@ export function useCounterPortalLogic() {
 
     setSubmittingCheckout(true);
     try {
+      const token = loggedInStaff?.token || JSON.parse(sessionStorage.getItem('wellspring_counter_session') || '{}').token;
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+
       const res = await axios.post(`${API_BASE}/counter/checkout`, {
         ticket_ids: selectedTicketIds,
         patient_names: combinedNames,
@@ -775,7 +778,7 @@ export function useCounterPortalLogic() {
         final_total: finalPayable,
         items_snapshot: billItems,
         created_by: loggedInStaff?.name || 'Counter'
-      });
+      }, config);
 
       if (mode === 'OUTDOOR_RX') {
         showToast(`Marked ${combinedNames} as Outdoor Medicine & removed from queue.`);
@@ -812,8 +815,10 @@ export function useCounterPortalLogic() {
       setSelectedTicketIds([]);
       await fetchPrescriptions();
       await fetchTodayLog();
-    } catch {
-      showToast('Failed to complete transaction. Check backend connection.', 'error');
+    } catch (err) {
+      console.error('Checkout error:', err);
+      const serverMsg = err.response?.data?.error;
+      showToast(serverMsg ? `Checkout failed: ${serverMsg}` : 'Failed to complete transaction. Check backend connection.', 'error');
     } finally {
       setSubmittingCheckout(false);
     }

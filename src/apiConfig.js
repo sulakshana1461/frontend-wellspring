@@ -9,15 +9,34 @@ export const API_BASE = rawUrl.endsWith('/api') ? rawUrl : `${rawUrl}/api`;
 axios.interceptors.request.use(
   (config) => {
     try {
+      config.headers = config.headers || {};
+      // If already explicitly provided in call, do not overwrite
+      if (config.headers['Authorization']) {
+        return config;
+      }
+
       const adminSession = JSON.parse(sessionStorage.getItem('wellspring_admin_session') || '{}');
       const docSession = JSON.parse(sessionStorage.getItem('wellspring_doctor_session') || '{}');
       const counterSession = JSON.parse(sessionStorage.getItem('wellspring_counter_session') || '{}');
       const grnSession = JSON.parse(sessionStorage.getItem('wellspring_grn_session') || '{}');
 
-      const token = adminSession.token || docSession.token || counterSession.token || grnSession.token;
+      // Context-aware token resolution based on active URL
+      const path = typeof window !== 'undefined' ? (window.location.pathname || '') : '';
+      let token = null;
+
+      if (path.includes('/counter')) {
+        token = counterSession.token || adminSession.token || docSession.token || grnSession.token;
+      } else if (path.includes('/doctor')) {
+        token = docSession.token || adminSession.token || counterSession.token || grnSession.token;
+      } else if (path.includes('/admin')) {
+        token = adminSession.token || docSession.token || counterSession.token || grnSession.token;
+      } else if (path.includes('/grn')) {
+        token = grnSession.token || adminSession.token || counterSession.token || docSession.token;
+      } else {
+        token = counterSession.token || docSession.token || adminSession.token || grnSession.token;
+      }
 
       if (token) {
-        config.headers = config.headers || {};
         config.headers['Authorization'] = `Bearer ${token}`;
       }
     } catch {
