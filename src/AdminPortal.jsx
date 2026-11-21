@@ -12,7 +12,8 @@ export default function AdminPortal() {
     financeSummary, financeChart, topMedicinesChart, weeklyTrafficChart, loadingFinance,
     demographics, loadingDemographics,
     logDate, setLogDate, dailyLogList, loadingLog, handleDownloadCSV,
-    systemUsers, loadingUsers, newUserForm, setNewUserForm, registeringUser, handleRegisterUser, handleDeleteUser
+    systemUsers, loadingUsers, newUserForm, setNewUserForm, registeringUser, handleRegisterUser, handleDeleteUser,
+    verifyCodeInput, setVerifyCodeInput, verifyingCode, verifyResult, verifySearched, handleVerifyAuthCode, handleClearVerify
   } = useAdminPortalLogic();
 
   if (!loggedInAdmin) {
@@ -81,6 +82,7 @@ export default function AdminPortal() {
           <button className={`admin-nav-btn ${activeTab === 'patients' ? 'active' : ''}`} onClick={() => setActiveTab('patients')}>👥 Patient Demographics</button>
           <button className={`admin-nav-btn ${activeTab === 'log' ? 'active' : ''}`} onClick={() => setActiveTab('log')}>📄 Daily Spreadsheet Log</button>
           <button className={`admin-nav-btn ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>⚙️ System Users</button>
+          <button className={`admin-nav-btn ${activeTab === 'verify' ? 'active' : ''}`} onClick={() => setActiveTab('verify')}>🔍 Verify Bill / Auth Code</button>
         </aside>
 
         <main className="admin-content-area">
@@ -325,6 +327,183 @@ export default function AdminPortal() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* TAB 5: AUTH CODE VERIFICATION ENGINE */}
+          {activeTab === 'verify' && (
+            <div className="verify-card">
+              <div>
+                <h2 style={{ margin: '0 0 6px 0', fontSize: '1.4rem', color: '#5eead4', fontWeight: 800 }}>
+                  🔍 Receipt Authenticator &amp; Audit Engine
+                </h2>
+                <p style={{ margin: 0, fontSize: '0.88rem', color: '#94a3b8' }}>
+                  Verify whether a patient&apos;s WhatsApp bill or receipt code genuinely exists in the clinic database and was paid into revenue.
+                </p>
+              </div>
+
+              <form onSubmit={handleVerifyAuthCode} className="verify-search-box">
+                <input
+                  type="text"
+                  className="verify-input"
+                  placeholder="Enter Auth Code (e.g. WSP-7X8K or 7X8K)..."
+                  value={verifyCodeInput}
+                  onChange={(e) => setVerifyCodeInput(e.target.value)}
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  disabled={verifyingCode}
+                  className="verify-submit-btn"
+                >
+                  {verifyingCode ? 'Verifying...' : '⚡ Verify Code'}
+                </button>
+                {verifySearched && (
+                  <button
+                    type="button"
+                    onClick={handleClearVerify}
+                    className="verify-clear-btn"
+                  >
+                    Reset
+                  </button>
+                )}
+              </form>
+
+              {/* RESULT STATE 1: VERIFIED OFFICIAL TRANSACTION */}
+              {verifyResult && verifyResult.verified && (
+                <div className="verify-success-panel">
+                  <div className="verify-success-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span className="verify-badge-pill">✅ OFFICIAL RECORDED BILL</span>
+                      <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc', letterSpacing: '0.5px' }}>
+                        Auth Code: {verifyResult.bill.auth_code}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.86rem', color: '#94a3b8' }}>
+                      Database ID: #{verifyResult.bill.id}
+                    </div>
+                  </div>
+
+                  <div className="verify-grid">
+                    <div className="verify-kpi">
+                      <div className="verify-kpi-label">Cash Collected</div>
+                      <div className="verify-kpi-value" style={{ color: '#34d399' }}>
+                        Rs. {Number(verifyResult.bill.final_total).toFixed(2)}
+                      </div>
+                    </div>
+
+                    <div className="verify-kpi">
+                      <div className="verify-kpi-label">Date &amp; Time</div>
+                      <div className="verify-kpi-value" style={{ fontSize: '1.05rem', marginTop: '6px' }}>
+                        {new Intl.DateTimeFormat('en-GB', {
+                          timeZone: 'Asia/Colombo',
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true
+                        }).format(new Date(verifyResult.bill.created_at))}
+                      </div>
+                    </div>
+
+                    <div className="verify-kpi">
+                      <div className="verify-kpi-label">Billed By (Cashier)</div>
+                      <div className="verify-kpi-value" style={{ color: '#38bdf8' }}>
+                        {verifyResult.bill.created_by}
+                      </div>
+                    </div>
+
+                    <div className="verify-kpi">
+                      <div className="verify-kpi-label">Patient Name</div>
+                      <div className="verify-kpi-value" style={{ fontSize: '1.1rem' }}>
+                        {verifyResult.bill.patient_names}
+                      </div>
+                    </div>
+
+                    <div className="verify-kpi">
+                      <div className="verify-kpi-label">Patient Phone</div>
+                      <div className="verify-kpi-value" style={{ fontSize: '1rem', color: '#94a3b8' }}>
+                        {verifyResult.bill.patient_phone || 'None'}
+                      </div>
+                    </div>
+
+                    <div className="verify-kpi">
+                      <div className="verify-kpi-label">Consulting Doctor</div>
+                      <div className="verify-kpi-value" style={{ fontSize: '1.1rem' }}>
+                        {verifyResult.bill.doctor_name}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dispensed Items Snapshot */}
+                  {Array.isArray(verifyResult.bill.items_snapshot) && verifyResult.bill.items_snapshot.length > 0 && (
+                    <div style={{ marginTop: '16px', background: 'rgba(15, 23, 42, 0.75)', borderRadius: '12px', padding: '16px', border: '1px solid rgba(45, 212, 191, 0.2)' }}>
+                      <h4 style={{ margin: '0 0 10px 0', fontSize: '0.92rem', color: '#5eead4', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Dispensed Items &amp; Charges
+                      </h4>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+                        <thead>
+                          <tr style={{ borderBottom: '1px solid #334155', color: '#94a3b8', textAlign: 'left' }}>
+                            <th style={{ padding: '6px 8px' }}>Type</th>
+                            <th style={{ padding: '6px 8px' }}>Item Name</th>
+                            <th style={{ padding: '6px 8px' }}>Qty</th>
+                            <th style={{ padding: '6px 8px', textAlign: 'right' }}>Unit Price</th>
+                            <th style={{ padding: '6px 8px', textAlign: 'right' }}>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {verifyResult.bill.items_snapshot.map((item, idx) => (
+                            <tr key={idx} style={{ borderBottom: '1px solid rgba(51, 65, 85, 0.4)' }}>
+                              <td style={{ padding: '8px', color: '#94a3b8', fontSize: '0.78rem' }}>{item.item_type || 'ITEM'}</td>
+                              <td style={{ padding: '8px', fontWeight: 700, color: '#f8fafc' }}>{item.name}</td>
+                              <td style={{ padding: '8px' }}>{item.qty || 1}</td>
+                              <td style={{ padding: '8px', textAlign: 'right' }}>Rs. {Number(item.unit_price || 0).toFixed(2)}</td>
+                              <td style={{ padding: '8px', textAlign: 'right', fontWeight: 700, color: '#34d399' }}>
+                                Rs. {Number(item.line_total || (item.unit_price * (item.qty || 1)) || 0).toFixed(2)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* RESULT STATE 2: RECEIPT NOT FOUND */}
+              {verifyResult && verifyResult.verified === false && (
+                <div className="verify-failed-panel">
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                    <div style={{ fontSize: '2.5rem', lineHeight: 1 }}>❌</div>
+                    <div>
+                      <h3 style={{ margin: '0 0 6px 0', color: '#fca5a5', fontSize: '1.25rem', fontWeight: 800 }}>
+                        RECEIPT NOT FOUND IN CLINIC DATABASE
+                      </h3>
+                      <p style={{ margin: '0 0 10px 0', color: '#fecaca', fontSize: '0.95rem', lineHeight: 1.5 }}>
+                        No official transaction exists with Auth Code: <strong>{verifyResult.code || verifyCodeInput}</strong>.
+                      </p>
+                      <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px 16px', borderRadius: '8px', fontSize: '0.85rem', color: '#fca5a5', lineHeight: 1.5 }}>
+                        ⚠️ <strong>Audit Warning:</strong> This payment was never entered into the dispensary POS. If a patient holds a WhatsApp message or paper receipt with this code, it was likely hand-typed without registering the cash into clinic revenue.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* IDLE STATE: EXPLANATION */}
+              {!verifySearched && (
+                <div style={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '12px', padding: '20px', color: '#94a3b8', fontSize: '0.88rem', lineHeight: 1.6 }}>
+                  <h4 style={{ margin: '0 0 8px 0', color: '#38bdf8', fontSize: '0.95rem' }}>
+                    🛡️ How Auth Code Anti-Fraud Verification Works:
+                  </h4>
+                  <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                    <li>Every official checkout in the counter portal generates a cryptographic <strong>Auth Code (e.g. WSP-7X8K)</strong> and stores it in the database.</li>
+                    <li>Cashiers cannot invent a matching code because it is generated automatically upon database insertion.</li>
+                    <li>Enter any code received on a patient&apos;s WhatsApp receipt above to instantly confirm whether the cash was entered into the clinic&apos;s revenue.</li>
+                  </ul>
+                </div>
+              )}
             </div>
           )}
         </main>

@@ -42,6 +42,43 @@ export function useAdminPortalLogic() {
   const [newUserForm, setNewUserForm] = useState({ role_type: 'DOCTOR', name: '', username: '', password: '', specialty_or_role: 'Consulting Physician' });
   const [registeringUser, setRegisteringUser] = useState(false);
 
+  // NEW: Auth Code Verification State
+  const [verifyCodeInput, setVerifyCodeInput] = useState('');
+  const [verifyingCode, setVerifyingCode] = useState(false);
+  const [verifyResult, setVerifyResult] = useState(null);
+  const [verifySearched, setVerifySearched] = useState(false);
+
+  const handleVerifyAuthCode = async (e) => {
+    if (e) e.preventDefault();
+    const cleanCode = verifyCodeInput.trim().toUpperCase();
+    if (!cleanCode) {
+      showToast('Please enter an Auth Code to verify.', 'error');
+      return;
+    }
+
+    setVerifyingCode(true);
+    setVerifySearched(true);
+    setVerifyResult(null);
+
+    try {
+      const res = await axios.get(`${API_BASE}/admin/verify-bill/${encodeURIComponent(cleanCode)}`);
+      setVerifyResult(res.data);
+      showToast(`✓ Authentic Bill Verified: ${res.data.bill?.auth_code || cleanCode}`);
+    } catch (err) {
+      const msg = err.response?.data?.error || `Receipt Not Found for code "${cleanCode}".`;
+      setVerifyResult({ verified: false, code: cleanCode, error: msg });
+      showToast(msg, 'error');
+    } finally {
+      setVerifyingCode(false);
+    }
+  };
+
+  const handleClearVerify = () => {
+    setVerifyCodeInput('');
+    setVerifyResult(null);
+    setVerifySearched(false);
+  };
+
   const [statusBanner, setStatusBanner] = useState(null);
   const showToast = (message, type = 'success') => {
     setStatusBanner({ message, type });
@@ -210,6 +247,7 @@ export function useAdminPortalLogic() {
     financeSummary, financeChart, topMedicinesChart, weeklyTrafficChart, loadingFinance,
     demographics, loadingDemographics,
     logDate, setLogDate, dailyLogList, loadingLog, handleDownloadCSV,
-    systemUsers, loadingUsers, newUserForm, setNewUserForm, registeringUser, handleRegisterUser, handleDeleteUser
+    systemUsers, loadingUsers, newUserForm, setNewUserForm, registeringUser, handleRegisterUser, handleDeleteUser,
+    verifyCodeInput, setVerifyCodeInput, verifyingCode, verifyResult, verifySearched, handleVerifyAuthCode, handleClearVerify
   };
 }

@@ -1233,6 +1233,14 @@ export default function CounterPortal() {
                   <span className="receipt-meta-label">Doctor:</span>
                   <span className="receipt-meta-value">{completedBillModal.doctor_name}</span>
                 </div>
+                {completedBillModal.auth_code && (
+                  <div className="receipt-meta-row" style={{ color: '#0f766e', fontWeight: 800 }}>
+                    <span className="receipt-meta-label" style={{ color: '#0f766e' }}>Auth Code:</span>
+                    <span className="receipt-meta-value" style={{ fontFamily: 'monospace', letterSpacing: '0.5px' }}>
+                      {completedBillModal.auth_code}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="receipt-summary-box">

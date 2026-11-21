@@ -162,9 +162,11 @@ export function buildWhatsAppReceiptMessage(billModal) {
     ? `for your visit with ${doctor} on ${dateStr}.`
     : `for your dispensary visit on ${dateStr}.`;
 
+  const authLine = billModal.auth_code ? `\nAuth: ${billModal.auth_code}` : '';
+
   return (
     `✅ *Payment Received – Wellspring Healthcare Center*\n\n` +
-    `${greeting}, we received *Rs. ${total}* ${visitSegment}\n\n` +
+    `${greeting}, we received *Rs. ${total}* ${visitSegment}${authLine}\n\n` +
     `Wishing you a speedy recovery!`
   );
 }
@@ -887,6 +889,7 @@ export function useCounterPortalLogic() {
         openReceiptModalWithData({
           bill_id: res.data.bill.id,
           daily_bill_no: res.data.bill.daily_bill_no || 1,
+          auth_code: res.data.bill.auth_code || '',
           ticket_ids: selectedTicketIds,
           is_walk_in: !isRegisteredPatient,
           date_str: slNowStr,
@@ -931,6 +934,7 @@ export function useCounterPortalLogic() {
     openReceiptModalWithData({
       bill_id: logRow.id,
       daily_bill_no: logRow.daily_bill_no || logRow.id,
+      auth_code: logRow.auth_code || '',
       ticket_ids: logRow.ticket_ids || [],
       is_walk_in: !hasTickets,
       date_str: formattedDate,
