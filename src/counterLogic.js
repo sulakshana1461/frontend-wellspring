@@ -119,28 +119,53 @@ export function formatDisplaySriLankaPhone(raw) {
   return `+94 ${norm.substring(2, 4)} ${norm.substring(4, 7)} ${norm.substring(7)}`;
 }
 
-// Formats a beautiful, clean WhatsApp receipt message with WhatsApp bold (*), italics (_), emojis
+// Formats a clean, direct WhatsApp receipt message
 export function buildWhatsAppReceiptMessage(billModal) {
   if (!billModal) return '';
-  const receiptNo = billModal.daily_bill_no || billModal.bill_id || 1;
-  const dateStr = billModal.date_str || 'Today';
-  const patient = billModal.patient_names || 'Walk-In Patient';
-  const doctor = billModal.doctor_name || 'Wellspring Physician';
+  const patient = (billModal.patient_names || '').trim();
+  const greeting = patient ? `Hi ${patient}` : 'Hi';
   const total = Number(billModal.final_total || 0).toFixed(2);
 
+  let doctor = (billModal.doctor_name || '').trim();
+  if (!doctor || doctor === 'Consulting Physician' || doctor === 'Wellspring Physician') {
+    doctor = 'Dr. Upul Jayathilaka';
+  } else if (doctor !== 'Dispensary Counter' && !/^Dr\.?\s/i.test(doctor)) {
+    doctor = `Dr. ${doctor}`;
+  }
+
+  let dateStr = '';
+  if (billModal.created_at) {
+    try {
+      dateStr = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Colombo',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      }).format(new Date(billModal.created_at));
+    } catch {
+      // ignore
+    }
+  }
+  if (!dateStr && billModal.date_str) {
+    dateStr = billModal.date_str.split(',')[0].trim();
+  }
+  if (!dateStr) {
+    dateStr = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Colombo',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }).format(new Date());
+  }
+
+  const visitSegment = doctor && doctor !== 'Dispensary Counter'
+    ? `for your visit with ${doctor} on ${dateStr}.`
+    : `for your dispensary visit on ${dateStr}.`;
+
   return (
-    `*Wellspring Health Care Center*\n` +
-    `_Private Dispensary & Primary Care Clinic_\n` +
-    `📍 Kirimatiyana Junction, Deeparama Mawatha\n` +
-    `📞 +94 312 262 462\n\n` +
-    `🧾 *Official Receipt:* #${receiptNo}\n` +
-    `📅 *Date:* ${dateStr}\n` +
-    `👤 *Patient:* ${patient}\n` +
-    `👨‍⚕️ *Doctor:* ${doctor}\n\n` +
-    `💵 *Total Paid:* Rs. ${total}\n` +
-    `_(Medical Consultation & Dispensary Charges Included)_\n\n` +
-    `Thank you for visiting Wellspring.\n` +
-    `Wishing you a speedy recovery! 🌿`
+    `✅ *Payment Received – Wellspring Healthcare Center*\n\n` +
+    `${greeting}, we received *Rs. ${total}* ${visitSegment}\n\n` +
+    `Wishing you a speedy recovery!`
   );
 }
 
