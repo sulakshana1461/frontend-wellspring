@@ -92,6 +92,58 @@ function playNewPrescriptionSound() {
   }
 }
 
+// ============================================================================
+// SRI LANKAN PHONE NORMALIZER & WHATSAPP RECEIPT ENGINE
+// Handles: 0777123456, 777123456, +94777123456, 94777123456, 0714347804, etc.
+// WhatsApp wa.me requires international format WITHOUT plus, leading zeros, or symbols
+// ============================================================================
+export function normalizeSriLankanWhatsAppPhone(raw) {
+  if (!raw) return '';
+  let digits = String(raw).replace(/\D/g, '');
+  if (!digits) return '';
+
+  if (digits.startsWith('0')) {
+    digits = '94' + digits.substring(1);
+  } else if (digits.startsWith('94')) {
+    // Already in 94 international format
+  } else if (digits.length === 9) {
+    digits = '94' + digits;
+  }
+  return digits;
+}
+
+// Pretty display format: +94 77 712 3456
+export function formatDisplaySriLankaPhone(raw) {
+  const norm = normalizeSriLankanWhatsAppPhone(raw);
+  if (!norm || norm.length < 11) return raw || '';
+  return `+94 ${norm.substring(2, 4)} ${norm.substring(4, 7)} ${norm.substring(7)}`;
+}
+
+// Formats a beautiful, clean WhatsApp receipt message with WhatsApp bold (*), italics (_), emojis
+export function buildWhatsAppReceiptMessage(billModal) {
+  if (!billModal) return '';
+  const receiptNo = billModal.daily_bill_no || billModal.bill_id || 1;
+  const dateStr = billModal.date_str || 'Today';
+  const patient = billModal.patient_names || 'Walk-In Patient';
+  const doctor = billModal.doctor_name || 'Wellspring Physician';
+  const total = Number(billModal.final_total || 0).toFixed(2);
+
+  return (
+    `*Wellspring Health Care Center*\n` +
+    `_Private Dispensary & Primary Care Clinic_\n` +
+    `📍 Kirimatiyana Junction, Deeparama Mawatha\n` +
+    `📞 +94 312 262 462\n\n` +
+    `🧾 *Official Receipt:* #${receiptNo}\n` +
+    `📅 *Date:* ${dateStr}\n` +
+    `👤 *Patient:* ${patient}\n` +
+    `👨‍⚕️ *Doctor:* ${doctor}\n\n` +
+    `💵 *Total Paid:* Rs. ${total}\n` +
+    `_(Medical Consultation & Dispensary Charges Included)_\n\n` +
+    `Thank you for visiting Wellspring.\n` +
+    `Wishing you a speedy recovery! 🌿`
+  );
+}
+
 // Dedicated Print Engine for True 80mm Thermal POS Printer vs A4 Sheet
 export function printReceiptDocument(billObj, format = 'thermal') {
   if (!billObj) return;
@@ -261,11 +313,18 @@ export function useCounterPortalLogic() {
   const [manualFinalTotal, setManualFinalTotal] = useState('');
   const [isManualTotalEdited, setIsManualTotalEdited] = useState(false);
 
-  // 9. Completed Bill Modal + SMS Confirmation & Sent State
+  // 9. Completed Bill Modal + SMS & WhatsApp State
   const [completedBillModal, setCompletedBillModal] = useState(null);
   const [printFormat, setPrintFormat] = useState('thermal');
   const [submittingCheckout, setSubmittingCheckout] = useState(false);
 
+  // WhatsApp Bill Direct Dispatch State
+  const [showWhatsAppConfirmBox, setShowWhatsAppConfirmBox] = useState(false);
+  const [whatsAppPhoneInput, setWhatsAppPhoneInput] = useState('');
+  const [isEditingWhatsAppPhone, setIsEditingWhatsAppPhone] = useState(false);
+  const [whatsAppOpenedStatus, setWhatsAppOpenedStatus] = useState(null);
+
+  // Retained legacy SMS state for backend endpoint compatibility
   const [showSmsConfirmBox, setShowSmsConfirmBox] = useState(false);
   const [smsPhoneInput, setSmsPhoneInput] = useState('');
   const [isEditingSmsPhone, setIsEditingSmsPhone] = useState(false);
@@ -739,7 +798,14 @@ export function useCounterPortalLogic() {
 
   const openReceiptModalWithData = (billModalObj) => {
     setCompletedBillModal(billModalObj);
-    setSmsPhoneInput(billModalObj.patient_phone || '');
+    const initialPhone = billModalObj.patient_phone || '';
+    setWhatsAppPhoneInput(initialPhone);
+    setShowWhatsAppConfirmBox(false);
+    setIsEditingWhatsAppPhone(false);
+    setWhatsAppOpenedStatus(null);
+
+    // Keep legacy SMS state synced
+    setSmsPhoneInput(initialPhone);
     setShowSmsConfirmBox(false);
     setIsEditingSmsPhone(false);
     setSmsSentStatus(null);
@@ -849,6 +915,67 @@ export function useCounterPortalLogic() {
       final_total: logRow.final_total,
       staff_name: logRow.created_by || 'Counter'
     });
+  };
+
+  // WhatsApp Flow Handlers
+  const handleInitiateWhatsAppFlow = () => {
+    if (!completedBillModal) return;
+    const existingPhone = completedBillModal.patient_phone || '';
+    setWhatsAppPhoneInput(existingPhone);
+    setShowWhatsAppConfirmBox(true);
+    setWhatsAppOpenedStatus(null);
+    if (!existingPhone.trim()) {
+      setIsEditingWhatsAppPhone(true);
+    } else {
+      setIsEditingWhatsAppPhone(false);
+    }
+  };
+
+  const handleLaunchWhatsAppReceipt = async () => {
+    if (!completedBillModal) return;
+    const raw = (whatsAppPhoneInput || '').trim();
+    if (!raw) {
+      return showToast('Please enter a mobile phone number for WhatsApp.', 'error');
+    }
+
+    const normPhone = normalizeSriLankanWhatsAppPhone(raw);
+    if (!normPhone || normPhone.length !== 11 || !normPhone.startsWith('94')) {
+      return showToast('Please enter a valid 9 or 10-digit Sri Lankan phone number.', 'error');
+    }
+
+    const formattedDisplay = formatDisplaySriLankaPhone(normPhone);
+    const message = buildWhatsAppReceiptMessage(completedBillModal);
+    const waUrl = `https://wa.me/${normPhone}?text=${encodeURIComponent(message)}`;
+
+    // Open WhatsApp Web or Desktop application directly
+    window.open(waUrl, '_blank');
+
+    setWhatsAppOpenedStatus({
+      phone: formattedDisplay,
+      raw: normPhone
+    });
+    setCompletedBillModal(prev => (prev ? { ...prev, patient_phone: raw } : prev));
+    setIsEditingWhatsAppPhone(false);
+
+    // Save phone number to database in background so it is permanently remembered
+    try {
+      const token = loggedInStaff?.token || JSON.parse(sessionStorage.getItem('wellspring_counter_session') || '{}').token;
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      await axios.post(`${API_BASE}/counter/send-sms`, {
+        bill_id: completedBillModal.bill_id,
+        daily_bill_no: completedBillModal.daily_bill_no,
+        ticket_ids: completedBillModal.ticket_ids || [],
+        phone: raw,
+        patient_names: completedBillModal.patient_names,
+        final_total: completedBillModal.final_total,
+        date_str: completedBillModal.date_str
+      }, config);
+      fetchTodayLog();
+    } catch {
+      // Quiet background sync
+    }
+
+    showToast(`WhatsApp opened for ${formattedDisplay}! Press Send in WhatsApp.`);
   };
 
   const handleInitiateSmsFlow = () => {
@@ -996,6 +1123,16 @@ export function useCounterPortalLogic() {
     setCompletedBillModal,
     printFormat,
     setPrintFormat,
+    showWhatsAppConfirmBox,
+    setShowWhatsAppConfirmBox,
+    whatsAppPhoneInput,
+    setWhatsAppPhoneInput,
+    isEditingWhatsAppPhone,
+    setIsEditingWhatsAppPhone,
+    whatsAppOpenedStatus,
+    setWhatsAppOpenedStatus,
+    handleInitiateWhatsAppFlow,
+    handleLaunchWhatsAppReceipt,
     showSmsConfirmBox,
     setShowSmsConfirmBox,
     smsPhoneInput,

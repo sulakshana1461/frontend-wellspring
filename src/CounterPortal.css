@@ -812,60 +812,113 @@
   margin-top: 12px;
 }
 
-/* SMS PHONE CONFIRMATION & EDIT PANEL INSIDE MODAL */
-.sms-confirm-drawer {
-  background: #f0fdfa;
-  border: 2px solid #5eead4;
+/* SMS & WHATSAPP PHONE CONFIRMATION & EDIT PANEL INSIDE MODAL */
+.sms-confirm-drawer,
+.wa-confirm-drawer {
+  background: #f0fdf4;
+  border: 2px solid #86efac;
   border-radius: 16px;
   padding: 16px 18px;
   margin-top: 14px;
 }
 
-.sms-confirm-header {
+.sms-confirm-header,
+.wa-confirm-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
 
-.sms-confirm-title {
+.sms-confirm-title,
+.wa-confirm-title {
   font-size: 0.92rem;
   font-weight: 800;
-  color: #0f766e;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.sms-phone-display-row {
+.sms-phone-display-row,
+.wa-phone-display-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   background: #ffffff;
-  border: 1.5px solid #99f6e4;
+  border: 1.5px solid #bbf7d0;
   border-radius: 12px;
   padding: 10px 14px;
   margin-bottom: 12px;
 }
 
-.sms-phone-number-text {
-  font-size: 1.12rem;
+.sms-phone-number-text,
+.wa-phone-number-text {
+  font-size: 1.15rem;
   font-weight: 800;
   color: #0f172a;
   letter-spacing: 0.5px;
 }
 
-.sms-edit-btn {
+.wa-phone-badge {
+  display: inline-block;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  margin-left: 6px;
+}
+
+.sms-edit-btn,
+.wa-edit-btn {
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1.5px solid #0d9488;
+  border: 1.5px solid #22c55e;
   background: #ffffff;
-  color: #0f766e;
+  color: #15803d;
   font-size: 0.8rem;
   font-weight: 800;
   cursor: pointer;
 }
 
-.sms-edit-btn:hover {
-  background: #ccfbf1;
+.sms-edit-btn:hover,
+.wa-edit-btn:hover {
+  background: #dcfce7;
+}
+
+.whatsapp-receipt-btn {
+  background: #25D366 !important;
+  color: #ffffff !important;
+  border: 1px solid #1ebc59 !important;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.28);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.whatsapp-receipt-btn:hover {
+  background: #20bd5a !important;
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+  transform: translateY(-1px);
+}
+
+.wa-sent-success-banner {
+  background: #dcfce7;
+  border: 2px solid #22c55e;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: #14532d;
 }
 
 .receipt-modal-actions {
