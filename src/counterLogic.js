@@ -123,13 +123,13 @@ export function formatDisplaySriLankaPhone(raw) {
 export function buildWhatsAppReceiptMessage(billModal) {
   if (!billModal) return '';
   const patient = (billModal.patient_names || '').trim();
-  const greeting = patient ? `Hi ${patient}` : 'Hi';
+  const greeting = patient ? `Dear ${patient}` : 'Dear Patient';
   const total = Number(billModal.final_total || 0).toFixed(2);
 
   let doctor = (billModal.doctor_name || '').trim();
-  if (!doctor || doctor === 'Consulting Physician' || doctor === 'Wellspring Physician') {
+  if (!doctor || doctor === 'Consulting Physician' || doctor === 'Wellspring Physician' || doctor === 'Dispensary Counter') {
     doctor = 'Dr. Upul Jayathilaka';
-  } else if (doctor !== 'Dispensary Counter' && !/^Dr\.?\s/i.test(doctor)) {
+  } else if (!/^Dr\.?\s/i.test(doctor)) {
     doctor = `Dr. ${doctor}`;
   }
 
@@ -158,16 +158,15 @@ export function buildWhatsAppReceiptMessage(billModal) {
     }).format(new Date());
   }
 
-  const visitSegment = doctor && doctor !== 'Dispensary Counter'
-    ? `for your visit with ${doctor} on ${dateStr}.`
-    : `for your dispensary visit on ${dateStr}.`;
-
-  const authLine = billModal.auth_code ? `\nAuth: ${billModal.auth_code}` : '';
+  const authCode = billModal.auth_code || 'WSP-VERIFIED';
+  const bt = String.fromCharCode(96);
 
   return (
-    `✅ *Payment Received – Wellspring Healthcare Center*\n\n` +
-    `${greeting}, we received *Rs. ${total}* ${visitSegment}${authLine}\n\n` +
-    `Wishing you a speedy recovery!`
+    `✅ *Payment Confirmation – Wellspring Healthcare Center*\n\n` +
+    `${greeting}, this confirms receipt of *Rs. ${total}* towards your medical consultation with ${doctor} on ${dateStr}.\n\n` +
+    `Wishing you good health and a speedy recovery.\n\n` +
+    `Ref: ${bt}${authCode}${bt}\n` +
+    `📢 Clinic updates: https://whatsapp.com/channel/0029Vb642BdCxoAnGOLXtn0p`
   );
 }
 
@@ -839,18 +838,13 @@ export function useCounterPortalLogic() {
   };
 
   const handleFinalizeCheckout = async (mode = 'COMPLETED_BILL') => {
-    const isRegisteredPatient = activePrescriptionCards.length > 0;
-    const combinedNames = isRegisteredPatient
-      ? activePrescriptionCards.map(c => c.patient.name).join(', ')
-      : customWalkInName.trim() || 'Walk-In Patient';
+    if (activePrescriptionCards.length === 0) {
+      return showToast('Please select a patient from the Doctor queue. Over-the-counter dispensing without doctor supervision is not permitted.', 'error');
+    }
 
-    const primaryPhone = isRegisteredPatient
-      ? activePrescriptionCards[0].patient.phone || ''
-      : customWalkInPhone.trim();
-
-    const doctorName = isRegisteredPatient
-      ? activePrescriptionCards[0].doctor_name
-      : 'Wellspring Physician';
+    const combinedNames = activePrescriptionCards.map(c => c.patient.name).join(', ');
+    const primaryPhone = activePrescriptionCards[0].patient.phone || '';
+    const doctorName = activePrescriptionCards[0].doctor_name || 'Dr. Upul Jayathilaka';
 
     const finalPayable = mode === 'OUTDOOR_RX' && billItems.length === 0
       ? 0
@@ -891,7 +885,7 @@ export function useCounterPortalLogic() {
           daily_bill_no: res.data.bill.daily_bill_no || 1,
           auth_code: res.data.bill.auth_code || '',
           ticket_ids: selectedTicketIds,
-          is_walk_in: !isRegisteredPatient,
+          is_walk_in: false,
           date_str: slNowStr,
           patient_names: combinedNames,
           patient_phone: primaryPhone,
