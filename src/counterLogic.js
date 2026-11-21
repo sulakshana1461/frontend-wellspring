@@ -970,7 +970,8 @@ export function useCounterPortalLogic() {
 
     const formattedDisplay = formatDisplaySriLankaPhone(normPhone);
     const message = buildWhatsAppReceiptMessage(completedBillModal);
-    const waUrl = `https://wa.me/${normPhone}?text=${encodeURIComponent(message)}`;
+    // Use official direct endpoint to prevent wa.me redirect from corrupting UTF-8 emojis into 
+    const waUrl = `https://api.whatsapp.com/send?phone=${normPhone}&text=${encodeURIComponent(message)}`;
 
     // Open WhatsApp Web or Desktop application directly
     window.open(waUrl, '_blank');
