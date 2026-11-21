@@ -382,19 +382,23 @@ export default function CounterPortal() {
             </section>
 
             <main className="counter-pos-card">
-              <div className="pos-active-rx-banner" style={{ background: activePrescriptionCards.length > 0 ? undefined : '#f8fafc', borderColor: activePrescriptionCards.length > 0 ? undefined : '#cbd5e1' }}>
+              <div className="pos-active-rx-banner" style={{ background: activePrescriptionCards.length > 0 ? undefined : '#f8fafc', borderColor: activePrescriptionCards.length > 0 ? undefined : '#e2e8f0' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                   <div>
-                    <span className="stacked-field-label" style={{ color: activePrescriptionCards.length > 0 ? '#0f766e' : '#64748b' }}>
-                      {activePrescriptionCards.length > 0
-                        ? `Active Billing Patient(s) (${activePrescriptionCards.length})`
-                        : 'Doctor Prescription Required'}
-                    </span>
-                    <div style={{ fontSize: '1.15rem', fontWeight: 800, color: activePrescriptionCards.length > 0 ? '#0f172a' : '#475569' }}>
-                      {activePrescriptionCards.length > 0
-                        ? activePrescriptionCards.map((c) => c.patient.name).join(' + ')
-                        : 'Select a patient from the Doctor Prescriptions queue on the left'}
-                    </div>
+                    {activePrescriptionCards.length > 0 ? (
+                      <>
+                        <span className="stacked-field-label" style={{ color: '#0f766e' }}>
+                          Active Billing Patient(s) ({activePrescriptionCards.length})
+                        </span>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
+                          {activePrescriptionCards.map((c) => c.patient.name).join(' + ')}
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#64748b', padding: '4px 0' }}>
+                        Select a patient from the Doctor Prescriptions
+                      </div>
+                    )}
                   </div>
                 </div>
 
