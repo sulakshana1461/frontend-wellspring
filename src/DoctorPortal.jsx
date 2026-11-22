@@ -957,15 +957,16 @@ export default function DoctorPortal() {
             </div>
           </div>
 
-          {!isDiagnosticHubMinimized && (
-            !selectedPatient ? (
-              <div className="diagnostic-empty-prompt">
-                <div className="diag-empty-icon">📊</div>
-                <h3>No Patient Selected</h3>
-                <p>Select a patient from the queue or search above to view dynamic vitals, lab report trend charts, and cardiovascular risk assessment.</p>
-              </div>
-            ) : (
-              <div className="diagnostic-content-container">
+          {!isDiagnosticHubMinimized && !selectedPatient && (
+            <div className="diagnostic-empty-prompt">
+              <div className="diag-empty-icon">📊</div>
+              <h3>No Patient Selected</h3>
+              <p>Select a patient from the queue or search above to view dynamic vitals, lab report trend charts, and cardiovascular risk assessment.</p>
+            </div>
+          )}
+
+          {!isDiagnosticHubMinimized && selectedPatient && (
+            <div className="diagnostic-content-container">
               {/* ========================================================= */}
               {/* SUB-TAB 1: VITALS & BMI TRACKER                           */}
               {/* ========================================================= */}
