@@ -2306,3 +2306,102 @@ input[type="date"].walkin-input::-webkit-calendar-picker-indicator:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* ================= MINIMIZE / MAXIMIZE & JUMP TO LOG STYLES ================= */
+.profile-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.jump-to-log-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--theme-soft-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--theme-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.jump-to-log-btn:hover {
+  background: var(--theme-primary);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.diagnostic-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.diag-toggle-collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.diag-toggle-collapse-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.diag-toggle-collapse-btn.active-minimized {
+  background: var(--theme-soft-bg);
+  border-color: var(--theme-border);
+  color: var(--theme-dark);
+  font-weight: 800;
+}
+
+.diag-minimized-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #475569;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.doc-diagnostic-card.is-minimized .diagnostic-header-bar {
+  border-bottom: none;
+}
+
+.framingham-bar-chart-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 4px;
+}
+
+.framingham-bar-chart-header {
+  margin-bottom: 6px;
+}
+
+.framingham-chart-label {
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #475569;
+}

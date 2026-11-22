@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   useDoctorPortalLogic,
@@ -5,12 +6,16 @@ import {
   calculateAge,
   formatClearDate,
   calculateBmiAndTargetWeight,
+  calculateFraminghamCvd,
   INVESTIGATION_CONFIG
 } from './doctorLogic';
 import {
   ResponsiveContainer,
   LineChart,
   Line,
+  BarChart,
+  Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -95,6 +100,29 @@ export default function DoctorPortal() {
   } = useDoctorPortalLogic();
 
   const selectedConfig = INVESTIGATION_CONFIG[selectedCatalogTest] || INVESTIGATION_CONFIG['Others'];
+  const [isDiagnosticHubMinimized, setIsDiagnosticHubMinimized] = useState(false);
+
+  const framinghamBarData = [
+    {
+      name: 'Current Patient',
+      risk: cvdResult?.percentage || 0,
+      fill: cvdResult?.color || '#f59e0b'
+    },
+    {
+      name: 'Optimal Target',
+      risk: calculateFraminghamCvd({
+        age: cvdAge,
+        gender: cvdGender,
+        totalChol: 160,
+        hdl: 55,
+        sbp: 115,
+        isTreated: false,
+        isSmoker: false,
+        isDiabetic: false
+      }).percentage || 2.5,
+      fill: '#10b981'
+    }
+  ];
 
   if (!loggedInDoctor) {
     return (
@@ -509,8 +537,21 @@ export default function DoctorPortal() {
 
         <main className="doc-middle-card">
           <div className="section-card-header">
-            <h2 className="section-card-title">Patient Clinical Profile</h2>
-            <span className="section-card-tag">Medical Record</span>
+            <div className="profile-header-left">
+              <h2 className="section-card-title">Patient Clinical Profile</h2>
+              <span className="section-card-tag">Medical Record</span>
+            </div>
+            <button
+              type="button"
+              className="jump-to-log-btn"
+              onClick={() => {
+                const el = document.getElementById('doc-history-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+              title="Jump directly to Consultation & Prescription Log"
+            >
+              📜 Log &darr;
+            </button>
           </div>
 
           {!selectedPatient ? (
@@ -834,7 +875,7 @@ export default function DoctorPortal() {
       {/* CLINICAL DIAGNOSTIC HUB: VITALS & BMI, LAB TRENDS, FRAMINGHAM CVD */}
       {/* ================================================================= */}
       <section className="doc-diagnostic-section">
-        <div className="doc-diagnostic-card">
+        <div className={`doc-diagnostic-card ${isDiagnosticHubMinimized ? 'is-minimized' : ''}`}>
           <div className="diagnostic-header-bar">
             <div className="diagnostic-title-area">
               <div className="diagnostic-badge-row">
@@ -842,64 +883,89 @@ export default function DoctorPortal() {
                 {selectedPatient && (
                   <span className="diagnostic-patient-tag">{selectedPatient.name}</span>
                 )}
+                {isDiagnosticHubMinimized && (
+                  <span className="diag-minimized-pill">Hub Minimized</span>
+                )}
               </div>
               <h2 className="diagnostic-main-title">Diagnostic Hub &amp; Trend Analytics</h2>
             </div>
 
-            {/* 3 Clickable Sub-Tabs */}
-            <div className="diagnostic-tabs-nav" role="tablist">
-              <button
-                type="button"
-                className={`diag-tab-btn ${docDiagnosticTab === 'vitals' ? 'active' : ''}`}
-                onClick={() => setDocDiagnosticTab('vitals')}
-              >
-                <span className="diag-tab-icon">⚖️</span>
-                <span className="diag-tab-text">Vitals &amp; BMI Tracker</span>
-                {selectedPatient && latestBmiMetrics?.bmi && (
-                  <span className="diag-tab-pill" style={{ backgroundColor: latestBmiMetrics.badgeColor }}>
-                    BMI {latestBmiMetrics.bmi}
-                  </span>
-                )}
-              </button>
+            <div className="diagnostic-header-controls">
+              {/* 3 Clickable Sub-Tabs */}
+              <div className="diagnostic-tabs-nav" role="tablist">
+                <button
+                  type="button"
+                  className={`diag-tab-btn ${docDiagnosticTab === 'vitals' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDocDiagnosticTab('vitals');
+                    setIsDiagnosticHubMinimized(false);
+                  }}
+                >
+                  <span className="diag-tab-icon">⚖️</span>
+                  <span className="diag-tab-text">Vitals &amp; BMI Tracker</span>
+                  {selectedPatient && latestBmiMetrics?.bmi && (
+                    <span className="diag-tab-pill" style={{ backgroundColor: latestBmiMetrics.badgeColor }}>
+                      BMI {latestBmiMetrics.bmi}
+                    </span>
+                  )}
+                </button>
 
-              <button
-                type="button"
-                className={`diag-tab-btn ${docDiagnosticTab === 'labs' ? 'active' : ''}`}
-                onClick={() => setDocDiagnosticTab('labs')}
-              >
-                <span className="diag-tab-icon">🧪</span>
-                <span className="diag-tab-text">Lab Investigation Trends</span>
-                {selectedPatient && patientLabList.length > 0 && (
-                  <span className="diag-tab-pill count-pill">
-                    {patientLabList.length} Tests
-                  </span>
-                )}
-              </button>
+                <button
+                  type="button"
+                  className={`diag-tab-btn ${docDiagnosticTab === 'labs' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDocDiagnosticTab('labs');
+                    setIsDiagnosticHubMinimized(false);
+                  }}
+                >
+                  <span className="diag-tab-icon">🧪</span>
+                  <span className="diag-tab-text">Lab Investigation Trends</span>
+                  {selectedPatient && patientLabList.length > 0 && (
+                    <span className="diag-tab-pill count-pill">
+                      {patientLabList.length} Tests
+                    </span>
+                  )}
+                </button>
 
+                <button
+                  type="button"
+                  className={`diag-tab-btn ${docDiagnosticTab === 'framingham' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDocDiagnosticTab('framingham');
+                    setIsDiagnosticHubMinimized(false);
+                  }}
+                >
+                  <span className="diag-tab-icon">❤️</span>
+                  <span className="diag-tab-text">Framingham CVD Risk</span>
+                  {selectedPatient && cvdResult?.score && (
+                    <span className="diag-tab-pill" style={{ backgroundColor: cvdResult.color }}>
+                      {cvdResult.percentage}% Risk
+                    </span>
+                  )}
+                </button>
+              </div>
+
+              {/* Minimize / Maximize Button */}
               <button
                 type="button"
-                className={`diag-tab-btn ${docDiagnosticTab === 'framingham' ? 'active' : ''}`}
-                onClick={() => setDocDiagnosticTab('framingham')}
+                className={`diag-toggle-collapse-btn ${isDiagnosticHubMinimized ? 'active-minimized' : ''}`}
+                onClick={() => setIsDiagnosticHubMinimized(prev => !prev)}
+                title={isDiagnosticHubMinimized ? 'Maximize Hub to view charts & entry forms' : 'Minimize Hub to compact view'}
               >
-                <span className="diag-tab-icon">❤️</span>
-                <span className="diag-tab-text">Framingham CVD Risk</span>
-                {selectedPatient && cvdResult?.score && (
-                  <span className="diag-tab-pill" style={{ backgroundColor: cvdResult.color }}>
-                    {cvdResult.percentage}% Risk
-                  </span>
-                )}
+                {isDiagnosticHubMinimized ? '⤢ Expand Hub' : '— Minimize Hub'}
               </button>
             </div>
           </div>
 
-          {!selectedPatient ? (
-            <div className="diagnostic-empty-prompt">
-              <div className="diag-empty-icon">📊</div>
-              <h3>No Patient Selected</h3>
-              <p>Select a patient from the queue or search above to view dynamic vitals, lab report trend charts, and cardiovascular risk assessment.</p>
-            </div>
-          ) : (
-            <div className="diagnostic-content-container">
+          {!isDiagnosticHubMinimized && (
+            !selectedPatient ? (
+              <div className="diagnostic-empty-prompt">
+                <div className="diag-empty-icon">📊</div>
+                <h3>No Patient Selected</h3>
+                <p>Select a patient from the queue or search above to view dynamic vitals, lab report trend charts, and cardiovascular risk assessment.</p>
+              </div>
+            ) : (
+              <div className="diagnostic-content-container">
               {/* ========================================================= */}
               {/* SUB-TAB 1: VITALS & BMI TRACKER                           */}
               {/* ========================================================= */}
@@ -1585,6 +1651,33 @@ export default function DoctorPortal() {
                         </div>
                       </div>
 
+                      {/* Comparative Bar Chart: Current vs Optimal */}
+                      {cvdResult.percentage > 0 && (
+                        <div className="framingham-bar-chart-card">
+                          <div className="framingham-bar-chart-header">
+                            <span className="framingham-chart-label">Risk Comparison vs. Optimal Target</span>
+                          </div>
+                          <div style={{ width: '100%', height: 160, minWidth: 0 }}>
+                            <ResponsiveContainer width="100%" height={160}>
+                              <BarChart data={framinghamBarData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                                <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} />
+                                <YAxis unit="%" stroke="#64748b" fontSize={10} domain={[0, 'auto']} />
+                                <Tooltip
+                                  formatter={(val) => [`${val}%`, '10-Yr CVD Risk']}
+                                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: '0.8rem' }}
+                                />
+                                <Bar dataKey="risk" radius={[6, 6, 0, 0]}>
+                                  {framinghamBarData.map((entry, idx) => (
+                                    <Cell key={`cell-${idx}`} fill={entry.fill} />
+                                  ))}
+                                </Bar>
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                      )}
+
                       <div className="framingham-advice-box">
                         <h5>Clinical Guidance:</h5>
                         <p>{cvdResult.message}</p>
@@ -1598,7 +1691,7 @@ export default function DoctorPortal() {
         </div>
       </section>
 
-      <section className="doc-history-section">
+      <section className="doc-history-section" id="doc-history-section">
         <div className="doc-history-card">
           <div className="history-title-bar">
             <h2>
