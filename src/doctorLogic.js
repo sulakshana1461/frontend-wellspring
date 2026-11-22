@@ -512,13 +512,15 @@ export function useDoctorPortalLogic() {
     loadCatalog();
   }, []);
 
-  // Fetch Vitals for a patient
+  // Fetch Vitals for a patient (sorted newest first for history table & latest metric cards)
   const fetchPatientVitals = useCallback(async (patientId) => {
     if (!patientId) return [];
     setLoadingVitals(true);
     try {
       const res = await axios.get(`${API_BASE}/doctor/patients/${patientId}/vitals`);
-      const vitals = res.data || [];
+      const vitals = (res.data || []).sort(
+        (a, b) => (new Date(b.record_date) - new Date(a.record_date)) || ((b.id || 0) - (a.id || 0))
+      );
       setPatientVitalsList(vitals);
       return vitals;
     } catch (err) {
@@ -530,13 +532,15 @@ export function useDoctorPortalLogic() {
     }
   }, []);
 
-  // Fetch Investigations for a patient
+  // Fetch Investigations for a patient (sorted newest first for history table & latest metrics)
   const fetchPatientInvestigations = useCallback(async (patientId) => {
     if (!patientId) return [];
     setLoadingLabs(true);
     try {
       const res = await axios.get(`${API_BASE}/doctor/patients/${patientId}/investigations`);
-      const labs = res.data || [];
+      const labs = (res.data || []).sort(
+        (a, b) => (new Date(b.test_date) - new Date(a.test_date)) || ((b.id || 0) - (a.id || 0))
+      );
       setPatientLabList(labs);
       return labs;
     } catch (err) {
@@ -1027,10 +1031,10 @@ export function useDoctorPortalLogic() {
     return calculateBmiAndTargetWeight(currentWeight, currentHeight);
   }, [vitalsForm.weight_kg, vitalsForm.height_cm, patientVitalsList]);
 
-  // Vitals Chronological Chart Data (oldest to newest for plotting)
+  // Vitals Chronological Chart Data (strictly sorted oldest on LEFT, newest on RIGHT)
   const vitalsChartData = useMemo(() => {
     return [...patientVitalsList]
-      .reverse()
+      .sort((a, b) => (new Date(a.record_date) - new Date(b.record_date)) || ((a.id || 0) - (b.id || 0)))
       .map(v => ({
         date: formatClearDate(v.record_date),
         rawDate: v.record_date,
@@ -1042,12 +1046,12 @@ export function useDoctorPortalLogic() {
       }));
   }, [patientVitalsList]);
 
-  // Lab Chronological Chart Data for selected test
+  // Lab Chronological Chart Data for selected test (strictly sorted oldest on LEFT, newest on RIGHT)
   const filteredLabRecordsForGraph = useMemo(() => {
     if (!selectedCatalogTest) return [];
     return [...patientLabList]
       .filter(l => (l.test_name || '').toLowerCase() === selectedCatalogTest.toLowerCase())
-      .reverse()
+      .sort((a, b) => (new Date(a.test_date) - new Date(b.test_date)) || ((a.id || 0) - (b.id || 0)))
       .map(l => {
         const item = {
           date: formatClearDate(l.test_date),
