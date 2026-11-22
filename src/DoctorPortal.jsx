@@ -99,7 +99,9 @@ export default function DoctorPortal() {
     cvdResult, handleAutoFillFramingham
   } = useDoctorPortalLogic();
 
-  const selectedConfig = INVESTIGATION_CONFIG[selectedCatalogTest] || INVESTIGATION_CONFIG['Others'];
+  const selectedConfig = INVESTIGATION_CONFIG[selectedCatalogTest] || 
+    (selectedCatalogTest?.toLowerCase().includes('thirox') || selectedCatalogTest?.toLowerCase().includes('thyrox') ? INVESTIGATION_CONFIG['Thyroxine'] : null) || 
+    INVESTIGATION_CONFIG['Others'];
   const [isDiagnosticHubMinimized, setIsDiagnosticHubMinimized] = useState(false);
 
   const framinghamBarData = [

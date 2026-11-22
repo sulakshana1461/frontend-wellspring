@@ -300,8 +300,20 @@ export const INVESTIGATION_CONFIG = {
       { key: 'tsh', label: 'TSH (µIU/mL)', color: '#0d9488', normalMin: 0.4, normalMax: 4.5 }
     ]
   },
+  'Thyroxine': {
+    name: 'Thyroxine (Free T4 / Total T4)',
+    isMultiMetric: true,
+    fields: [
+      { key: 'ft4', label: 'Free T4 (FT4)', unit: 'ng/dL', normal: '0.8 – 1.8', step: '0.01' },
+      { key: 'total_t4', label: 'Total T4', unit: 'µg/dL', normal: '4.5 – 12.0', step: '0.1' }
+    ],
+    chartMetrics: [
+      { key: 'ft4', label: 'FT4 (ng/dL)', color: '#0284c7', normalMin: 0.8, normalMax: 1.8 },
+      { key: 'total_t4', label: 'Total T4 (µg/dL)', color: '#7c3aed', normalMin: 4.5, normalMax: 12.0 }
+    ]
+  },
   'Thiroxing': {
-    name: 'Thiroxing (Thyroxine / FT4)',
+    name: 'Thyroxine (Free T4 / Total T4)',
     isMultiMetric: true,
     fields: [
       { key: 'ft4', label: 'Free T4 (FT4)', unit: 'ng/dL', normal: '0.8 – 1.8', step: '0.01' },
@@ -1050,7 +1062,13 @@ export function useDoctorPortalLogic() {
   const filteredLabRecordsForGraph = useMemo(() => {
     if (!selectedCatalogTest) return [];
     return [...patientLabList]
-      .filter(l => (l.test_name || '').toLowerCase() === selectedCatalogTest.toLowerCase())
+      .filter(l => {
+        const t1 = (l.test_name || '').toLowerCase();
+        const t2 = selectedCatalogTest.toLowerCase();
+        if (t1 === t2) return true;
+        if ((t1.includes('thirox') || t1.includes('thyrox')) && (t2.includes('thirox') || t2.includes('thyrox'))) return true;
+        return false;
+      })
       .sort((a, b) => (new Date(a.test_date) - new Date(b.test_date)) || ((a.id || 0) - (b.id || 0)))
       .map(l => {
         const item = {
