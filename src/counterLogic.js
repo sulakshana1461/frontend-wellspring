@@ -324,7 +324,7 @@ export function printReceiptDocument(billObj, format = 'thermal') {
         <div class="receipt-wrapper">
           <div class="brand">Wellspring</div>
           <div class="sub">Medical Center &amp; Dispensary</div>
-          <div class="clinic-tel">Tel: +94 31 226 2462 / 031 226 2462</div>
+          <div class="clinic-tel">Tel: 031 226 2462</div>
           <div class="receipt-no">Official Receipt #${displayReceiptNo}</div>
 
           <div class="meta-row">
@@ -615,9 +615,9 @@ export function useCounterPortalLogic() {
   }, [loggedInStaff, selectedServiceId]);
 
   // Fetch Incoming Doctor Prescriptions (flag = 2) + Play Chime on New Arrival
-  const fetchPrescriptions = useCallback(async () => {
+  const fetchPrescriptions = useCallback(async (isSilent = false) => {
     if (!loggedInStaff) return;
-    setLoadingPrescriptions(true);
+    if (!isSilent) setLoadingPrescriptions(true);
     try {
       const res = await axios.get(`${API_BASE}/counter/prescriptions`);
       const list = res.data || [];
@@ -632,31 +632,63 @@ export function useCounterPortalLogic() {
       }
       knownPrescriptionIdsRef.current = incomingIds;
 
-      setPrescriptionQueue(list);
+      setPrescriptionQueue(prev => {
+        if (
+          prev.length === list.length &&
+          prev.every((item, i) => {
+            const nextItem = list[i];
+            return item.ticket_id === nextItem.ticket_id &&
+                   item.prescription === nextItem.prescription &&
+                   item.time === nextItem.time &&
+                   item.bill_status === nextItem.bill_status &&
+                   item.patient?.id === nextItem.patient?.id &&
+                   item.patient?.name === nextItem.patient?.name &&
+                   item.patient?.phone === nextItem.patient?.phone;
+          })
+        ) {
+          return prev;
+        }
+        return list;
+      });
 
       setSelectedTicketIds(prev => {
         const validExisting = prev.filter(id => list.some(item => item.ticket_id === id));
-        if (validExisting.length > 0) return validExisting;
-        return list.length > 0 ? [list[0].ticket_id] : [];
+        const finalIds = validExisting.length > 0 ? validExisting : (list.length > 0 ? [list[0].ticket_id] : []);
+        if (
+          prev.length === finalIds.length &&
+          prev.every((id, i) => id === finalIds[i])
+        ) {
+          return prev;
+        }
+        return finalIds;
       });
     } catch (err) {
       console.error('Failed to fetch prescriptions:', err.message);
     } finally {
-      setLoadingPrescriptions(false);
+      if (!isSilent) setLoadingPrescriptions(false);
     }
   }, [loggedInStaff]);
 
   // Fetch Active Doctor Waiting Queue (flag = 1)
-  const fetchActiveWaitingQueue = useCallback(async () => {
+  const fetchActiveWaitingQueue = useCallback(async (isSilent = false) => {
     if (!loggedInStaff) return;
-    setLoadingWaitingQueue(true);
+    if (!isSilent) setLoadingWaitingQueue(true);
     try {
       const res = await axios.get(`${API_BASE}/doctor/queue`);
-      setActiveWaitingQueue(res.data || []);
+      const list = res.data || [];
+      setActiveWaitingQueue(prev => {
+        if (
+          prev.length === list.length &&
+          prev.every((item, i) => item.ticket_id === list[i].ticket_id && item.patient?.id === list[i].patient?.id)
+        ) {
+          return prev;
+        }
+        return list;
+      });
     } catch (err) {
       console.error('Failed to load active waiting queue:', err.message);
     } finally {
-      setLoadingWaitingQueue(false);
+      if (!isSilent) setLoadingWaitingQueue(false);
     }
   }, [loggedInStaff]);
 
@@ -688,8 +720,8 @@ export function useCounterPortalLogic() {
     fetchTodayLog();
 
     const pollInterval = setInterval(async () => {
-      fetchPrescriptions();
-      fetchActiveWaitingQueue();
+      fetchPrescriptions(true);
+      fetchActiveWaitingQueue(true);
       try {
         const res = await axios.get(`${API_BASE}/counter/alerts`);
         const latestBell = res.data;
@@ -935,9 +967,23 @@ export function useCounterPortalLogic() {
     return prescriptionQueue.filter(item => selectedTicketIds.includes(item.ticket_id));
   }, [prescriptionQueue, selectedTicketIds]);
 
-  // Synchronize billing member selections when queue selection changes
+  const prevSelectedTicketIdsRef = useRef([]);
+
+  // Synchronize billing member selections ONLY when cashier intentionally changes queue ticket selection
   useEffect(() => {
-    if (selectedTicketIds.length === 0) {
+    const prevIds = prevSelectedTicketIdsRef.current;
+    const currIds = selectedTicketIds;
+
+    // Check if the ticket IDs are identical (e.g. background polling or no set change)
+    const areIdentical =
+      prevIds.length === currIds.length &&
+      prevIds.every((id, idx) => id === currIds[idx]);
+
+    if (areIdentical) return;
+
+    prevSelectedTicketIdsRef.current = currIds;
+
+    if (currIds.length === 0) {
       setSelectedBillingTicketIds([]);
       setCustomBillingName('');
       setBillingPhone('');
@@ -945,11 +991,25 @@ export function useCounterPortalLogic() {
       return;
     }
 
-    setSelectedBillingTicketIds(prev => {
-      const valid = prev.filter(id => selectedTicketIds.includes(id));
-      const newlyAdded = selectedTicketIds.filter(id => !valid.includes(id));
-      const next = [...valid, ...newlyAdded];
-      return next.length > 0 ? next : selectedTicketIds;
+    // Did the cashier switch to a completely different set of tickets?
+    const hasOverlap = currIds.some(id => prevIds.includes(id));
+
+    if (!hasOverlap) {
+      // Completely new selection -> initialize fresh to all selected tickets
+      setSelectedBillingTicketIds(currIds);
+      setIsManualBillName(false);
+      return;
+    }
+
+    // Cashier kept existing ticket(s) and added/removed a queue ticket
+    const genuinelyNewTickets = currIds.filter(id => !prevIds.includes(id));
+
+    setSelectedBillingTicketIds(prevBilling => {
+      // Keep existing chosen billing tickets that are still in currIds
+      const stillValid = prevBilling.filter(id => currIds.includes(id));
+      // Only append tickets that were genuinely newly added to the queue selection
+      const nextBilling = [...stillValid, ...genuinelyNewTickets];
+      return nextBilling.length > 0 ? nextBilling : currIds;
     });
   }, [selectedTicketIds]);
 
