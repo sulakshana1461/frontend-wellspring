@@ -353,7 +353,7 @@ export function useDoctorPortalLogic() {
   useEffect(() => { localStorage.setItem('wellspring_doc_theme', activeTheme); }, [activeTheme]);
 
   const [loggedInDoctor, setLoggedInDoctor] = useState(() => {
-    const saved = sessionStorage.getItem('wellspring_doctor_session');
+    const saved = sessionStorage.getItem('wellspring_doctor_session') || localStorage.getItem('wellspring_doctor_session');
     return saved ? JSON.parse(saved) : null;
   });
   const [loginUsername, setLoginUsername] = useState('');
@@ -476,6 +476,7 @@ export function useDoctorPortalLogic() {
       const res = await axios.post(`${API_BASE}/doctor/login`, { username: loginUsername, password: loginPassword });
       setLoggedInDoctor(res.data);
       sessionStorage.setItem('wellspring_doctor_session', JSON.stringify(res.data));
+      localStorage.setItem('wellspring_doctor_session', JSON.stringify(res.data));
       setLoginPassword('');
     } catch (err) {
       setLoginError(err.response?.data?.error || 'Unable to sign in. Check your credentials.');
@@ -486,6 +487,7 @@ export function useDoctorPortalLogic() {
 
   const handleDoctorLogout = () => {
     sessionStorage.removeItem('wellspring_doctor_session');
+    localStorage.removeItem('wellspring_doctor_session');
     setLoggedInDoctor(null); setSelectedPatient(null); setActiveTicketId(null);
   };
 

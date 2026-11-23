@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import { useDashboardLogic } from './dashboardLogic';
 import './App.css';
 import DoctorPortal from './DoctorPortal';
+import DoctorDailyLog from './DoctorDailyLog';
 import CounterPortal from './CounterPortal';
 import AdminPortal from './AdminPortal';
 import GRNPortal from './GRNPortal';
@@ -389,6 +390,7 @@ const HomePage = () => {
 const ROUTE_TITLES = {
   '/': 'Wellspring Health Care | Private Dispensary',
   '/doctor': 'Doctor Consultation | Wellspring',
+  '/doctor/daily-log': "Doctor's Daily Clinical Log | Wellspring",
   '/counter': 'Counter & Pharmacy | Wellspring',
   '/grn': 'Stock & GRN Portal | Wellspring',
   '/admin': 'Administration Portal | Wellspring',
@@ -414,6 +416,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/admin" element={<AdminPortal />} />
         <Route path="/doctor" element={<DoctorPortal />} />
+        <Route path="/doctor/daily-log" element={<DoctorDailyLog />} />
         <Route path="/counter" element={<CounterPortal />} />
         <Route path="/grn" element={<GRNPortal />} />
         <Route path="/queue" element={<QueueDisplay />} />

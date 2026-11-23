@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { DOCTOR_THEMES, calculateAge, formatClearDate } from './doctorLogic';
 import { API_BASE } from './apiConfig';
@@ -421,9 +422,9 @@ export function useCounterPortalLogic() {
     localStorage.setItem('wellspring_counter_theme', activeTheme);
   }, [activeTheme]);
 
-  // 2. Counter Staff Auth State
+  // 2. Counter Staff Auth State (Synchronized between sessionStorage & localStorage for multi-tab support)
   const [loggedInStaff, setLoggedInStaff] = useState(() => {
-    const saved = sessionStorage.getItem('wellspring_counter_session');
+    const saved = sessionStorage.getItem('wellspring_counter_session') || localStorage.getItem('wellspring_counter_session');
     return saved ? JSON.parse(saved) : null;
   });
   const [loginUsername, setLoginUsername] = useState('');
@@ -432,7 +433,29 @@ export function useCounterPortalLogic() {
   const [loggingIn, setLoggingIn] = useState(false);
 
   // 3. Left Sidebar Navigation: 'pharmacy' | 'today_log' | 'queue' | 'registration'
-  const [activePage, setActivePage] = useState('pharmacy');
+  // Synced with URL search params (?tab=...) so cashier can right-click and open tabs in new windows
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlTab = searchParams.get('tab');
+  const validTabs = ['pharmacy', 'today_log', 'queue', 'registration'];
+  const initialTab = validTabs.includes(urlTab) ? urlTab : 'pharmacy';
+  const [activePage, setActivePage] = useState(initialTab);
+
+  useEffect(() => {
+    const currentUrlTab = searchParams.get('tab');
+    if (validTabs.includes(currentUrlTab) && currentUrlTab !== activePage) {
+      setActivePage(currentUrlTab);
+    }
+  }, [searchParams]);
+
+  const handleSetActivePage = (newPage) => {
+    setActivePage(newPage);
+    if (newPage === 'pharmacy') {
+      searchParams.delete('tab');
+      setSearchParams(searchParams, { replace: true });
+    } else {
+      setSearchParams({ tab: newPage }, { replace: true });
+    }
+  };
 
   // 4. Incoming Prescriptions from Doctor (flag = 2) + Sound Detection Ref
   const [prescriptionQueue, setPrescriptionQueue] = useState([]);
@@ -558,6 +581,7 @@ export function useCounterPortalLogic() {
       });
       setLoggedInStaff(res.data);
       sessionStorage.setItem('wellspring_counter_session', JSON.stringify(res.data));
+      localStorage.setItem('wellspring_counter_session', JSON.stringify(res.data));
       setLoginPassword('');
     } catch (err) {
       setLoginError(err.response?.data?.error || 'Unable to sign in to Counter Console.');
@@ -568,6 +592,7 @@ export function useCounterPortalLogic() {
 
   const handleCounterLogout = () => {
     sessionStorage.removeItem('wellspring_counter_session');
+    localStorage.removeItem('wellspring_counter_session');
     setLoggedInStaff(null);
     setSelectedTicketIds([]);
     setBillItems([]);
@@ -1421,6 +1446,7 @@ export function useCounterPortalLogic() {
     handleCounterLogout,
     activePage,
     setActivePage,
+    handleSetActivePage,
     prescriptionQueue,
     loadingPrescriptions,
     fetchPrescriptions,

@@ -1,0 +1,376 @@
+/* ================= DOCTOR DAILY LOG PAGE STYLES ================= */
+
+.doc-daily-log-page {
+  min-height: 100vh;
+  background: #020617;
+  color: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-log-main-container {
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+}
+
+/* Auth Gate Container */
+.doc-auth-gate-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #020617;
+  padding: 20px;
+}
+
+.doc-auth-gate-card {
+  max-width: 460px;
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 20px;
+  padding: 36px 30px;
+  text-align: center;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+}
+
+.doc-gate-brand {
+  font-family: 'Tangerine', cursive;
+  font-size: 3.8rem;
+  font-weight: 700;
+  color: #5eead4;
+  line-height: 0.9;
+  margin-bottom: 4px;
+}
+
+.doc-gate-sub {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.doc-gate-alert {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1.5px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.doc-gate-alert h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+  color: #f87171;
+}
+
+.doc-gate-alert p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #cbd5e1;
+}
+
+.doc-gate-login-btn {
+  display: inline-block;
+  background: #0f766e;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+}
+
+.doc-gate-login-btn:hover {
+  background: #115e59;
+  transform: translateY(-1px);
+}
+
+/* KPI Summary Cards Grid */
+.doc-kpi-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.doc-kpi-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.doc-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.doc-kpi-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.doc-kpi-card.total-patients .doc-kpi-icon-wrap {
+  background: rgba(14, 165, 233, 0.15);
+  color: #38bdf8;
+}
+
+.doc-kpi-card.total-revenue .doc-kpi-icon-wrap {
+  background: rgba(45, 212, 191, 0.15);
+  color: #2dd4bf;
+}
+
+.doc-kpi-card.paid-bills .doc-kpi-icon-wrap {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+.doc-kpi-card.outdoor-bills .doc-kpi-icon-wrap {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.doc-kpi-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.doc-kpi-value {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  line-height: 1.1;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.doc-kpi-hint {
+  font-size: 0.74rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Date Picker Controls */
+.log-date-picker-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 4px 8px;
+}
+
+.date-nav-arrow-btn {
+  background: #1e293b;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.date-nav-arrow-btn:hover {
+  background: #334155;
+  color: #ffffff;
+}
+
+.date-today-btn {
+  background: #0f766e;
+  border: none;
+  color: #ffffff;
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.date-today-btn:hover {
+  background: #134e4a;
+}
+
+/* Ledger Search & Filter Inputs */
+.doc-ledger-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.doc-ledger-search-input {
+  background: #020617;
+  border: 1px solid #334155;
+  color: #ffffff;
+  padding: 8px 32px 8px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  width: 260px;
+  transition: border-color 0.2s;
+}
+
+.doc-ledger-search-input:focus {
+  outline: none;
+  border-color: #0d9488;
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.doc-status-filter-select {
+  background: #020617;
+  border: 1px solid #334155;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.doc-status-filter-select:focus {
+  outline: none;
+  border-color: #0d9488;
+}
+
+/* Sheet Table Enhancements for Clinical Ledger */
+.doc-ledger-card {
+  height: auto;
+  min-height: 540px;
+}
+
+.doc-daily-sheet-table th {
+  background: #020617 !important;
+  color: #94a3b8;
+  font-size: 0.84rem;
+  letter-spacing: 0.4px;
+}
+
+.doc-daily-sheet-table td {
+  vertical-align: middle;
+}
+
+/* Medicine Prescription Cell */
+.doc-rx-prescription-cell {
+  background: #020617;
+  border: 1.5px solid #1e293b;
+  border-left: 3px solid #0d9488;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #f1f5f9;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 480px;
+}
+
+/* Gender Tags */
+.gender-tag {
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+.gender-tag.male {
+  background: rgba(14, 165, 233, 0.15);
+  color: #38bdf8;
+}
+
+.gender-tag.female {
+  background: rgba(236, 72, 153, 0.15);
+  color: #f472b6;
+}
+
+/* Status Pills */
+.status-pill.waiting {
+  background: rgba(148, 163, 184, 0.18);
+  color: #cbd5e1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+/* Spinner */
+.doc-pulse-spinner {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto;
+  border: 3px solid #1e293b;
+  border-top-color: #0d9488;
+  border-radius: 50%;
+  animation: docSpinner 0.8s linear infinite;
+}
+
+@keyframes docSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Daily Log Nav Button on Doctor Portal Header */
+.doc-nav-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #0f766e;
+  border: 1.5px solid #14b8a6;
+  color: #ffffff !important;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  padding: 8px 14px;
+  border-radius: 10px;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25);
+}
+
+.doc-nav-tab-btn:hover {
+  background: #115e59;
+  border-color: #2dd4bf;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.4);
+}

@@ -15,10 +15,10 @@ axios.interceptors.request.use(
         return config;
       }
 
-      const adminSession = JSON.parse(sessionStorage.getItem('wellspring_admin_session') || '{}');
-      const docSession = JSON.parse(sessionStorage.getItem('wellspring_doctor_session') || '{}');
-      const counterSession = JSON.parse(sessionStorage.getItem('wellspring_counter_session') || '{}');
-      const grnSession = JSON.parse(sessionStorage.getItem('wellspring_grn_session') || '{}');
+      const adminSession = JSON.parse(sessionStorage.getItem('wellspring_admin_session') || localStorage.getItem('wellspring_admin_session') || '{}');
+      const docSession = JSON.parse(sessionStorage.getItem('wellspring_doctor_session') || localStorage.getItem('wellspring_doctor_session') || '{}');
+      const counterSession = JSON.parse(sessionStorage.getItem('wellspring_counter_session') || localStorage.getItem('wellspring_counter_session') || '{}');
+      const grnSession = JSON.parse(sessionStorage.getItem('wellspring_grn_session') || localStorage.getItem('wellspring_grn_session') || '{}');
 
       // Context-aware token resolution based on active URL
       const path = typeof window !== 'undefined' ? (window.location.pathname || '') : '';

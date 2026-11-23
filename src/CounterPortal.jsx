@@ -22,6 +22,7 @@ export default function CounterPortal() {
     handleCounterLogout,
     activePage,
     setActivePage,
+    handleSetActivePage,
     prescriptionQueue,
     loadingPrescriptions,
     fetchPrescriptions,
@@ -291,41 +292,57 @@ export default function CounterPortal() {
           </div>
 
           <nav className="counter-nav-stack">
-            <button
-              type="button"
+            <Link
+              to="/counter"
               className={`counter-nav-btn ${activePage === 'pharmacy' ? 'active' : ''}`}
-              onClick={() => setActivePage('pharmacy')}
+              onClick={(e) => {
+                if (!e.ctrlKey && !e.metaKey && e.button === 0) {
+                  handleSetActivePage('pharmacy');
+                }
+              }}
             >
               <span>1. Pharmacy &amp; POS</span>
               <span className="nav-badge-pill">{prescriptionQueue.length} Waiting</span>
-            </button>
+            </Link>
 
-            <button
-              type="button"
+            <Link
+              to="/counter?tab=queue"
               className={`counter-nav-btn ${activePage === 'queue' ? 'active' : ''}`}
-              onClick={() => setActivePage('queue')}
+              onClick={(e) => {
+                if (!e.ctrlKey && !e.metaKey && e.button === 0) {
+                  handleSetActivePage('queue');
+                }
+              }}
             >
               <span>2. Active Queue</span>
               <span className="nav-badge-pill">{activeWaitingQueue.length} In Queue</span>
-            </button>
+            </Link>
 
-            <button
-              type="button"
+            <Link
+              to="/counter?tab=registration"
               className={`counter-nav-btn ${activePage === 'registration' ? 'active' : ''}`}
-              onClick={() => setActivePage('registration')}
+              onClick={(e) => {
+                if (!e.ctrlKey && !e.metaKey && e.button === 0) {
+                  handleSetActivePage('registration');
+                }
+              }}
             >
               <span>3. Registration</span>
               <span className="nav-badge-pill">+ New</span>
-            </button>
+            </Link>
 
-            <button
-              type="button"
+            <Link
+              to="/counter?tab=today_log"
               className={`counter-nav-btn ${activePage === 'today_log' ? 'active' : ''}`}
-              onClick={() => setActivePage('today_log')}
+              onClick={(e) => {
+                if (!e.ctrlKey && !e.metaKey && e.button === 0) {
+                  handleSetActivePage('today_log');
+                }
+              }}
             >
               <span>4. Today&apos;s Log</span>
               <span className="nav-badge-pill">{todayLogList.length} Today</span>
-            </button>
+            </Link>
           </nav>
 
           <div className="counter-sidebar-footer">
