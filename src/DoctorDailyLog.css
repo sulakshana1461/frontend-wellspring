@@ -1,11 +1,145 @@
+/* Load Fonts: 'Tangerine' for Wellspring brand, 'Plus Jakarta Sans' & 'Inter' for clinical UI */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Tangerine:wght@700&display=swap');
+
 /* ================= DOCTOR DAILY LOG PAGE STYLES ================= */
 
 .doc-daily-log-page {
   min-height: 100vh;
   background: #020617;
   color: #f1f5f9;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   display: flex;
   flex-direction: column;
+}
+
+/* ================= TOP HEADER BAR ================= */
+.doc-log-topbar {
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1.5px solid #1e293b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+.doc-log-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.doc-log-logo-script {
+  font-family: 'Tangerine', cursive;
+  font-size: 3.4rem;
+  font-weight: 700;
+  color: #2dd4bf;
+  line-height: 0.82;
+  text-shadow: 0 0 18px rgba(45, 212, 191, 0.3);
+  display: block;
+  user-select: none;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.doc-log-logo-script:hover {
+  color: #5eead4;
+  text-shadow: 0 0 24px rgba(94, 234, 212, 0.5);
+}
+
+.doc-log-header-divider {
+  width: 1.5px;
+  height: 40px;
+  background: #334155;
+  border-radius: 2px;
+}
+
+.doc-log-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.doc-log-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.doc-log-heading {
+  margin: 0;
+  font-size: 1.28rem;
+  font-weight: 800;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.doc-log-badge {
+  background: rgba(13, 148, 136, 0.2);
+  border: 1px solid rgba(20, 184, 166, 0.5);
+  color: #5eead4;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2.5px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.doc-log-sub {
+  font-size: 0.84rem;
+  color: #94a3b8;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doc-log-doctor-name {
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
+.doc-log-bullet {
+  color: #475569;
+  font-size: 0.8rem;
+}
+
+.doc-log-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.doc-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 9px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+}
+
+.doc-back-btn:hover {
+  background: #334155;
+  color: #ffffff;
+  border-color: #475569;
+  transform: translateY(-1px);
 }
 
 .doc-log-main-container {
@@ -373,4 +507,44 @@
   border-color: #2dd4bf;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(15, 118, 110, 0.4);
+}
+
+/* Responsive Top Bar Layout */
+@media (max-width: 1100px) {
+  .doc-log-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+  }
+
+  .doc-log-actions-group {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .doc-log-brand-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .doc-log-header-divider {
+    display: none;
+  }
+
+  .log-date-picker-wrap {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .doc-back-btn,
+  .csv-btn {
+    flex: 1;
+    justify-content: center;
+  }
 }

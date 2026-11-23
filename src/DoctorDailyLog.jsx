@@ -95,8 +95,11 @@ export default function DoctorDailyLog() {
       const prescription = (row.prescription || '').toLowerCase();
       const ticketNum = String(row.ticket_number || '').toLowerCase();
       const remarks = (row.remarks || '').toLowerCase();
+      const isMale = row.gender === 1 || String(row.gender).toLowerCase() === 'male' || String(row.gender) === '1';
+      const isFemale = row.gender === 0 || row.gender === 2 || String(row.gender).toLowerCase() === 'female' || String(row.gender) === '0';
+      const genderStr = isMale ? 'male' : isFemale ? 'female' : '';
 
-      return name.includes(q) || phone.includes(q) || prescription.includes(q) || ticketNum.includes(q) || remarks.includes(q);
+      return name.includes(q) || phone.includes(q) || prescription.includes(q) || ticketNum.includes(q) || remarks.includes(q) || (genderStr && genderStr === q);
     });
   }, [dailyData.records, searchQuery, statusFilter]);
 
@@ -125,7 +128,9 @@ export default function DoctorDailyLog() {
         ? new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', hour12: true }).format(new Date(row.time))
         : '-';
 
-      const genderStr = row.gender === 1 ? 'Male' : row.gender === 2 ? 'Female' : 'Not Set';
+      const isMale = row.gender === 1 || String(row.gender).toLowerCase() === 'male' || String(row.gender) === '1';
+      const isFemale = row.gender === 0 || row.gender === 2 || String(row.gender).toLowerCase() === 'female' || String(row.gender) === '0';
+      const genderStr = isMale ? 'Male' : isFemale ? 'Female' : 'Not Specified';
       const ageStr = row.birth_date ? calculateAge(row.birth_date) : '-';
       const statusStr = row.bill_status === 'COMPLETED_BILL' ? 'Paid Bill' : row.bill_status === 'OUTDOOR_RX' ? 'Outdoor Medicine' : row.bill_status || 'Pending';
       const cleanRx = (row.prescription || '').replace(/"/g, '""');
@@ -193,19 +198,26 @@ export default function DoctorDailyLog() {
       )}
 
       {/* TOP HEADER BAR (MATCHING ADMIN & DOCTOR PORTAL) */}
-      <header className="doc-top-bar">
-        <div className="doc-header-left">
-          <div className="doc-brand-title">Wellspring</div>
-          <div className="doc-header-divider"></div>
-          <div>
-            <div className="doc-header-heading">Doctor's Daily Clinical Log</div>
-            <div className="doc-header-sub">
-              {doctorSession.name || 'Dr. Upul Jayathilaka'} • Daily Consultations &amp; Prescriptions Ledger
+      <header className="doc-log-topbar">
+        <div className="doc-log-brand-group">
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <span className="doc-log-logo-script">Wellspring</span>
+          </Link>
+          <div className="doc-log-header-divider"></div>
+          <div className="doc-log-title-block">
+            <div className="doc-log-title-row">
+              <h1 className="doc-log-heading">Doctor's Daily Clinical Log</h1>
+              <span className="doc-log-badge">CONFIDENTIAL</span>
+            </div>
+            <div className="doc-log-sub">
+              <span className="doc-log-doctor-name">{doctorSession.name || 'Dr. Upul Jayathilaka'}</span>
+              <span className="doc-log-bullet">•</span>
+              <span>Daily Consultations &amp; Prescriptions Ledger</span>
             </div>
           </div>
         </div>
 
-        <div className="doc-header-right">
+        <div className="doc-log-actions-group">
           <div className="log-date-picker-wrap">
             <button
               type="button"
@@ -247,7 +259,7 @@ export default function DoctorDailyLog() {
             📥 Export CSV
           </button>
 
-          <Link to="/doctor" className="doc-logout-btn" style={{ textDecoration: 'none' }}>
+          <Link to="/doctor" className="doc-back-btn">
             ← Back to Console
           </Link>
         </div>
@@ -421,6 +433,8 @@ export default function DoctorDailyLog() {
                     const isPaid = row.bill_status === 'COMPLETED_BILL';
                     const isWaiting = row.bill_status === 'WAITING' || row.bill_status === 'AT_COUNTER';
                     const ageText = row.birth_date ? calculateAge(row.birth_date) : '-';
+                    const isMale = row.gender === 1 || String(row.gender).toLowerCase() === 'male' || String(row.gender) === '1';
+                    const isFemale = row.gender === 0 || row.gender === 2 || String(row.gender).toLowerCase() === 'female' || String(row.gender) === '0';
 
                     return (
                       <tr key={row.id || idx}>
@@ -443,9 +457,9 @@ export default function DoctorDailyLog() {
                           {row.patient_phone || <span style={{ color: '#64748b' }}>—</span>}
                         </td>
                         <td>
-                          {row.gender === 1 ? (
+                          {isMale ? (
                             <span className="gender-tag male">Male</span>
-                          ) : row.gender === 2 ? (
+                          ) : isFemale ? (
                             <span className="gender-tag female">Female</span>
                           ) : (
                             <span style={{ color: '#64748b' }}>—</span>
