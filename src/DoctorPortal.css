@@ -597,9 +597,11 @@
   cursor: pointer;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   transition: all 0.2s ease;
+  height: auto;
+  min-height: 56px;
 }
 
 .patient-list-item:hover {
@@ -619,17 +621,18 @@
   flex-direction: column;
   gap: 4px;
   min-width: 0;
+  flex: 1;
 }
 
-/* Fix for Pixelated Patient Name Font */
+/* Full Patient Name Display without Truncation or Dots */
 .patient-item-name {
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: #0f172a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.35;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -694,6 +697,8 @@
   padding: 6px 12px;
   border-radius: 10px;
   flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
 }
 
 .sidebar-search-input,

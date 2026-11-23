@@ -383,6 +383,20 @@ export function useCounterPortalLogic() {
   const [searchingQueuePatients, setSearchingQueuePatients] = useState(false);
   const [addingToQueueId, setAddingToQueueId] = useState(null);
 
+  // 11B. Patient Details & Quick Demographic Edit State for Counter
+  const [selectedQueuePatient, setSelectedQueuePatient] = useState(null);
+  const [isPatientDetailMinimized, setIsPatientDetailMinimized] = useState(false);
+  const [isEditingPatient, setIsEditingPatient] = useState(false);
+  const [savingPatientDetails, setSavingPatientDetails] = useState(false);
+  const [patientEditForm, setPatientEditForm] = useState({
+    name: '',
+    birth_date: '',
+    phone: '',
+    id_number: '',
+    gender: '1',
+    married: '0'
+  });
+
   // 12. Page 4: Counter Full Registration Form State
   const [regForm, setRegForm] = useState({
     name: '',
@@ -612,6 +626,97 @@ export function useCounterPortalLogic() {
       await fetchActiveWaitingQueue();
     } catch {
       showToast('Failed to remove patient from queue.', 'error');
+    }
+  };
+
+  // Select Patient for Quick Demographic View & Edit in Counter
+  const handleSelectPatientForDetail = (patient) => {
+    if (!patient) return;
+    setSelectedQueuePatient(patient);
+    setPatientEditForm({
+      name: patient.name || '',
+      birth_date: patient.birth_date ? patient.birth_date.substring(0, 10) : '',
+      phone: patient.phone || '',
+      id_number: patient.id_number || '',
+      gender: String(patient.gender !== undefined && patient.gender !== null ? patient.gender : '1'),
+      married: String(patient.married !== undefined && patient.married !== null ? patient.married : '0')
+    });
+    setIsEditingPatient(false);
+    setIsPatientDetailMinimized(false);
+  };
+
+  const handleStartEditPatient = () => {
+    if (!selectedQueuePatient) return;
+    setPatientEditForm({
+      name: selectedQueuePatient.name || '',
+      birth_date: selectedQueuePatient.birth_date ? selectedQueuePatient.birth_date.substring(0, 10) : '',
+      phone: selectedQueuePatient.phone || '',
+      id_number: selectedQueuePatient.id_number || '',
+      gender: String(selectedQueuePatient.gender !== undefined && selectedQueuePatient.gender !== null ? selectedQueuePatient.gender : '1'),
+      married: String(selectedQueuePatient.married !== undefined && selectedQueuePatient.married !== null ? selectedQueuePatient.married : '0')
+    });
+    setIsEditingPatient(true);
+    setIsPatientDetailMinimized(false);
+  };
+
+  const handleCancelEditPatient = () => {
+    if (selectedQueuePatient) {
+      setPatientEditForm({
+        name: selectedQueuePatient.name || '',
+        birth_date: selectedQueuePatient.birth_date ? selectedQueuePatient.birth_date.substring(0, 10) : '',
+        phone: selectedQueuePatient.phone || '',
+        id_number: selectedQueuePatient.id_number || '',
+        gender: String(selectedQueuePatient.gender !== undefined && selectedQueuePatient.gender !== null ? selectedQueuePatient.gender : '1'),
+        married: String(selectedQueuePatient.married !== undefined && selectedQueuePatient.married !== null ? selectedQueuePatient.married : '0')
+      });
+    }
+    setIsEditingPatient(false);
+  };
+
+  const handleSavePatientDemographics = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!selectedQueuePatient || !selectedQueuePatient.id) return;
+
+    if (!patientEditForm.name.trim()) {
+      return showToast('Patient full name is required.', 'error');
+    }
+    if (!patientEditForm.phone.trim()) {
+      return showToast('Patient phone number is required.', 'error');
+    }
+
+    setSavingPatientDetails(true);
+    try {
+      const res = await axios.put(`${API_BASE}/patients/${selectedQueuePatient.id}/demographics`, {
+        name: patientEditForm.name.trim(),
+        birth_date: patientEditForm.birth_date || null,
+        phone: patientEditForm.phone.trim(),
+        id_number: patientEditForm.id_number ? patientEditForm.id_number.trim() : '',
+        gender: Number(patientEditForm.gender),
+        married: Number(patientEditForm.married)
+      });
+
+      const updated = res.data.patient || {
+        ...selectedQueuePatient,
+        name: patientEditForm.name.trim(),
+        birth_date: patientEditForm.birth_date || null,
+        phone: patientEditForm.phone.trim(),
+        id_number: patientEditForm.id_number ? patientEditForm.id_number.trim() : '',
+        gender: Number(patientEditForm.gender),
+        married: Number(patientEditForm.married)
+      };
+
+      setSelectedQueuePatient(updated);
+      setIsEditingPatient(false);
+      showToast(`Updated details for ${updated.name} successfully!`);
+
+      await fetchActiveWaitingQueue();
+      setQueueSearchResults(prev =>
+        prev.map(p => (p.id === updated.id ? { ...p, ...updated } : p))
+      );
+    } catch (err) {
+      showToast(err.response?.data?.error || 'Failed to update patient details.', 'error');
+    } finally {
+      setSavingPatientDetails(false);
     }
   };
 
@@ -1200,6 +1305,20 @@ export function useCounterPortalLogic() {
     addingToQueueId,
     handleAddPatientToQueue,
     handleRemoveFromActiveQueue,
+    // Counter Patient Details & Quick Demographic Edit
+    selectedQueuePatient,
+    setSelectedQueuePatient,
+    isPatientDetailMinimized,
+    setIsPatientDetailMinimized,
+    isEditingPatient,
+    setIsEditingPatient,
+    savingPatientDetails,
+    patientEditForm,
+    setPatientEditForm,
+    handleSelectPatientForDetail,
+    handleStartEditPatient,
+    handleCancelEditPatient,
+    handleSavePatientDemographics,
     regForm,
     setRegForm,
     registeringPatient,

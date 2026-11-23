@@ -110,6 +110,19 @@ export default function CounterPortal() {
     addingToQueueId,
     handleAddPatientToQueue,
     handleRemoveFromActiveQueue,
+    selectedQueuePatient,
+    setSelectedQueuePatient,
+    isPatientDetailMinimized,
+    setIsPatientDetailMinimized,
+    isEditingPatient,
+    setIsEditingPatient,
+    savingPatientDetails,
+    patientEditForm,
+    setPatientEditForm,
+    handleSelectPatientForDetail,
+    handleStartEditPatient,
+    handleCancelEditPatient,
+    handleSavePatientDemographics,
     regForm,
     setRegForm,
     registeringPatient,
@@ -854,8 +867,14 @@ export default function CounterPortal() {
                 ) : (
                   queueSearchResults.map((pat) => {
                     const alreadyInQueue = activeWaitingQueue.some((q) => q.patient?.id === pat.id);
+                    const isSelected = selectedQueuePatient?.id === pat.id;
                     return (
-                      <div key={pat.id} className="queue-patient-result-card">
+                      <div
+                        key={pat.id}
+                        className={`queue-patient-result-card ${isSelected ? 'selected' : ''}`}
+                        onClick={() => handleSelectPatientForDetail(pat)}
+                        title="Click to view & edit patient details in the panel on the right"
+                      >
                         <div className="patient-item-info">
                           <div className="patient-item-name">{pat.name}</div>
                           <div className="patient-item-sub">
@@ -870,7 +889,10 @@ export default function CounterPortal() {
                           type="button"
                           disabled={alreadyInQueue || addingToQueueId === pat.id}
                           className="add-to-queue-btn"
-                          onClick={() => handleAddPatientToQueue(pat)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddPatientToQueue(pat);
+                          }}
                         >
                           {alreadyInQueue
                             ? '✓ In Queue'
@@ -896,69 +918,298 @@ export default function CounterPortal() {
               </div>
             </section>
 
-            {/* RIGHT WIDE COLUMN: TODAY'S ACTIVE WAITING QUEUE FOR DOCTOR */}
-            <main className="counter-active-queue-card">
-              <div className="section-card-header" style={{ marginBottom: '16px', paddingBottom: '14px' }}>
-                <div>
-                  <h2 className="section-card-title" style={{ fontSize: '1.3rem' }}>
-                    Today&apos;s Active Waiting Queue (Doctor Room)
-                  </h2>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '0.86rem', color: '#64748b', fontWeight: 600 }}>
-                    Strictly showing patients registered for <strong>today only</strong>. Old unfinished tickets from past days are automatically cleared.
-                  </p>
-                </div>
-
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <span className="queue-count-pill" style={{ fontSize: '0.9rem', padding: '7px 14px' }}>
-                    {activeWaitingQueue.length} Waiting Today
-                  </span>
-                  <button type="button" onClick={fetchActiveWaitingQueue} className="refresh-mini-btn" style={{ height: '38px' }}>
-                    {loadingWaitingQueue ? 'Loading...' : '↻ Refresh'}
-                  </button>
-                </div>
-              </div>
-
-              <div className="active-queue-list-scroll">
-                {activeWaitingQueue.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '70px 24px', color: '#64748b' }}>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>
-                      Active Queue is Currently Empty (0 Waiting)
-                    </h3>
-                    <p style={{ fontSize: '0.95rem', maxWidth: '460px', margin: '0 auto', lineHeight: '1.6' }}>
-                      Search for an existing patient in the middle column and click <strong>+ Add to Queue</strong>, or register a new patient in the <strong>Registration</strong> tab.
-                    </p>
+            {/* RIGHT WIDE COLUMN: TODAY'S ACTIVE WAITING QUEUE + MINIMIZABLE PATIENT DESK */}
+            <div className="counter-queue-right-column">
+              {/* TOP MINIMIZABLE PATIENT DETAILS & QUICK EDIT SECTION */}
+              <section className={`counter-patient-detail-card ${isPatientDetailMinimized ? 'is-minimized' : ''}`}>
+                <div className="diagnostic-header-bar" style={{ padding: '12px 18px' }}>
+                  <div className="diagnostic-title-area">
+                    <div className="diagnostic-badge-row">
+                      <span className="diagnostic-live-indicator" style={{ background: '#0f766e', color: '#ffffff' }}>
+                        PATIENT DESK
+                      </span>
+                      {selectedQueuePatient && (
+                        <span className="diagnostic-patient-tag" style={{ background: '#e0f2fe', color: '#0369a1', borderColor: '#bae6fd' }}>
+                          {selectedQueuePatient.name} #{selectedQueuePatient.id}
+                        </span>
+                      )}
+                      {isPatientDetailMinimized && (
+                        <span className="diag-minimized-pill">Desk Minimized</span>
+                      )}
+                    </div>
+                    <h2 className="diagnostic-main-title" style={{ fontSize: '1.12rem', margin: '2px 0 0 0' }}>
+                      Patient Details &amp; Quick Demographic Edit
+                    </h2>
                   </div>
-                ) : (
-                  activeWaitingQueue.map((item, index) => (
-                    <div key={item.ticket_id} className="active-queue-row-card">
-                      <div className="active-queue-left">
-                        <div className="active-queue-number-circle" title="Arrival Queue Order">
-                          #{index + 1}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '1.12rem', fontWeight: 800, color: '#0f172a' }}>
-                            {item.patient.name}
-                          </div>
-                          <div style={{ fontSize: '0.86rem', fontWeight: 600, color: '#475569', marginTop: '3px' }}>
-                            {calculateAge(item.patient.birth_date)} • DOB: {formatClearDate(item.patient.birth_date)} • Tel: {item.patient.phone || 'No Phone'}
-                            {item.patient.id_number ? ` • NIC: ${item.patient.id_number}` : ''}
-                          </div>
-                        </div>
-                      </div>
 
+                  <div className="diagnostic-header-controls">
+                    {selectedQueuePatient && !isEditingPatient && (
                       <button
                         type="button"
-                        className="cancel-queue-btn"
-                        onClick={() => handleRemoveFromActiveQueue(item.ticket_id, item.patient.name)}
-                        title="Remove patient if they walked out or cancelled before seeing the doctor"
+                        className="walkin-submit-btn"
+                        style={{ padding: '6px 14px', fontSize: '0.82rem', height: 'auto', background: '#0f766e' }}
+                        onClick={() => handleStartEditPatient()}
                       >
-                        ✕ Cancel / Left Clinic
+                        ✏️ Edit Details
+                      </button>
+                    )}
+                    {selectedQueuePatient && (
+                      <button
+                        type="button"
+                        className="edit-toggle-btn"
+                        style={{ padding: '6px 10px', fontSize: '0.8rem' }}
+                        onClick={() => {
+                          setSelectedQueuePatient(null);
+                          setIsEditingPatient(false);
+                        }}
+                        title="Deselect patient profile"
+                      >
+                        ✕ Close
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className={`diag-toggle-collapse-btn ${isPatientDetailMinimized ? 'active-minimized' : ''}`}
+                      onClick={() => setIsPatientDetailMinimized(prev => !prev)}
+                      title={isPatientDetailMinimized ? 'Maximize Desk to view & edit details' : 'Minimize Desk to compact bar'}
+                    >
+                      {isPatientDetailMinimized ? '⤢ Expand Desk' : '— Minimize'}
+                    </button>
+                  </div>
+                </div>
+
+                {!isPatientDetailMinimized && !selectedQueuePatient && (
+                  <div style={{ padding: '16px 20px', textAlign: 'center', background: '#f8fafc', color: '#64748b' }}>
+                    <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>
+                      👆 Click any patient&apos;s name in <strong>Find Patient</strong> or <strong>Today&apos;s Active Queue</strong> below to view their demographic profile, update phone number, birthday, or correct details.
+                    </p>
+                  </div>
+                )}
+
+                {!isPatientDetailMinimized && selectedQueuePatient && !isEditingPatient && (
+                  <div className="patient-detail-grid">
+                    <div className="patient-detail-block">
+                      <span className="patient-detail-label">Full Name</span>
+                      <div className="patient-detail-val primary-name">{selectedQueuePatient.name}</div>
+                    </div>
+
+                    <div className="patient-detail-block">
+                      <span className="patient-detail-label">Birthday &amp; Age</span>
+                      <div className="patient-detail-val">
+                        {formatClearDate(selectedQueuePatient.birth_date)} ({calculateAge(selectedQueuePatient.birth_date)})
+                      </div>
+                    </div>
+
+                    <div className="patient-detail-block">
+                      <span className="patient-detail-label">Phone Number</span>
+                      <div className="patient-detail-val">
+                        {selectedQueuePatient.phone ? (
+                          <a href={`tel:${selectedQueuePatient.phone}`} style={{ color: '#0f766e', textDecoration: 'none', fontWeight: 800 }}>
+                            📞 {selectedQueuePatient.phone}
+                          </a>
+                        ) : (
+                          <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>No Phone Registered</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="patient-detail-block">
+                      <span className="patient-detail-label">NIC / ID Number</span>
+                      <div className="patient-detail-val">
+                        {selectedQueuePatient.id_number || (
+                          <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Not Provided</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="patient-detail-block">
+                      <span className="patient-detail-label">Gender</span>
+                      <div className="patient-detail-val">
+                        {selectedQueuePatient.gender === 1 ? 'Male 👨' : selectedQueuePatient.gender === 0 ? 'Female 👩' : 'Not Specified'}
+                      </div>
+                    </div>
+
+                    <div className="patient-detail-block">
+                      <span className="patient-detail-label">Marital Status</span>
+                      <div className="patient-detail-val">
+                        {selectedQueuePatient.married === 1 ? 'Married' : 'Single / Unmarried'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {!isPatientDetailMinimized && selectedQueuePatient && isEditingPatient && (
+                  <form className="patient-quick-edit-form" onSubmit={handleSavePatientDemographics}>
+                    <div className="patient-edit-form-grid">
+                      <div className="walkin-form-group">
+                        <label className="walkin-label">Full Name *</label>
+                        <input
+                          type="text"
+                          className="walkin-input"
+                          value={patientEditForm.name}
+                          onChange={(e) => setPatientEditForm({ ...patientEditForm, name: e.target.value })}
+                          required
+                          autoFocus
+                        />
+                      </div>
+
+                      <div className="walkin-form-group">
+                        <label className="walkin-label">
+                          Date of Birth {patientEditForm.birth_date ? `(${calculateAge(patientEditForm.birth_date)})` : ''}
+                        </label>
+                        <input
+                          type="date"
+                          className="walkin-input"
+                          value={patientEditForm.birth_date}
+                          onChange={(e) => setPatientEditForm({ ...patientEditForm, birth_date: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="walkin-form-group">
+                        <label className="walkin-label">Phone Number *</label>
+                        <input
+                          type="text"
+                          className="walkin-input"
+                          value={patientEditForm.phone}
+                          onChange={(e) => setPatientEditForm({ ...patientEditForm, phone: e.target.value })}
+                          placeholder="e.g., 0714347804"
+                          required
+                        />
+                      </div>
+
+                      <div className="walkin-form-group">
+                        <label className="walkin-label">NIC / National ID</label>
+                        <input
+                          type="text"
+                          className="walkin-input"
+                          value={patientEditForm.id_number}
+                          onChange={(e) => setPatientEditForm({ ...patientEditForm, id_number: e.target.value })}
+                          placeholder="e.g., 199313500240"
+                        />
+                      </div>
+
+                      <div className="walkin-form-group">
+                        <label className="walkin-label">Gender</label>
+                        <select
+                          className="walkin-input"
+                          value={patientEditForm.gender}
+                          onChange={(e) => setPatientEditForm({ ...patientEditForm, gender: e.target.value })}
+                        >
+                          <option value="1">Male</option>
+                          <option value="0">Female</option>
+                        </select>
+                      </div>
+
+                      <div className="walkin-form-group">
+                        <label className="walkin-label">Marital Status</label>
+                        <select
+                          className="walkin-input"
+                          value={patientEditForm.married}
+                          onChange={(e) => setPatientEditForm({ ...patientEditForm, married: e.target.value })}
+                        >
+                          <option value="0">Single / Unmarried</option>
+                          <option value="1">Married</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="patient-edit-actions-row">
+                      <button
+                        type="button"
+                        className="edit-toggle-btn"
+                        onClick={handleCancelEditPatient}
+                        disabled={savingPatientDetails}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="walkin-submit-btn"
+                        style={{ height: 'auto', padding: '9px 20px', background: '#0f766e' }}
+                        disabled={savingPatientDetails}
+                      >
+                        {savingPatientDetails ? 'Saving...' : '💾 Save Changes'}
                       </button>
                     </div>
-                  ))
+                  </form>
                 )}
-              </div>
-            </main>
+              </section>
+
+              {/* LIVE QUEUE CARD */}
+              <main className="counter-active-queue-card">
+                <div className="section-card-header" style={{ marginBottom: '16px', paddingBottom: '14px' }}>
+                  <div>
+                    <h2 className="section-card-title" style={{ fontSize: '1.3rem' }}>
+                      Today&apos;s Active Waiting Queue (Doctor Room)
+                    </h2>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '0.86rem', color: '#64748b', fontWeight: 600 }}>
+                      Strictly showing patients registered for <strong>today only</strong>. Old unfinished tickets from past days are automatically cleared.
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <span className="queue-count-pill" style={{ fontSize: '0.9rem', padding: '7px 14px' }}>
+                      {activeWaitingQueue.length} Waiting Today
+                    </span>
+                    <button type="button" onClick={fetchActiveWaitingQueue} className="refresh-mini-btn" style={{ height: '38px' }}>
+                      {loadingWaitingQueue ? 'Loading...' : '↻ Refresh'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="active-queue-list-scroll">
+                  {activeWaitingQueue.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '70px 24px', color: '#64748b' }}>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>
+                        Active Queue is Currently Empty (0 Waiting)
+                      </h3>
+                      <p style={{ fontSize: '0.95rem', maxWidth: '460px', margin: '0 auto', lineHeight: '1.6' }}>
+                        Search for an existing patient in the middle column and click <strong>+ Add to Queue</strong>, or register a new patient in the <strong>Registration</strong> tab.
+                      </p>
+                    </div>
+                  ) : (
+                    activeWaitingQueue.map((item, index) => {
+                      const isSelected = selectedQueuePatient?.id === item.patient?.id;
+                      return (
+                        <div
+                          key={item.ticket_id}
+                          className={`active-queue-row-card ${isSelected ? 'selected' : ''}`}
+                          onClick={() => handleSelectPatientForDetail(item.patient)}
+                          title="Click to view & edit patient details in the panel above"
+                        >
+                          <div className="active-queue-left">
+                            <div className="active-queue-number-circle" title="Arrival Queue Order">
+                              #{index + 1}
+                            </div>
+                            <div className="active-queue-info-wrap">
+                              <div className="active-queue-name">
+                                {item.patient.name}
+                              </div>
+                              <div style={{ fontSize: '0.86rem', fontWeight: 600, color: '#475569', marginTop: '3px' }}>
+                                {calculateAge(item.patient.birth_date)} • DOB: {formatClearDate(item.patient.birth_date)} • Tel: {item.patient.phone || 'No Phone'}
+                                {item.patient.id_number ? ` • NIC: ${item.patient.id_number}` : ''}
+                              </div>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            className="cancel-queue-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveFromActiveQueue(item.ticket_id, item.patient.name);
+                            }}
+                            title="Remove patient if they walked out or cancelled before seeing the doctor"
+                          >
+                            ✕ Cancel / Left Clinic
+                          </button>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </main>
+            </div>
           </>
         )}
 
