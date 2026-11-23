@@ -29,6 +29,21 @@ export default function CounterPortal() {
     handleSelectSinglePrescription,
     handleToggleFamilyMember,
     activePrescriptionCards,
+    selectedBillingTicketIds,
+    setSelectedBillingTicketIds,
+    customBillingName,
+    setCustomBillingName,
+    billingPhone,
+    setBillingPhone,
+    isManualBillName,
+    setIsManualBillName,
+    handleToggleBillingMember,
+    handleSelectAllFamilyMembers,
+    handleSelectOnlyMember,
+    isEditingBillModalName,
+    setIsEditingBillModalName,
+    billModalNameInput,
+    setBillModalNameInput,
     customWalkInName,
     setCustomWalkInName,
     customWalkInPhone,
@@ -425,6 +440,141 @@ export default function CounterPortal() {
                         <div className="pos-rx-mini-text">{card.prescription}</div>
                       </div>
                     ))}
+                  </div>
+                )}
+
+                {activePrescriptionCards.length > 1 && (
+                  <div className="family-bill-selection-box">
+                    <div className="family-bill-header">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '1.15rem' }}>👨‍👩‍👧‍👦</span>
+                        <strong style={{ fontSize: '0.98rem', color: '#0f172a' }}>Family Bill – Choose Name(s) for Receipt &amp; Insurance</strong>
+                        <span className="family-badge">Insurance Claim Ready</span>
+                      </div>
+                      <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                        Select patient(s) whose name will appear on the printed receipt
+                      </span>
+                    </div>
+
+                    <div className="family-bill-presets">
+                      <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155' }}>Quick Choice:</span>
+                      <button
+                        type="button"
+                        className={`family-preset-pill ${selectedBillingTicketIds.length === activePrescriptionCards.length && !isManualBillName ? 'active' : ''}`}
+                        onClick={handleSelectAllFamilyMembers}
+                      >
+                        All Members Combined
+                      </button>
+                      {activePrescriptionCards.map((card) => {
+                        const isOnlyThis = selectedBillingTicketIds.length === 1 && selectedBillingTicketIds[0] === card.ticket_id && !isManualBillName;
+                        return (
+                          <button
+                            key={`preset-${card.ticket_id}`}
+                            type="button"
+                            className={`family-preset-pill ${isOnlyThis ? 'active' : ''}`}
+                            onClick={() => handleSelectOnlyMember(card)}
+                          >
+                            Only {card.patient.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="family-members-toggle-row">
+                      <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155' }}>Include in Bill:</span>
+                      {activePrescriptionCards.map((card) => {
+                        const isIncluded = selectedBillingTicketIds.includes(card.ticket_id);
+                        return (
+                          <label key={`check-${card.ticket_id}`} className={`family-checkbox-label ${isIncluded ? 'selected' : ''}`}>
+                            <input
+                              type="checkbox"
+                              checked={isIncluded}
+                              onChange={() => handleToggleBillingMember(card.ticket_id)}
+                            />
+                            <span className="member-name-text">{card.patient.name}</span>
+                            {card.patient.phone && (
+                              <span
+                                className="member-phone-chip"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setBillingPhone(card.patient.phone);
+                                }}
+                                title="Click to use this phone on the bill"
+                              >
+                                📞 {card.patient.phone}
+                              </span>
+                            )}
+                          </label>
+                        );
+                      })}
+                    </div>
+
+                    <div className="family-custom-name-row">
+                      <div style={{ flex: '1 1 280px' }}>
+                        <label className="pos-input-label" style={{ fontWeight: 800, color: '#0f766e' }}>
+                          Name on Bill &amp; Receipt (Insurance Claim):
+                        </label>
+                        <input
+                          type="text"
+                          className="pos-field-input"
+                          style={{ fontWeight: 700, fontSize: '0.98rem', color: '#0f172a', background: '#ffffff', border: '1.5px solid #0d9488' }}
+                          value={customBillingName}
+                          onChange={(e) => {
+                            setCustomBillingName(e.target.value);
+                            setIsManualBillName(true);
+                          }}
+                          placeholder="e.g. Mr. Sunimal Perera"
+                        />
+                      </div>
+                      <div style={{ width: '200px' }}>
+                        <label className="pos-input-label" style={{ fontWeight: 800, color: '#0f766e' }}>
+                          Patient Phone:
+                        </label>
+                        <input
+                          type="text"
+                          className="pos-field-input"
+                          style={{ fontWeight: 700, fontSize: '0.95rem', color: '#0f172a', background: '#ffffff', border: '1.5px solid #0d9488' }}
+                          value={billingPhone}
+                          onChange={(e) => setBillingPhone(e.target.value)}
+                          placeholder="e.g. 0771234567"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activePrescriptionCards.length === 1 && (
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '10px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                    <div style={{ flex: '1 1 240px' }}>
+                      <label className="pos-input-label" style={{ fontWeight: 700, color: '#0f766e' }}>
+                        Receipt / Insurance Name:
+                      </label>
+                      <input
+                        type="text"
+                        className="pos-field-input"
+                        style={{ fontWeight: 700, fontSize: '0.92rem' }}
+                        value={customBillingName}
+                        onChange={(e) => {
+                          setCustomBillingName(e.target.value);
+                          setIsManualBillName(true);
+                        }}
+                        placeholder="Patient name on receipt"
+                      />
+                    </div>
+                    <div style={{ width: '180px' }}>
+                      <label className="pos-input-label" style={{ fontWeight: 700, color: '#0f766e' }}>
+                        Patient Phone:
+                      </label>
+                      <input
+                        type="text"
+                        className="pos-field-input"
+                        style={{ fontWeight: 700, fontSize: '0.92rem' }}
+                        value={billingPhone}
+                        onChange={(e) => setBillingPhone(e.target.value)}
+                        placeholder="Phone on receipt"
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -1451,6 +1601,9 @@ export default function CounterPortal() {
               <div className="receipt-brand-header">
                 <div className="receipt-brand-script">Wellspring</div>
                 <div className="receipt-brand-sub">Medical Center &amp; Dispensary</div>
+                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#475569', marginTop: '2px', marginBottom: '6px' }}>
+                  Tel: +94 31 226 2462 / 031 226 2462
+                </div>
                 <span className="receipt-no-badge">
                   Official Receipt #{completedBillModal.daily_bill_no || completedBillModal.bill_id}
                 </span>
@@ -1461,10 +1614,92 @@ export default function CounterPortal() {
                   <span className="receipt-meta-label">Date &amp; Time:</span>
                   <span className="receipt-meta-value">{completedBillModal.date_str}</span>
                 </div>
-                <div className="receipt-meta-row">
+                <div className="receipt-meta-row" style={{ alignItems: 'center' }}>
                   <span className="receipt-meta-label">Patient Name(s):</span>
-                  <span className="receipt-meta-value">{completedBillModal.patient_names}</span>
+                  {!isEditingBillModalName ? (
+                    <span className="receipt-meta-value" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <strong>{completedBillModal.patient_names}</strong>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setBillModalNameInput(completedBillModal.patient_names || '');
+                          setIsEditingBillModalName(true);
+                        }}
+                        style={{
+                          background: '#f1f5f9',
+                          border: '1px solid #cbd5e1',
+                          borderRadius: '6px',
+                          padding: '2px 7px',
+                          fontSize: '0.74rem',
+                          color: '#0f766e',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                        title="Edit patient name on receipt for insurance claim"
+                      >
+                        ✎ Edit for Insurance
+                      </button>
+                    </span>
+                  ) : (
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center', width: '100%', maxWidth: '280px' }}>
+                      <input
+                        type="text"
+                        value={billModalNameInput}
+                        onChange={(e) => setBillModalNameInput(e.target.value)}
+                        className="pos-field-input"
+                        style={{ fontSize: '0.85rem', padding: '4px 8px', height: '32px' }}
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const trimmed = billModalNameInput.trim();
+                          if (trimmed) {
+                            setCompletedBillModal(prev => prev ? { ...prev, patient_names: trimmed } : prev);
+                          }
+                          setIsEditingBillModalName(false);
+                        }}
+                        style={{
+                          background: '#0d9488',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: '6px',
+                          padding: '0 10px',
+                          height: '32px',
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingBillModalName(false)}
+                        style={{
+                          background: '#e2e8f0',
+                          color: '#475569',
+                          border: 'none',
+                          borderRadius: '6px',
+                          padding: '0 8px',
+                          height: '32px',
+                          fontSize: '0.8rem',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
                 </div>
+                {completedBillModal.patient_phone && (
+                  <div className="receipt-meta-row">
+                    <span className="receipt-meta-label">Patient Tel:</span>
+                    <span className="receipt-meta-value">
+                      {formatDisplaySriLankaPhone(completedBillModal.patient_phone) || completedBillModal.patient_phone}
+                    </span>
+                  </div>
+                )}
                 <div className="receipt-meta-row">
                   <span className="receipt-meta-label">Doctor:</span>
                   <span className="receipt-meta-value">{completedBillModal.doctor_name}</span>

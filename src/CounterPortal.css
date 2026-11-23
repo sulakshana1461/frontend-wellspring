@@ -1543,3 +1543,118 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ================= FAMILY BILL & INSURANCE NAME SELECTION ================= */
+.family-bill-selection-box {
+  margin-top: 14px;
+  background: #ffffff;
+  border: 1.5px solid #0d9488;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 3px 10px rgba(13, 148, 136, 0.08);
+}
+
+.family-bill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #cbd5e1;
+  margin-bottom: 10px;
+}
+
+.family-badge {
+  background: #ccfbf1;
+  color: #0f766e;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.family-bill-presets {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.family-preset-pill {
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.family-preset-pill:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.family-preset-pill.active {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.25);
+}
+
+.family-members-toggle-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.family-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.family-checkbox-label.selected {
+  background: #e6fffa;
+  color: #0f766e;
+}
+
+.member-phone-chip {
+  font-size: 0.72rem;
+  color: #0284c7;
+  background: #e0f2fe;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.member-phone-chip:hover {
+  background: #bae6fd;
+}
+
+.family-custom-name-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+

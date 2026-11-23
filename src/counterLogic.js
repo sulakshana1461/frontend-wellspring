@@ -194,13 +194,19 @@ export function printReceiptDocument(billObj, format = 'thermal') {
     return;
   }
 
+  // NOTE: In Chromium / Blink, @page rules CANNOT contain '!important'.
+  // Using '!important' inside @page invalidates the rule and causes Chrome to revert to default 1-inch margins!
   const pageSizeRule = isThermal
-    ? '@page { size: 80mm auto; margin: 0mm !important; } html, body { margin: 0 !important; padding: 0 !important; }'
+    ? '@page { margin: 0; size: 80mm auto; }'
     : '@page { size: auto; margin: 12mm; }';
 
   const bodyStyles = isThermal
-    ? `width: 72mm; margin: 0 auto; padding: 0mm 2mm 24mm 2mm; font-family: 'Courier New', monospace; color: #000;`
+    ? `width: 72mm; margin: 0 auto; padding: 0mm 2mm 0mm 2mm; font-family: 'Courier New', monospace; color: #000;`
     : `width: 100%; max-width: 720px; margin: 20px auto; padding: 24px 30px; font-family: 'Segoe UI', Arial, sans-serif; color: #000; border: 1.5px solid #000; border-radius: 8px;`;
+
+  const formattedPatientPhone = billObj.patient_phone
+    ? (formatDisplaySriLankaPhone(billObj.patient_phone) || billObj.patient_phone)
+    : '';
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -211,71 +217,179 @@ export function printReceiptDocument(billObj, format = 'thermal') {
         <style>
           ${pageSizeRule}
           * { box-sizing: border-box; }
-          body { ${bodyStyles} background: #fff; -webkit-print-color-adjust: exact; }
-          .brand { font-family: 'Tangerine', cursive; font-size: ${isThermal ? '38px' : '52px'}; font-weight: 700; text-align: center; line-height: 0.82; margin: 0 0 2px 0; padding: 0; }
-          .sub { text-align: center; font-size: ${isThermal ? '10.5px' : '13px'}; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin: 0 0 2px 0; }
-          .receipt-no { text-align: center; font-size: ${isThermal ? '11px' : '13px'}; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1.5px dashed #000; }
-          .meta-row { display: flex; justify-content: space-between; font-size: ${isThermal ? '12px' : '15px'}; margin-bottom: 6px; gap: 10px; }
-          .meta-label { font-weight: 700; white-space: nowrap; }
-          .meta-val { text-align: right; word-break: break-word; }
-          .summary-box { border-top: 1.5px dashed #000; border-bottom: 1.5px dashed #000; padding: 10px 0; margin: 12px 0; }
-          .summary-line { display: flex; justify-content: space-between; font-size: ${isThermal ? '12px' : '15px'}; margin-bottom: 8px; }
-          .grand-total { display: flex; justify-content: space-between; font-size: ${isThermal ? '17px' : '22px'}; font-weight: 800; padding-top: 6px; }
-          .footer { text-align: center; font-size: ${isThermal ? '11px' : '13px'}; margin-top: 12px; line-height: 1.5; }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          body {
+            ${bodyStyles}
+            background: #fff;
+            -webkit-print-color-adjust: exact;
+          }
+          .receipt-wrapper {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          .brand {
+            font-family: 'Tangerine', cursive;
+            font-size: ${isThermal ? '36px' : '50px'};
+            font-weight: 700;
+            text-align: center;
+            line-height: 0.85;
+            margin: 0;
+            padding: 0;
+          }
+          .sub {
+            text-align: center;
+            font-size: ${isThermal ? '10px' : '13px'};
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin: 2px 0 1px 0;
+          }
+          .clinic-tel {
+            text-align: center;
+            font-size: ${isThermal ? '9.5px' : '12px'};
+            font-weight: 600;
+            color: #111;
+            margin: 0 0 5px 0;
+          }
+          .receipt-no {
+            text-align: center;
+            font-size: ${isThermal ? '11px' : '13px'};
+            margin-bottom: 7px;
+            padding-bottom: 5px;
+            border-bottom: 1.5px dashed #000;
+          }
+          .meta-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: ${isThermal ? '12px' : '15px'};
+            margin-bottom: 5px;
+            gap: 8px;
+          }
+          .meta-label {
+            font-weight: 700;
+            white-space: nowrap;
+          }
+          .meta-val {
+            text-align: right;
+            word-break: break-word;
+          }
+          .summary-box {
+            border-top: 1.5px dashed #000;
+            border-bottom: 1.5px dashed #000;
+            padding: 9px 0;
+            margin: 10px 0;
+          }
+          .summary-line {
+            display: flex;
+            justify-content: space-between;
+            font-size: ${isThermal ? '12px' : '15px'};
+            margin-bottom: 6px;
+          }
+          .grand-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: ${isThermal ? '17px' : '22px'};
+            font-weight: 800;
+            padding-top: 4px;
+          }
+          .footer {
+            text-align: center;
+            font-size: ${isThermal ? '11px' : '13px'};
+            margin-top: 10px;
+            line-height: 1.45;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          .thermal-cut-spacer {
+            height: 20mm;
+            min-height: 20mm;
+            line-height: 20mm;
+            width: 100%;
+            display: block;
+            clear: both;
+            user-select: none;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
         </style>
       </head>
       <body>
-        <div class="brand">Wellspring</div>
-        <div class="sub">Medical Center &amp; Dispensary</div>
-        <div class="receipt-no">Official Receipt #${displayReceiptNo}</div>
+        <div class="receipt-wrapper">
+          <div class="brand">Wellspring</div>
+          <div class="sub">Medical Center &amp; Dispensary</div>
+          <div class="clinic-tel">Tel: +94 31 226 2462 / 031 226 2462</div>
+          <div class="receipt-no">Official Receipt #${displayReceiptNo}</div>
 
-        <div class="meta-row">
-          <span class="meta-label">Date:</span>
-          <span class="meta-val">${billObj.date_str}</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-label">Patient(s):</span>
-          <span class="meta-val">${billObj.patient_names}</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-label">Doctor:</span>
-          <span class="meta-val">${billObj.doctor_name}</span>
-        </div>
-        ${billObj.auth_code ? `
-        <div class="meta-row">
-          <span class="meta-label">Auth Code:</span>
-          <span class="meta-val" style="font-weight: 800; letter-spacing: 0.5px;">${billObj.auth_code}</span>
-        </div>
-        ` : ''}
-
-        <div class="summary-box">
-          <div class="summary-line">
-            <span>Consultation &amp; Dispensary Charges</span>
-            <span>Included</span>
+          <div class="meta-row">
+            <span class="meta-label">Date:</span>
+            <span class="meta-val">${billObj.date_str}</span>
           </div>
-          <div class="grand-total">
-            <span>TOTAL PAID</span>
-            <span>Rs. ${Number(billObj.final_total).toFixed(2)}</span>
+          <div class="meta-row">
+            <span class="meta-label">Patient(s):</span>
+            <span class="meta-val">${billObj.patient_names}</span>
           </div>
-        </div>
+          ${formattedPatientPhone ? `
+          <div class="meta-row">
+            <span class="meta-label">Patient Tel:</span>
+            <span class="meta-val">${formattedPatientPhone}</span>
+          </div>
+          ` : ''}
+          <div class="meta-row">
+            <span class="meta-label">Doctor:</span>
+            <span class="meta-val">${billObj.doctor_name}</span>
+          </div>
+          ${billObj.auth_code ? `
+          <div class="meta-row">
+            <span class="meta-label">Auth Code:</span>
+            <span class="meta-val" style="font-weight: 800; letter-spacing: 0.5px;">${billObj.auth_code}</span>
+          </div>
+          ` : ''}
 
-        <div class="footer">
-          Thank you for visiting Wellspring.<br/>
-          Wishing you a speedy recovery!
-        </div>
+          <div class="summary-box">
+            <div class="summary-line">
+              <span>Consultation &amp; Dispensary Charges</span>
+              <span>Included</span>
+            </div>
+            <div class="grand-total">
+              <span>TOTAL PAID</span>
+              <span>Rs. ${Number(billObj.final_total).toFixed(2)}</span>
+            </div>
+          </div>
 
-        ${isThermal ? `
-        <!-- Generous paper feed clearance: ensures thermal printer cutter blade slices below the footer text -->
-        <div style="height: 24mm; width: 100%; clear: both;"></div>
-        ` : ''}
+          <div class="footer">
+            Thank you for visiting Wellspring.<br/>
+            Wishing you a speedy recovery!
+          </div>
+
+          ${isThermal ? `
+          <!-- 2cm blank feed clearance so thermal printer cutter slices in the blank area below greeting -->
+          <div class="thermal-cut-spacer">&nbsp;</div>
+          ` : ''}
+        </div>
 
         <script>
           window.onload = function() {
-            setTimeout(function() {
-              window.focus();
-              window.print();
-              window.close();
-            }, 300);
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(function() {
+                setTimeout(function() {
+                  window.focus();
+                  window.print();
+                  window.close();
+                }, 150);
+              });
+            } else {
+              setTimeout(function() {
+                window.focus();
+                window.print();
+                window.close();
+              }, 300);
+            }
           };
         </script>
       </body>
@@ -327,6 +441,14 @@ export function useCounterPortalLogic() {
   const [customWalkInName, setCustomWalkInName] = useState('');
   const [customWalkInPhone, setCustomWalkInPhone] = useState('');
   const knownPrescriptionIdsRef = useRef(null);
+
+  // 4B. Family Bill & Insurance Claim Customization
+  const [selectedBillingTicketIds, setSelectedBillingTicketIds] = useState([]);
+  const [customBillingName, setCustomBillingName] = useState('');
+  const [billingPhone, setBillingPhone] = useState('');
+  const [isManualBillName, setIsManualBillName] = useState(false);
+  const [isEditingBillModalName, setIsEditingBillModalName] = useState(false);
+  const [billModalNameInput, setBillModalNameInput] = useState('');
 
   // 5. Medicine & Clinic Services Catalog
   const [medicinesCatalog, setMedicinesCatalog] = useState([]);
@@ -772,9 +894,11 @@ export function useCounterPortalLogic() {
 
   const handleSelectSinglePrescription = (ticketId) => {
     setSelectedTicketIds([ticketId]);
+    setIsManualBillName(false);
   };
 
   const handleToggleFamilyMember = (ticketId) => {
+    setIsManualBillName(false);
     setSelectedTicketIds(prev =>
       prev.includes(ticketId)
         ? prev.filter(id => id !== ticketId)
@@ -785,6 +909,73 @@ export function useCounterPortalLogic() {
   const activePrescriptionCards = useMemo(() => {
     return prescriptionQueue.filter(item => selectedTicketIds.includes(item.ticket_id));
   }, [prescriptionQueue, selectedTicketIds]);
+
+  // Synchronize billing member selections when queue selection changes
+  useEffect(() => {
+    if (selectedTicketIds.length === 0) {
+      setSelectedBillingTicketIds([]);
+      setCustomBillingName('');
+      setBillingPhone('');
+      setIsManualBillName(false);
+      return;
+    }
+
+    setSelectedBillingTicketIds(prev => {
+      const valid = prev.filter(id => selectedTicketIds.includes(id));
+      const newlyAdded = selectedTicketIds.filter(id => !valid.includes(id));
+      const next = [...valid, ...newlyAdded];
+      return next.length > 0 ? next : selectedTicketIds;
+    });
+  }, [selectedTicketIds]);
+
+  // Synchronize customBillingName & phone whenever billing selections or active cards change
+  useEffect(() => {
+    if (activePrescriptionCards.length === 0) {
+      setCustomBillingName('');
+      setBillingPhone('');
+      setIsManualBillName(false);
+      return;
+    }
+
+    if (!isManualBillName) {
+      const chosenCards = activePrescriptionCards.filter(c => selectedBillingTicketIds.includes(c.ticket_id));
+      const cardsToUse = chosenCards.length > 0 ? chosenCards : activePrescriptionCards;
+      const derivedName = cardsToUse.map(c => c.patient.name).join(', ');
+      setCustomBillingName(derivedName);
+    }
+
+    setBillingPhone(prev => {
+      if (prev && activePrescriptionCards.some(c => c.patient.phone === prev)) return prev;
+      const firstWithPhone = activePrescriptionCards.find(c => selectedBillingTicketIds.includes(c.ticket_id) && c.patient.phone)
+        || activePrescriptionCards.find(c => c.patient.phone);
+      return firstWithPhone ? (firstWithPhone.patient.phone || '') : (activePrescriptionCards[0]?.patient?.phone || '');
+    });
+  }, [selectedBillingTicketIds, activePrescriptionCards, isManualBillName]);
+
+  const handleToggleBillingMember = (ticketId) => {
+    setIsManualBillName(false);
+    setSelectedBillingTicketIds(prev => {
+      if (prev.includes(ticketId)) {
+        if (prev.length === 1) return prev; // Keep at least one member selected
+        return prev.filter(id => id !== ticketId);
+      } else {
+        return [...prev, ticketId];
+      }
+    });
+  };
+
+  const handleSelectAllFamilyMembers = () => {
+    setIsManualBillName(false);
+    setSelectedBillingTicketIds(activePrescriptionCards.map(c => c.ticket_id));
+  };
+
+  const handleSelectOnlyMember = (card) => {
+    setIsManualBillName(false);
+    setSelectedBillingTicketIds([card.ticket_id]);
+    if (card.patient.phone) {
+      setBillingPhone(card.patient.phone);
+    }
+  };
 
   const filteredMedicines = useMemo(() => {
     const q = medSearchText.trim().toLowerCase();
@@ -940,6 +1131,8 @@ export function useCounterPortalLogic() {
 
   const openReceiptModalWithData = (billModalObj) => {
     setCompletedBillModal(billModalObj);
+    setIsEditingBillModalName(false);
+    setBillModalNameInput(billModalObj.patient_names || '');
     const initialPhone = billModalObj.patient_phone || '';
     setWhatsAppPhoneInput(initialPhone);
     setShowWhatsAppConfirmBox(false);
@@ -953,14 +1146,23 @@ export function useCounterPortalLogic() {
     setSmsSentStatus(null);
   };
 
-  const handleFinalizeCheckout = async (mode = 'COMPLETED_BILL') => {
-    if (activePrescriptionCards.length === 0) {
+  const handleFinalizeCheckout = async (mode = 'COMPLETED_BILL', overrideTicketIds = null) => {
+    const targetTicketIds = overrideTicketIds || selectedTicketIds;
+    const targetCards = prescriptionQueue.filter(item => targetTicketIds.includes(item.ticket_id));
+
+    if (targetCards.length === 0) {
       return showToast('Please select a patient from the Doctor queue. Over-the-counter dispensing without doctor supervision is not permitted.', 'error');
     }
 
-    const combinedNames = activePrescriptionCards.map(c => c.patient.name).join(', ');
-    const primaryPhone = activePrescriptionCards[0].patient.phone || '';
-    const doctorName = activePrescriptionCards[0].doctor_name || 'Dr. Upul Jayathilaka';
+    const defaultNames = targetCards.map(c => c.patient.name).join(', ');
+    const combinedNames = (!overrideTicketIds && customBillingName && customBillingName.trim())
+      ? customBillingName.trim()
+      : defaultNames;
+    const defaultPhone = targetCards[0].patient.phone || '';
+    const primaryPhone = (!overrideTicketIds && billingPhone && billingPhone.trim())
+      ? billingPhone.trim()
+      : defaultPhone;
+    const doctorName = targetCards[0].doctor_name || 'Dr. Upul Jayathilaka';
 
     const finalPayable = mode === 'OUTDOOR_RX' && billItems.length === 0
       ? 0
@@ -972,7 +1174,7 @@ export function useCounterPortalLogic() {
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
       const res = await axios.post(`${API_BASE}/counter/checkout`, {
-        ticket_ids: selectedTicketIds,
+        ticket_ids: targetTicketIds,
         patient_names: combinedNames,
         patient_phone: primaryPhone,
         doctor_name: doctorName,
@@ -1000,7 +1202,7 @@ export function useCounterPortalLogic() {
           bill_id: res.data.bill.id,
           daily_bill_no: res.data.bill.daily_bill_no || 1,
           auth_code: res.data.bill.auth_code || '',
-          ticket_ids: selectedTicketIds,
+          ticket_ids: targetTicketIds,
           is_walk_in: false,
           date_str: slNowStr,
           patient_names: combinedNames,
@@ -1017,6 +1219,10 @@ export function useCounterPortalLogic() {
       setCustomWalkInName('');
       setCustomWalkInPhone('');
       setSelectedTicketIds([]);
+      setSelectedBillingTicketIds([]);
+      setCustomBillingName('');
+      setBillingPhone('');
+      setIsManualBillName(false);
       await fetchPrescriptions();
       await fetchTodayLog();
     } catch (err) {
@@ -1222,6 +1428,21 @@ export function useCounterPortalLogic() {
     handleSelectSinglePrescription,
     handleToggleFamilyMember,
     activePrescriptionCards,
+    selectedBillingTicketIds,
+    setSelectedBillingTicketIds,
+    customBillingName,
+    setCustomBillingName,
+    billingPhone,
+    setBillingPhone,
+    isManualBillName,
+    setIsManualBillName,
+    handleToggleBillingMember,
+    handleSelectAllFamilyMembers,
+    handleSelectOnlyMember,
+    isEditingBillModalName,
+    setIsEditingBillModalName,
+    billModalNameInput,
+    setBillModalNameInput,
     customWalkInName,
     setCustomWalkInName,
     customWalkInPhone,
