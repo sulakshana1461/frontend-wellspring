@@ -195,12 +195,12 @@ export function printReceiptDocument(billObj, format = 'thermal') {
   }
 
   const pageSizeRule = isThermal
-    ? '@page { size: 80mm auto; margin: 0mm; }'
+    ? '@page { size: 80mm auto; margin: 0mm !important; } html, body { margin: 0 !important; padding: 0 !important; }'
     : '@page { size: auto; margin: 12mm; }';
 
   const bodyStyles = isThermal
-    ? `width: 72mm; margin: 0 auto; padding: 4mm 2mm; font-family: 'Courier New', monospace; color: #000;`
-    : `width: 100%; max-width: 720px; margin: 24px auto; padding: 28px 32px; font-family: 'Segoe UI', Arial, sans-serif; color: #000; border: 1.5px solid #000; border-radius: 8px;`;
+    ? `width: 72mm; margin: 0 auto; padding: 0mm 2mm 24mm 2mm; font-family: 'Courier New', monospace; color: #000;`
+    : `width: 100%; max-width: 720px; margin: 20px auto; padding: 24px 30px; font-family: 'Segoe UI', Arial, sans-serif; color: #000; border: 1.5px solid #000; border-radius: 8px;`;
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -212,16 +212,16 @@ export function printReceiptDocument(billObj, format = 'thermal') {
           ${pageSizeRule}
           * { box-sizing: border-box; }
           body { ${bodyStyles} background: #fff; -webkit-print-color-adjust: exact; }
-          .brand { font-family: 'Tangerine', cursive; font-size: ${isThermal ? '42px' : '54px'}; font-weight: 700; text-align: center; line-height: 0.9; margin-bottom: 4px; }
-          .sub { text-align: center; font-size: ${isThermal ? '11px' : '14px'}; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-          .receipt-no { text-align: center; font-size: ${isThermal ? '11px' : '13px'}; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1.5px dashed #000; }
+          .brand { font-family: 'Tangerine', cursive; font-size: ${isThermal ? '38px' : '52px'}; font-weight: 700; text-align: center; line-height: 0.82; margin: 0 0 2px 0; padding: 0; }
+          .sub { text-align: center; font-size: ${isThermal ? '10.5px' : '13px'}; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin: 0 0 2px 0; }
+          .receipt-no { text-align: center; font-size: ${isThermal ? '11px' : '13px'}; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1.5px dashed #000; }
           .meta-row { display: flex; justify-content: space-between; font-size: ${isThermal ? '12px' : '15px'}; margin-bottom: 6px; gap: 10px; }
           .meta-label { font-weight: 700; white-space: nowrap; }
           .meta-val { text-align: right; word-break: break-word; }
-          .summary-box { border-top: 1.5px dashed #000; border-bottom: 1.5px dashed #000; padding: 12px 0; margin: 14px 0; }
+          .summary-box { border-top: 1.5px dashed #000; border-bottom: 1.5px dashed #000; padding: 10px 0; margin: 12px 0; }
           .summary-line { display: flex; justify-content: space-between; font-size: ${isThermal ? '12px' : '15px'}; margin-bottom: 8px; }
           .grand-total { display: flex; justify-content: space-between; font-size: ${isThermal ? '17px' : '22px'}; font-weight: 800; padding-top: 6px; }
-          .footer { text-align: center; font-size: ${isThermal ? '11px' : '13px'}; margin-top: 14px; line-height: 1.5; }
+          .footer { text-align: center; font-size: ${isThermal ? '11px' : '13px'}; margin-top: 12px; line-height: 1.5; }
         </style>
       </head>
       <body>
@@ -241,6 +241,12 @@ export function printReceiptDocument(billObj, format = 'thermal') {
           <span class="meta-label">Doctor:</span>
           <span class="meta-val">${billObj.doctor_name}</span>
         </div>
+        ${billObj.auth_code ? `
+        <div class="meta-row">
+          <span class="meta-label">Auth Code:</span>
+          <span class="meta-val" style="font-weight: 800; letter-spacing: 0.5px;">${billObj.auth_code}</span>
+        </div>
+        ` : ''}
 
         <div class="summary-box">
           <div class="summary-line">
@@ -258,13 +264,18 @@ export function printReceiptDocument(billObj, format = 'thermal') {
           Wishing you a speedy recovery!
         </div>
 
+        ${isThermal ? `
+        <!-- Generous paper feed clearance: ensures thermal printer cutter blade slices below the footer text -->
+        <div style="height: 24mm; width: 100%; clear: both;"></div>
+        ` : ''}
+
         <script>
           window.onload = function() {
             setTimeout(function() {
               window.focus();
               window.print();
               window.close();
-            }, 250);
+            }, 300);
           };
         </script>
       </body>
