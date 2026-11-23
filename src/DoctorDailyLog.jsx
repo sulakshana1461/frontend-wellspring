@@ -96,7 +96,7 @@ export default function DoctorDailyLog() {
       const ticketNum = String(row.ticket_number || '').toLowerCase();
       const remarks = (row.remarks || '').toLowerCase();
       const isMale = row.gender === 1 || String(row.gender).toLowerCase() === 'male' || String(row.gender) === '1';
-      const isFemale = row.gender === 0 || row.gender === 2 || String(row.gender).toLowerCase() === 'female' || String(row.gender) === '0';
+      const isFemale = row.gender === 0 || String(row.gender).toLowerCase() === 'female' || String(row.gender) === '0';
       const genderStr = isMale ? 'male' : isFemale ? 'female' : '';
 
       return name.includes(q) || phone.includes(q) || prescription.includes(q) || ticketNum.includes(q) || remarks.includes(q) || (genderStr && genderStr === q);
@@ -129,7 +129,7 @@ export default function DoctorDailyLog() {
         : '-';
 
       const isMale = row.gender === 1 || String(row.gender).toLowerCase() === 'male' || String(row.gender) === '1';
-      const isFemale = row.gender === 0 || row.gender === 2 || String(row.gender).toLowerCase() === 'female' || String(row.gender) === '0';
+      const isFemale = row.gender === 0 || String(row.gender).toLowerCase() === 'female' || String(row.gender) === '0';
       const genderStr = isMale ? 'Male' : isFemale ? 'Female' : 'Not Specified';
       const ageStr = row.birth_date ? calculateAge(row.birth_date) : '-';
       const statusStr = row.bill_status === 'COMPLETED_BILL' ? 'Paid Bill' : row.bill_status === 'OUTDOOR_RX' ? 'Outdoor Medicine' : row.bill_status || 'Pending';
@@ -434,7 +434,7 @@ export default function DoctorDailyLog() {
                     const isWaiting = row.bill_status === 'WAITING' || row.bill_status === 'AT_COUNTER';
                     const ageText = row.birth_date ? calculateAge(row.birth_date) : '-';
                     const isMale = row.gender === 1 || String(row.gender).toLowerCase() === 'male' || String(row.gender) === '1';
-                    const isFemale = row.gender === 0 || row.gender === 2 || String(row.gender).toLowerCase() === 'female' || String(row.gender) === '0';
+                    const isFemale = row.gender === 0 || String(row.gender).toLowerCase() === 'female' || String(row.gender) === '0';
 
                     return (
                       <tr key={row.id || idx}>
