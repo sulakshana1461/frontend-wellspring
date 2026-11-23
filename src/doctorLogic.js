@@ -756,7 +756,7 @@ export function useDoctorPortalLogic() {
       setIsEditingPhone(false);
       showToast('Phone number updated successfully.');
     } catch (err) {
-      showToast('Failed to update phone number.', 'error');
+      showToast(err.response?.data?.error || 'Failed to update phone number.', 'error');
     } finally {
       setSavingPhone(false);
     }
