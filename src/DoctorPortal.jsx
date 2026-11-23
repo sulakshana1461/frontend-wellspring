@@ -8,7 +8,8 @@ import {
   formatClearDate,
   calculateBmiAndTargetWeight,
   calculateFraminghamCvd,
-  INVESTIGATION_CONFIG
+  INVESTIGATION_CONFIG,
+  DEFAULT_INVESTIGATION_CATALOG
 } from './doctorLogic';
 import {
   ResponsiveContainer,
@@ -1246,7 +1247,7 @@ export default function DoctorPortal() {
                     </div>
 
                     <div className="diag-test-pills">
-                      {investigationCatalog.map((item) => {
+                      {(investigationCatalog && investigationCatalog.length > 0 ? investigationCatalog : DEFAULT_INVESTIGATION_CATALOG).map((item) => {
                         const count = patientLabList.filter(l => (l.test_name || '').toLowerCase() === (item.investigation || '').toLowerCase()).length;
                         return (
                           <button

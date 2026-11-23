@@ -348,6 +348,22 @@ export const INVESTIGATION_CONFIG = {
   }
 };
 
+export const DEFAULT_INVESTIGATION_CATALOG = [
+  { id: 1, investigation: 'FBC', remarks: 'Full Blood Count' },
+  { id: 2, investigation: 'Lipid Profile', remarks: 'Lipid Profile' },
+  { id: 3, investigation: 'FBS', remarks: 'Fasting Blood Sugar' },
+  { id: 4, investigation: 'HBA1C', remarks: 'Hemoglobin A1C' },
+  { id: 5, investigation: 'ESR', remarks: 'Erythrocyte Sedimentation Rate' },
+  { id: 6, investigation: 'CRP', remarks: 'C-Reactive Protein' },
+  { id: 7, investigation: 'BUN', remarks: 'Blood Urea Nitrogen' },
+  { id: 8, investigation: 'Serum Creatinine', remarks: 'Serum Creatinine (SCR)' },
+  { id: 9, investigation: 'Liver Profile', remarks: 'Liver Profile (SGOT / SGPT / AST / ALT)' },
+  { id: 10, investigation: 'UFR', remarks: 'Urine Full Report' },
+  { id: 11, investigation: 'Thyroxine', remarks: 'Thyroxine (Free T4 / Total T4)' },
+  { id: 12, investigation: 'Uric Acid', remarks: 'Serum Uric Acid' },
+  { id: 13, investigation: 'Others', remarks: 'Clinical Laboratory Findings' }
+];
+
 export function useDoctorPortalLogic() {
   const [activeTheme, setActiveTheme] = useState(() => localStorage.getItem('wellspring_doc_theme') || 'teal');
   useEffect(() => { localStorage.setItem('wellspring_doc_theme', activeTheme); }, [activeTheme]);
@@ -432,7 +448,7 @@ export function useDoctorPortalLogic() {
   });
 
   // Lab Investigation Catalog & Patient Labs State
-  const [investigationCatalog, setInvestigationCatalog] = useState([]);
+  const [investigationCatalog, setInvestigationCatalog] = useState(DEFAULT_INVESTIGATION_CATALOG);
   const [selectedCatalogTest, setSelectedCatalogTest] = useState('FBC');
   const [patientLabList, setPatientLabList] = useState([]);
   const [loadingLabs, setLoadingLabs] = useState(false);
@@ -469,6 +485,17 @@ export function useDoctorPortalLogic() {
     }
   }, [prescriptionText, remarksText, selectedPatient]);
 
+  const fetchInvestigationCatalog = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/doctor/investigation-catalog`);
+      if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+        setInvestigationCatalog(res.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch investigation catalog:', err.message);
+    }
+  }, []);
+
   const handleDoctorLogin = async (e) => {
     e.preventDefault();
     setLoginError(''); setLoggingIn(true);
@@ -478,6 +505,7 @@ export function useDoctorPortalLogic() {
       sessionStorage.setItem('wellspring_doctor_session', JSON.stringify(res.data));
       localStorage.setItem('wellspring_doctor_session', JSON.stringify(res.data));
       setLoginPassword('');
+      fetchInvestigationCatalog();
     } catch (err) {
       setLoginError(err.response?.data?.error || 'Unable to sign in. Check your credentials.');
     } finally {
@@ -511,20 +539,16 @@ export function useDoctorPortalLogic() {
     return () => clearInterval(interval);
   }, [fetchQueue, loggedInDoctor]);
 
-  // Load investigation catalog once
+  // Load investigation catalog on mount and whenever doctor logs in or switches to labs sub-tab
   useEffect(() => {
-    async function loadCatalog() {
-      try {
-        const res = await axios.get(`${API_BASE}/doctor/investigation-catalog`);
-        if (res.data && Array.isArray(res.data)) {
-          setInvestigationCatalog(res.data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch investigation catalog:', err.message);
-      }
+    fetchInvestigationCatalog();
+  }, [fetchInvestigationCatalog, loggedInDoctor]);
+
+  useEffect(() => {
+    if (docDiagnosticTab === 'labs') {
+      fetchInvestigationCatalog();
     }
-    loadCatalog();
-  }, []);
+  }, [docDiagnosticTab, fetchInvestigationCatalog]);
 
   // Fetch Vitals for a patient (sorted newest first for history table & latest metric cards)
   const fetchPatientVitals = useCallback(async (patientId) => {
@@ -1130,7 +1154,7 @@ export function useDoctorPortalLogic() {
     handleSaveVitals, handleEditVital, handleCancelEditVital, handleDeleteVital,
     latestBmiMetrics, vitalsChartData,
     // Labs
-    investigationCatalog, selectedCatalogTest, setSelectedCatalogTest,
+    investigationCatalog, selectedCatalogTest, setSelectedCatalogTest, fetchInvestigationCatalog,
     patientLabList, loadingLabs, labForm, setLabForm, editingLabId, savingLab,
     selectedLabMetricToGraph, setSelectedLabMetricToGraph,
     handleSelectTest, handleLabResultChange, handleSaveLabResult, handleEditLabResult, handleCancelEditLab, handleDeleteLabResult,
