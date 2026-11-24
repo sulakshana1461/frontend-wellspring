@@ -60,6 +60,8 @@ export default function DoctorPortal() {
     activeTicketId,
     loadingProfile,
     selectPatientForConsultation,
+    isEditingName, setIsEditingName, nameValue, setNameValue, savingName, handleSaveName,
+    isEditingBirthDate, setIsEditingBirthDate, birthDateValue, setBirthDateValue, savingBirthDate, handleSaveBirthDate,
     isEditingMarital, setIsEditingMarital, maritalValue, setMaritalValue, savingMarital, handleSaveMaritalStatus,
     isEditingGender, setIsEditingGender, genderValue, setGenderValue, savingGender, handleSaveGender,
     isEditingPhone, setIsEditingPhone, phoneValue, setPhoneValue, savingPhone, handleSavePhone,
@@ -588,30 +590,114 @@ export default function DoctorPortal() {
             </div>
           ) : (
             <div className="stacked-details-list">
+              {/* PATIENT NAME (EDITABLE) */}
               <div className="stacked-field-block">
-                <span className="stacked-field-label">
-                  Patient Name {activeTicketId ? `• Ticket #${activeTicketId}` : '• Direct Walk-In'}
-                </span>
-                <div className="stacked-field-value-primary">
-                  {selectedPatient.name}
+                <div className="editable-header-row">
+                  <span className="stacked-field-label">
+                    Patient Name {activeTicketId ? `• Ticket #${activeTicketId}` : '• Direct Walk-In'}
+                  </span>
+
+                  {!isEditingName ? (
+                    <button
+                      type="button"
+                      className="edit-toggle-btn"
+                      onClick={() => {
+                        setNameValue(selectedPatient.name || '');
+                        setIsEditingName(true);
+                      }}
+                      title="Edit patient name"
+                    >
+                      Edit
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={savingName}
+                      className="edit-toggle-btn done-mode"
+                      onClick={handleSaveName}
+                    >
+                      {savingName ? 'Saving...' : 'Done'}
+                    </button>
+                  )}
                 </div>
+
+                {!isEditingName ? (
+                  <div className="stacked-field-value-primary">
+                    {selectedPatient.name}
+                  </div>
+                ) : (
+                  <input
+                    type="text"
+                    className="clinical-edit-input"
+                    value={nameValue}
+                    onChange={(e) => setNameValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSaveName();
+                      if (e.key === 'Escape') setIsEditingName(false);
+                    }}
+                    placeholder="Enter corrected patient name"
+                    autoFocus
+                  />
+                )}
                 <div className="stacked-field-meta">
                   Patient ID: #{selectedPatient.id} {selectedPatient.phone ? `• Phone: ${selectedPatient.phone}` : ''}
                   {selectedPatient.id_number ? ` • NIC: ${selectedPatient.id_number}` : ''}
                 </div>
               </div>
 
+              {/* DATE OF BIRTH (EDITABLE) */}
+              <div className="stacked-field-block">
+                <div className="editable-header-row">
+                  <span className="stacked-field-label">Date of Birth</span>
+
+                  {!isEditingBirthDate ? (
+                    <button
+                      type="button"
+                      className="edit-toggle-btn"
+                      onClick={() => {
+                        setBirthDateValue(selectedPatient.birth_date ? selectedPatient.birth_date.substring(0, 10) : '');
+                        setIsEditingBirthDate(true);
+                      }}
+                      title="Edit date of birth"
+                    >
+                      Edit
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={savingBirthDate}
+                      className="edit-toggle-btn done-mode"
+                      onClick={handleSaveBirthDate}
+                    >
+                      {savingBirthDate ? 'Saving...' : 'Done'}
+                    </button>
+                  )}
+                </div>
+
+                {!isEditingBirthDate ? (
+                  <div className="stacked-field-value" style={{ marginTop: '4px' }}>
+                    {formatClearDate(selectedPatient.birth_date)}
+                  </div>
+                ) : (
+                  <input
+                    type="date"
+                    className="clinical-edit-input"
+                    value={birthDateValue}
+                    onChange={(e) => setBirthDateValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSaveBirthDate();
+                      if (e.key === 'Escape') setIsEditingBirthDate(false);
+                    }}
+                    autoFocus
+                  />
+                )}
+              </div>
+
+              {/* AGE (DYNAMICALLY CALCULATED) */}
               <div className="stacked-field-block">
                 <span className="stacked-field-label">Age</span>
                 <div className="stacked-field-value">
                   {calculateAge(selectedPatient.birth_date)}
-                </div>
-              </div>
-
-              <div className="stacked-field-block">
-                <span className="stacked-field-label">Date of Birth</span>
-                <div className="stacked-field-value">
-                  {formatClearDate(selectedPatient.birth_date)}
                 </div>
               </div>
 

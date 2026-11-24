@@ -396,6 +396,16 @@ export function useDoctorPortalLogic() {
   const [activeTicketId, setActiveTicketId] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(false);
 
+  // Editable Name State
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState('');
+  const [savingName, setSavingName] = useState(false);
+
+  // Editable Birth Date State
+  const [isEditingBirthDate, setIsEditingBirthDate] = useState(false);
+  const [birthDateValue, setBirthDateValue] = useState('');
+  const [savingBirthDate, setSavingBirthDate] = useState(false);
+
   const [isEditingMarital, setIsEditingMarital] = useState(false);
   const [maritalValue, setMaritalValue] = useState('0');
   const [savingMarital, setSavingMarital] = useState(false);
@@ -632,6 +642,8 @@ export function useDoctorPortalLogic() {
     setIsEditingMarital(false);
     setIsEditingGender(false);
     setIsEditingPhone(false);
+    setIsEditingName(false);
+    setIsEditingBirthDate(false);
     setActiveTicketId(ticketId);
 
     // Reset vitals and labs forms
@@ -658,6 +670,8 @@ export function useDoctorPortalLogic() {
       const { patient, allergiesAndReports, prescriptionHistory: history } = res.data;
       setSelectedPatient(patient);
       
+      setNameValue(patient.name || '');
+      setBirthDateValue(patient.birth_date ? patient.birth_date.substring(0, 10) : '');
       setMaritalValue(patient.married ? patient.married.toString() : '0');
       setGenderValue(patient.gender ? patient.gender.toString() : '1');
       setPhoneValue(patient.phone || '');
@@ -785,6 +799,43 @@ export function useDoctorPortalLogic() {
       showToast(err.response?.data?.error || 'Failed to update phone number.', 'error');
     } finally {
       setSavingPhone(false);
+    }
+  };
+
+  const handleSaveName = async () => {
+    if (!selectedPatient) return;
+    const cleanName = (nameValue || '').trim();
+    if (!cleanName) {
+      return showToast('Patient name cannot be empty.', 'error');
+    }
+    setSavingName(true);
+    try {
+      await axios.put(`${API_BASE}/patients/${selectedPatient.id}/demographics`, { name: cleanName });
+      setSelectedPatient(prev => ({ ...prev, name: cleanName }));
+      setQueueList(prev => prev.map(q => q.patient_id === selectedPatient.id ? { ...q, patient: { ...q.patient, name: cleanName } } : q));
+      setIsEditingName(false);
+      showToast('Patient name updated successfully.');
+    } catch (err) {
+      showToast(err.response?.data?.error || 'Failed to update patient name.', 'error');
+    } finally {
+      setSavingName(false);
+    }
+  };
+
+  const handleSaveBirthDate = async () => {
+    if (!selectedPatient) return;
+    setSavingBirthDate(true);
+    try {
+      const cleanDob = birthDateValue ? birthDateValue.trim() : null;
+      await axios.put(`${API_BASE}/patients/${selectedPatient.id}/demographics`, { birth_date: cleanDob });
+      setSelectedPatient(prev => ({ ...prev, birth_date: cleanDob }));
+      setQueueList(prev => prev.map(q => q.patient_id === selectedPatient.id ? { ...q, patient: { ...q.patient, birth_date: cleanDob } } : q));
+      setIsEditingBirthDate(false);
+      showToast('Date of birth updated successfully.');
+    } catch (err) {
+      showToast(err.response?.data?.error || 'Failed to update date of birth.', 'error');
+    } finally {
+      setSavingBirthDate(false);
     }
   };
 
@@ -1139,6 +1190,8 @@ export function useDoctorPortalLogic() {
     advancedSearch, setAdvancedSearch, searchResults, searchPage, hasMoreSearch, searching, handleSearchPatients, 
     newPatientForm, setNewPatientForm, creatingPatient, handleCreateWalkInPatient, selectedPatient, activeTicketId, loadingProfile, 
     selectPatientForConsultation, 
+    isEditingName, setIsEditingName, nameValue, setNameValue, savingName, handleSaveName,
+    isEditingBirthDate, setIsEditingBirthDate, birthDateValue, setBirthDateValue, savingBirthDate, handleSaveBirthDate,
     isEditingMarital, setIsEditingMarital, maritalValue, setMaritalValue, savingMarital, handleSaveMaritalStatus,
     isEditingGender, setIsEditingGender, genderValue, setGenderValue, savingGender, handleSaveGender,
     isEditingPhone, setIsEditingPhone, phoneValue, setPhoneValue, savingPhone, handleSavePhone,
