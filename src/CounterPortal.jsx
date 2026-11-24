@@ -1746,6 +1746,10 @@ export default function CounterPortal() {
                 Thank you for visiting Wellspring.<br />
                 Wishing you a speedy recovery!
               </div>
+
+              <div className="receipt-modal-end-divider">
+                ----------------------------------------
+              </div>
             </div>
 
             {showWhatsAppConfirmBox && (

@@ -307,10 +307,27 @@ export function printReceiptDocument(billObj, format = 'thermal') {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
           }
+          .receipt-end-divider {
+            text-align: center;
+            margin: 8px auto 2px auto;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          .receipt-dashed-line {
+            font-family: 'Courier New', monospace;
+            font-size: ${isThermal ? '12px' : '14px'};
+            font-weight: 700;
+            color: #000;
+            letter-spacing: 1.5px;
+            line-height: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            display: block;
+          }
           .thermal-cut-spacer {
-            height: 20mm;
-            min-height: 20mm;
-            line-height: 20mm;
+            height: 25mm;
+            min-height: 25mm;
+            line-height: 25mm;
             width: 100%;
             display: block;
             clear: both;
@@ -368,9 +385,15 @@ export function printReceiptDocument(billObj, format = 'thermal') {
             Wishing you a speedy recovery!
           </div>
 
+          <div class="receipt-end-divider">
+            <div class="receipt-dashed-line">----------------------------------------</div>
+          </div>
+
           ${isThermal ? `
-          <!-- 2cm blank feed clearance so thermal printer cutter slices in the blank area below greeting -->
-          <div class="thermal-cut-spacer">&nbsp;</div>
+          <!-- Extra 25mm blank paper feed so physical cutter cuts well below the dashed line -->
+          <div class="thermal-cut-spacer">
+            <div style="height: 25mm; line-height: 25mm; font-size: 6px; color: transparent; user-select: none;">.</div>
+          </div>
           ` : ''}
         </div>
 
