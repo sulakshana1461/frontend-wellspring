@@ -1618,12 +1618,9 @@ export default function CounterPortal() {
               <div className="receipt-brand-header">
                 <div className="receipt-brand-script">Wellspring</div>
                 <div className="receipt-brand-sub">Medical Center &amp; Dispensary</div>
-                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#475569', marginTop: '2px', marginBottom: '6px' }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#475569', marginTop: '2px', marginBottom: '2px' }}>
                   Tel: 031 226 2462
                 </div>
-                <span className="receipt-no-badge">
-                  Official Receipt #{completedBillModal.daily_bill_no || completedBillModal.bill_id}
-                </span>
               </div>
 
               <div className="receipt-meta-list">

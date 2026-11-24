@@ -213,7 +213,7 @@ export function printReceiptDocument(billObj, format = 'thermal') {
     <!DOCTYPE html>
     <html>
       <head>
-        <title>Wellspring Receipt #${displayReceiptNo}</title>
+        <title>Wellspring Receipt</title>
         <link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@700&display=swap" rel="stylesheet">
         <style>
           ${pageSizeRule}
@@ -256,13 +256,8 @@ export function printReceiptDocument(billObj, format = 'thermal') {
             font-size: ${isThermal ? '9.5px' : '12px'};
             font-weight: 600;
             color: #111;
-            margin: 0 0 5px 0;
-          }
-          .receipt-no {
-            text-align: center;
-            font-size: ${isThermal ? '11px' : '13px'};
-            margin-bottom: 7px;
-            padding-bottom: 5px;
+            margin: 0 0 7px 0;
+            padding-bottom: 6px;
             border-bottom: 1.5px dashed #000;
           }
           .meta-row {
@@ -342,7 +337,6 @@ export function printReceiptDocument(billObj, format = 'thermal') {
           <div class="brand">Wellspring</div>
           <div class="sub">Medical Center &amp; Dispensary</div>
           <div class="clinic-tel">Tel: 031 226 2462</div>
-          <div class="receipt-no">Official Receipt #${displayReceiptNo}</div>
 
           <div class="meta-row">
             <span class="meta-label">Date:</span>
