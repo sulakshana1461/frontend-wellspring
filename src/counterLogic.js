@@ -807,6 +807,11 @@ export function useCounterPortalLogic() {
       });
       showToast(`Added ${patientObj.name} to Active Queue (Queue #${res.data.daily_number})!`);
       await fetchActiveWaitingQueue();
+      // Automatically clear search fields and search results for the next patient
+      setQueueSearch({ name: '', nic: '', phone: '', dob: '' });
+      setQueueSearchResults([]);
+      setQueueSearchPage(1);
+      setHasMoreQueueSearch(false);
     } catch (err) {
       showToast(err.response?.data?.error || 'Could not add patient to queue.', 'error');
     } finally {
