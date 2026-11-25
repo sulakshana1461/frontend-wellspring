@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAdminPortalLogic } from './adminLogic';
+import IsoDateInput from './IsoDateInput';
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import './DoctorPortal.css'; 
 import './AdminPortal.css';
@@ -99,9 +100,9 @@ export default function AdminPortal() {
                 </div>
                 {dateFilter === 'CUSTOM' && (
                   <div className="custom-date-inputs">
-                    <input type="date" className="admin-date-input" value={customStart} onChange={e => setCustomStart(e.target.value)} />
+                    <IsoDateInput theme="dark" inline className="admin-date-input" value={customStart} onChange={val => setCustomStart(val)} />
                     <span style={{ color: '#64748b' }}>to</span>
-                    <input type="date" className="admin-date-input" value={customEnd} onChange={e => setCustomEnd(e.target.value)} />
+                    <IsoDateInput theme="dark" inline className="admin-date-input" value={customEnd} onChange={val => setCustomEnd(val)} />
                   </div>
                 )}
               </div>
@@ -207,7 +208,7 @@ export default function AdminPortal() {
                   <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>View and export granular billing data as an Excel CSV</p>
                 </div>
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                  <input type="date" className="admin-date-input" value={logDate} onChange={e => setLogDate(e.target.value)} />
+                  <IsoDateInput theme="dark" inline className="admin-date-input" value={logDate} onChange={val => setLogDate(val)} required />
                   <button className="csv-btn" onClick={handleDownloadCSV}>📥 Export CSV (Excel)</button>
                 </div>
               </div>

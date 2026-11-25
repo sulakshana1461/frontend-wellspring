@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { API_BASE } from './apiConfig';
+import { getSriLankaTodayString, parseStrictIsoDate, shiftIsoDate } from './dateUtils';
 
 export function useAdminPortalLogic() {
   const [loggedInAdmin, setLoggedInAdmin] = useState(() => {
@@ -30,9 +31,7 @@ export function useAdminPortalLogic() {
   const [loadingDemographics, setLoadingDemographics] = useState(false);
 
   // NEW: Daily Spreadsheet Log State
-  const [logDate, setLogDate] = useState(() => {
-    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Colombo' }).format(new Date());
-  });
+  const [logDate, setLogDate] = useState(() => getSriLankaTodayString());
   const [dailyLogList, setDailyLogList] = useState([]);
   const [loadingLog, setLoadingLog] = useState(false);
 
@@ -103,8 +102,7 @@ export function useAdminPortalLogic() {
   };
 
   const getOffsetDate = (daysAgo) => {
-    const d = new Date(); d.setDate(d.getDate() - daysAgo);
-    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Colombo' }).format(d);
+    return shiftIsoDate(getSriLankaTodayString(), -daysAgo);
   };
 
   // FETCH: Dashboard Data
@@ -115,11 +113,14 @@ export function useAdminPortalLogic() {
       let start = ''; let end = getOffsetDate(0);
       if (dateFilter === '7D') start = getOffsetDate(7);
       else if (dateFilter === '30D') start = getOffsetDate(30);
-      else if (dateFilter === 'YTD') start = `${new Date().getFullYear()}-01-01`;
+      else if (dateFilter === 'YTD') start = `${getSriLankaTodayString().slice(0, 4)}-01-01`;
       else if (dateFilter === 'ALL') { start = ''; end = ''; }
       else if (dateFilter === 'CUSTOM') {
-        start = customStart; end = customEnd;
-        if (!start || !end) { setLoadingFinance(false); return; }
+        const parsedStart = parseStrictIsoDate(customStart);
+        const parsedEnd = parseStrictIsoDate(customEnd);
+        if (!parsedStart || !parsedEnd) { setLoadingFinance(false); return; }
+        start = parsedStart.iso;
+        end = parsedEnd.iso;
       }
       const params = {};
       if (start) params.startDate = start;
@@ -147,10 +148,11 @@ export function useAdminPortalLogic() {
 
   // FETCH: Daily Log
   const fetchDailyLog = useCallback(async () => {
-    if (!loggedInAdmin || !logDate) return;
+    const validLogDate = parseStrictIsoDate(logDate);
+    if (!loggedInAdmin || !validLogDate) return;
     setLoadingLog(true);
     try {
-      const res = await axios.get(`${API_BASE}/admin/daily-log`, { params: { date: logDate } });
+      const res = await axios.get(`${API_BASE}/admin/daily-log`, { params: { date: validLogDate.iso } });
       
       // Assign Daily Bill Number visually (1, 2, 3...)
       const numberedList = (res.data || []).map((row, index) => ({

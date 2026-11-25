@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './DoctorDailyLog.css';
+import IsoDateInput from './IsoDateInput';
 import {
   useDoctorPortalLogic,
   DOCTOR_THEMES,
   calculateAge,
   formatClearDate,
+  getSriLankaTodayString,
   calculateBmiAndTargetWeight,
   calculateFraminghamCvd,
   INVESTIGATION_CONFIG,
@@ -453,13 +455,15 @@ export default function DoctorPortal() {
                   </div>
 
                   <div className="walkin-form-group">
-                    <label className="walkin-label">Date of Birth</label>
-                    <input
-                      type="date"
+                    <label className="walkin-label">Date of Birth (YYYY-MM-DD)</label>
+                    <IsoDateInput
                       className="walkin-input"
                       style={{ marginBottom: 0 }}
                       value={newPatientForm.birth_date}
-                      onChange={(e) => setNewPatientForm({ ...newPatientForm, birth_date: e.target.value })}
+                      onChange={(val) => setNewPatientForm({ ...newPatientForm, birth_date: val })}
+                      maxDate={getSriLankaTodayString()}
+                      showPreview
+                      showAge
                     />
                   </div>
 
@@ -679,13 +683,18 @@ export default function DoctorPortal() {
                     {formatClearDate(selectedPatient.birth_date)}
                   </div>
                 ) : (
-                  <input
-                    type="date"
+                  <IsoDateInput
                     className="clinical-edit-input"
                     value={birthDateValue}
-                    onChange={(e) => setBirthDateValue(e.target.value)}
+                    onChange={(val) => setBirthDateValue(val)}
+                    maxDate={getSriLankaTodayString()}
+                    showPreview
+                    showAge
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleSaveBirthDate();
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSaveBirthDate();
+                      }
                       if (e.key === 'Escape') setIsEditingBirthDate(false);
                     }}
                     autoFocus
@@ -1177,12 +1186,12 @@ export default function DoctorPortal() {
                     <form onSubmit={handleSaveVitals} className="diag-vitals-form">
                       <div className="diag-form-grid">
                         <div className="diag-field">
-                          <label>Record Date</label>
-                          <input
-                            type="date"
+                          <label>Record Date (YYYY-MM-DD)</label>
+                          <IsoDateInput
                             required
                             value={vitalsForm.record_date}
-                            onChange={(e) => setVitalsForm({ ...vitalsForm, record_date: e.target.value })}
+                            onChange={(val) => setVitalsForm({ ...vitalsForm, record_date: val })}
+                            maxDate={getSriLankaTodayString()}
                           />
                         </div>
                         <div className="diag-field">
@@ -1444,12 +1453,12 @@ export default function DoctorPortal() {
 
                     <form onSubmit={handleSaveLabResult} className="diag-lab-form">
                       <div className="diag-date-row">
-                        <label>Report Date</label>
-                        <input
-                          type="date"
+                        <label>Report Date (YYYY-MM-DD)</label>
+                        <IsoDateInput
                           required
                           value={labForm.test_date}
-                          onChange={(e) => setLabForm({ ...labForm, test_date: e.target.value })}
+                          onChange={(val) => setLabForm({ ...labForm, test_date: val })}
+                          maxDate={getSriLankaTodayString()}
                         />
                       </div>
 
