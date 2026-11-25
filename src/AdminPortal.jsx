@@ -92,6 +92,7 @@ export default function AdminPortal() {
             <>
               <div className="admin-filter-bar">
                 <div className="filter-btn-group">
+                  <button className={`filter-tab ${dateFilter === 'TODAY' ? 'active' : ''}`} onClick={() => setDateFilter('TODAY')}>Today</button>
                   <button className={`filter-tab ${dateFilter === '7D' ? 'active' : ''}`} onClick={() => setDateFilter('7D')}>Last 7 Days</button>
                   <button className={`filter-tab ${dateFilter === '30D' ? 'active' : ''}`} onClick={() => setDateFilter('30D')}>Last 30 Days</button>
                   <button className={`filter-tab ${dateFilter === 'YTD' ? 'active' : ''}`} onClick={() => setDateFilter('YTD')}>Year to Date</button>

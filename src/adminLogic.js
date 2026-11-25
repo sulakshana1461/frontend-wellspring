@@ -18,8 +18,8 @@ export function useAdminPortalLogic() {
   
   // Financial & Demographic State
   const [dateFilter, setDateFilter] = useState('30D');
-  const [customStart, setCustomStart] = useState('');
-  const [customEnd, setCustomEnd] = useState('');
+  const [customStart, setCustomStart] = useState(() => getSriLankaTodayString());
+  const [customEnd, setCustomEnd] = useState(() => getSriLankaTodayString());
   
   const [financeSummary, setFinanceSummary] = useState({ totalRevenue: 0, totalCost: 0, totalProfit: 0, totalPatients: 0 });
   const [financeChart, setFinanceChart] = useState([]);
@@ -111,7 +111,8 @@ export function useAdminPortalLogic() {
     setLoadingFinance(true);
     try {
       let start = ''; let end = getOffsetDate(0);
-      if (dateFilter === '7D') start = getOffsetDate(7);
+      if (dateFilter === 'TODAY') start = getOffsetDate(0);
+      else if (dateFilter === '7D') start = getOffsetDate(7);
       else if (dateFilter === '30D') start = getOffsetDate(30);
       else if (dateFilter === 'YTD') start = `${getSriLankaTodayString().slice(0, 4)}-01-01`;
       else if (dateFilter === 'ALL') { start = ''; end = ''; }
@@ -119,6 +120,11 @@ export function useAdminPortalLogic() {
         const parsedStart = parseStrictIsoDate(customStart);
         const parsedEnd = parseStrictIsoDate(customEnd);
         if (!parsedStart || !parsedEnd) { setLoadingFinance(false); return; }
+        if (parsedStart.iso > parsedEnd.iso) {
+          showToast('Start date cannot be after end date.', 'error');
+          setLoadingFinance(false);
+          return;
+        }
         start = parsedStart.iso;
         end = parsedEnd.iso;
       }
