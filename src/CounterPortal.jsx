@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCounterPortalLogic, printReceiptDocument, formatDisplaySriLankaPhone } from './counterLogic';
 import IsoDateInput from './IsoDateInput';
@@ -6,6 +7,9 @@ import './DoctorPortal.css';
 import './CounterPortal.css';
 
 export default function CounterPortal() {
+  const [draggedTicketId, setDraggedTicketId] = useState(null);
+  const [dragOverTicketId, setDragOverTicketId] = useState(null);
+
   const {
     DOCTOR_THEMES,
     calculateAge,
@@ -117,7 +121,11 @@ export default function CounterPortal() {
     handleReprintFromTodayLog,
     activeWaitingQueue,
     loadingWaitingQueue,
+    savingQueueOrder,
+    setQueueDragging,
     fetchActiveWaitingQueue,
+    handleReorderWaitingQueue,
+    handleMoveQueueItem,
     queueSearch,
     setQueueSearch,
     queueSearchResults,
@@ -1314,15 +1322,15 @@ export default function CounterPortal() {
                       Today&apos;s Active Waiting Queue (Doctor Room)
                     </h2>
                     <p style={{ margin: '4px 0 0 0', fontSize: '0.86rem', color: '#64748b', fontWeight: 600 }}>
-                      Strictly showing patients registered for <strong>today only</strong>. Old unfinished tickets from past days are automatically cleared.
+                      Drag <strong>⋮⋮</strong> or use <strong>↑ / ↓ / Bottom</strong> to reorder late callers. Changes sync live to the TV display &amp; Doctor room.
                     </p>
                   </div>
 
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <span className="queue-count-pill" style={{ fontSize: '0.9rem', padding: '7px 14px' }}>
-                      {activeWaitingQueue.length} Waiting Today
+                      {savingQueueOrder ? 'Syncing Order...' : `${activeWaitingQueue.length} Waiting Today`}
                     </span>
-                    <button type="button" onClick={fetchActiveWaitingQueue} className="refresh-mini-btn" style={{ height: '38px' }}>
+                    <button type="button" onClick={() => fetchActiveWaitingQueue()} className="refresh-mini-btn" style={{ height: '38px' }}>
                       {loadingWaitingQueue ? 'Loading...' : '↻ Refresh'}
                     </button>
                   </div>
@@ -1341,15 +1349,61 @@ export default function CounterPortal() {
                   ) : (
                     activeWaitingQueue.map((item, index) => {
                       const isSelected = selectedQueuePatient?.id === item.patient?.id;
+                      const isDragging = draggedTicketId === item.ticket_id;
+                      const isDragOver = dragOverTicketId === item.ticket_id && draggedTicketId !== item.ticket_id;
+                      const isFirst = index === 0;
+                      const isLast = index === activeWaitingQueue.length - 1;
+
                       return (
                         <div
                           key={item.ticket_id}
-                          className={`active-queue-row-card ${isSelected ? 'selected' : ''}`}
+                          draggable={!savingQueueOrder}
+                          onDragStart={(e) => {
+                            setQueueDragging(true);
+                            setDraggedTicketId(item.ticket_id);
+                            e.dataTransfer.effectAllowed = 'move';
+                            e.dataTransfer.setData('text/plain', String(item.ticket_id));
+                          }}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = 'move';
+                            if (dragOverTicketId !== item.ticket_id) {
+                              setDragOverTicketId(item.ticket_id);
+                            }
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            const sourceId = draggedTicketId || Number(e.dataTransfer.getData('text/plain'));
+                            setQueueDragging(false);
+                            setDraggedTicketId(null);
+                            setDragOverTicketId(null);
+                            if (!sourceId || sourceId === item.ticket_id) return;
+                            const reordered = [...activeWaitingQueue];
+                            const fromIdx = reordered.findIndex(q => q.ticket_id === sourceId);
+                            const toIdx = reordered.findIndex(q => q.ticket_id === item.ticket_id);
+                            if (fromIdx === -1 || toIdx === -1) return;
+                            const [moved] = reordered.splice(fromIdx, 1);
+                            reordered.splice(toIdx, 0, moved);
+                            handleReorderWaitingQueue(reordered);
+                          }}
+                          onDragEnd={() => {
+                            setQueueDragging(false);
+                            setDraggedTicketId(null);
+                            setDragOverTicketId(null);
+                          }}
+                          className={`active-queue-row-card ${isSelected ? 'selected' : ''} ${isDragging ? 'dragging' : ''} ${isDragOver ? 'drag-over' : ''}`.trim()}
                           onClick={() => handleSelectPatientForDetail(item.patient)}
-                          title="Click to view & edit patient details in the panel above"
+                          title="Drag to reorder queue, or click to view & edit patient details above"
                         >
                           <div className="active-queue-left">
-                            <div className="active-queue-number-circle" title="Arrival Queue Order">
+                            <span
+                              className="queue-drag-handle"
+                              title="Drag up or down to reorder queue"
+                              aria-label="Drag handle"
+                            >
+                              ⋮⋮
+                            </span>
+                            <div className="active-queue-number-circle" title="Live Queue Order">
                               #{index + 1}
                             </div>
                             <div className="active-queue-info-wrap">
@@ -1363,17 +1417,46 @@ export default function CounterPortal() {
                             </div>
                           </div>
 
-                          <button
-                            type="button"
-                            className="cancel-queue-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveFromActiveQueue(item.ticket_id, item.patient.name);
-                            }}
-                            title="Remove patient if they walked out or cancelled before seeing the doctor"
-                          >
-                            ✕ Cancel / Left Clinic
-                          </button>
+                          <div className="active-queue-actions" onClick={(e) => e.stopPropagation()}>
+                            <div className="queue-move-btn-group">
+                              <button
+                                type="button"
+                                className="queue-move-btn"
+                                disabled={isFirst || savingQueueOrder}
+                                onClick={() => handleMoveQueueItem(item.ticket_id, 'up')}
+                                title="Move Up One Position"
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                className="queue-move-btn"
+                                disabled={isLast || savingQueueOrder}
+                                onClick={() => handleMoveQueueItem(item.ticket_id, 'down')}
+                                title="Move Down One Position"
+                              >
+                                ↓
+                              </button>
+                              <button
+                                type="button"
+                                className="queue-move-btn to-bottom"
+                                disabled={isLast || savingQueueOrder}
+                                onClick={() => handleMoveQueueItem(item.ticket_id, 'bottom')}
+                                title="Late caller / not arrived yet — move to bottom of queue"
+                              >
+                                ⏬ Bottom
+                              </button>
+                            </div>
+
+                            <button
+                              type="button"
+                              className="cancel-queue-btn"
+                              onClick={() => handleRemoveFromActiveQueue(item.ticket_id, item.patient.name)}
+                              title="Remove patient if they walked out or cancelled before seeing the doctor"
+                            >
+                              ✕ Cancel
+                            </button>
+                          </div>
                         </div>
                       );
                     })

@@ -515,7 +515,7 @@ export function useDoctorPortalLogic() {
   useEffect(() => {
     if (!loggedInDoctor) return;
     fetchQueue();
-    const interval = setInterval(fetchQueue, 10000);
+    const interval = setInterval(fetchQueue, 4000);
     return () => clearInterval(interval);
   }, [fetchQueue, loggedInDoctor]);
 

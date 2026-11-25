@@ -539,6 +539,9 @@ export function useCounterPortalLogic() {
   // 11. Page 3: Active Queue & Patient Search State (Same smart search as Doctor Portal)
   const [activeWaitingQueue, setActiveWaitingQueue] = useState([]);
   const [loadingWaitingQueue, setLoadingWaitingQueue] = useState(false);
+  const [savingQueueOrder, setSavingQueueOrder] = useState(false);
+  const savingQueueOrderRef = useRef(false);
+  const isDraggingQueueRef = useRef(false);
   const [queueSearch, setQueueSearch] = useState({ name: '', nic: '', phone: '', dob: '' });
   const [queueSearchResults, setQueueSearchResults] = useState([]);
   const [queueSearchPage, setQueueSearchPage] = useState(1);
@@ -690,9 +693,11 @@ export function useCounterPortalLogic() {
   // Fetch Active Doctor Waiting Queue (flag = 1)
   const fetchActiveWaitingQueue = useCallback(async (isSilent = false) => {
     if (!loggedInStaff) return;
+    if (isSilent && (isDraggingQueueRef.current || savingQueueOrderRef.current)) return;
     if (!isSilent) setLoadingWaitingQueue(true);
     try {
       const res = await axios.get(`${API_BASE}/doctor/queue`);
+      if (isSilent && (isDraggingQueueRef.current || savingQueueOrderRef.current)) return;
       const list = res.data || [];
       setActiveWaitingQueue(prev => {
         if (
@@ -820,6 +825,10 @@ export function useCounterPortalLogic() {
     }
   };
 
+  const setQueueDragging = useCallback((dragging) => {
+    isDraggingQueueRef.current = Boolean(dragging);
+  }, []);
+
   // Cancel / Remove Patient from Active Queue (Walk-Out)
   const handleRemoveFromActiveQueue = async (ticketId, patientName) => {
     try {
@@ -828,6 +837,48 @@ export function useCounterPortalLogic() {
       await fetchActiveWaitingQueue();
     } catch {
       showToast('Failed to remove patient from queue.', 'error');
+    }
+  };
+
+  // Persist Reordered Queue to Backend (syncs Live TV & Doctor Console)
+  const handleReorderWaitingQueue = async (nextOrderedList) => {
+    if (!Array.isArray(nextOrderedList) || nextOrderedList.length === 0) return;
+
+    setActiveWaitingQueue(nextOrderedList);
+    savingQueueOrderRef.current = true;
+    setSavingQueueOrder(true);
+    try {
+      await axios.put(`${API_BASE}/counter/queue/reorder`, {
+        ordered_ticket_ids: nextOrderedList.map(item => item.ticket_id)
+      });
+    } catch (err) {
+      showToast(err.response?.data?.error || 'Could not save queue order.', 'error');
+      await fetchActiveWaitingQueue();
+    } finally {
+      savingQueueOrderRef.current = false;
+      setSavingQueueOrder(false);
+    }
+  };
+
+  const handleMoveQueueItem = async (ticketId, direction) => {
+    const idx = activeWaitingQueue.findIndex(item => item.ticket_id === ticketId);
+    if (idx === -1) return;
+
+    let targetIdx = idx;
+    if (direction === 'up') targetIdx = Math.max(0, idx - 1);
+    else if (direction === 'down') targetIdx = Math.min(activeWaitingQueue.length - 1, idx + 1);
+    else if (direction === 'bottom') targetIdx = activeWaitingQueue.length - 1;
+    else if (direction === 'top') targetIdx = 0;
+
+    if (targetIdx === idx) return;
+
+    const updated = [...activeWaitingQueue];
+    const [moved] = updated.splice(idx, 1);
+    updated.splice(targetIdx, 0, moved);
+
+    await handleReorderWaitingQueue(updated);
+    if (direction === 'bottom') {
+      showToast(`Moved ${moved.patient?.name || 'patient'} to bottom of queue (#${targetIdx + 1}).`);
     }
   };
 
@@ -1645,7 +1696,11 @@ export function useCounterPortalLogic() {
     handleReprintFromTodayLog,
     activeWaitingQueue,
     loadingWaitingQueue,
+    savingQueueOrder,
+    setQueueDragging,
     fetchActiveWaitingQueue,
+    handleReorderWaitingQueue,
+    handleMoveQueueItem,
     queueSearch,
     setQueueSearch,
     queueSearchResults,

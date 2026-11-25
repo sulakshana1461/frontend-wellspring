@@ -10,9 +10,8 @@ export function useQueueDisplayLogic() {
   const fetchActiveWaitingQueue = useCallback(async () => {
     try {
       const res = await axios.get(`${API_BASE}/doctor/queue`);
-      // Sort by the ticket_number (which corresponds to the daily # assigned)
-      const sortedQueue = (res.data || []).sort((a, b) => a.ticket_number - b.ticket_number);
-      setActiveWaitingQueue(sortedQueue);
+      // Preserve exact cashier-ordered queue returned by backend (queue_order ASC, id ASC)
+      setActiveWaitingQueue(res.data || []);
       setError(null);
     } catch (err) {
       console.error('Failed to load active waiting queue:', err.message);
@@ -26,8 +25,8 @@ export function useQueueDisplayLogic() {
     // Initial fetch
     fetchActiveWaitingQueue();
 
-    // Poll every 3 seconds for near-instant updates on the TV screen
-    const interval = setInterval(fetchActiveWaitingQueue, 3000);
+    // Poll every 2 seconds for near-instant updates when Counter reorders the queue
+    const interval = setInterval(fetchActiveWaitingQueue, 2000);
     return () => clearInterval(interval);
   }, [fetchActiveWaitingQueue]);
 

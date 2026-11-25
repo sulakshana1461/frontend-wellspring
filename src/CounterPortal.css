@@ -1258,6 +1258,90 @@
   box-shadow: 0 4px 14px rgba(13, 148, 136, 0.14);
 }
 
+.active-queue-row-card.dragging {
+  opacity: 0.48;
+  transform: scale(0.99);
+}
+
+.active-queue-row-card.drag-over {
+  border-color: #0284c7;
+  border-top: 4px solid #0284c7;
+  background: #f0f9ff;
+}
+
+.queue-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 48px;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #94a3b8;
+  cursor: grab;
+  user-select: none;
+  flex-shrink: 0;
+  letter-spacing: -2px;
+}
+
+.active-queue-row-card:hover .queue-drag-handle {
+  color: #475569;
+}
+
+.queue-drag-handle:active {
+  cursor: grabbing;
+}
+
+.active-queue-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.queue-move-btn-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.queue-move-btn {
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.queue-move-btn:hover:not(:disabled) {
+  border-color: var(--theme-primary);
+  color: var(--theme-primary);
+  background: #f0fdfa;
+}
+
+.queue-move-btn.to-bottom {
+  background: #fff7ed;
+  border-color: #fdba74;
+  color: #c2410c;
+}
+
+.queue-move-btn.to-bottom:hover:not(:disabled) {
+  background: #ffedd5;
+  border-color: #ea580c;
+  color: #9a3412;
+}
+
+.queue-move-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .active-queue-left {
   display: flex;
   align-items: flex-start;
