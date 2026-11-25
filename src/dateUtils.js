@@ -13,7 +13,7 @@ export const MONTH_FULL_NAMES = [
  * Uses formatToParts so browser OS locale can never swap month and day.
  */
 export function getSriLankaTodayString() {
-  const parts = new Intl.DateTimeFormat('en-US', {
+  const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Colombo',
     year: 'numeric',
     month: '2-digit',

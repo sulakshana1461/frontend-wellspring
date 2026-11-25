@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
   MONTH_FULL_NAMES,
@@ -14,6 +14,22 @@ import {
 import './IsoDateInput.css';
 
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+function computePopoverPos(el) {
+  if (!el) return { top: 0, left: 0 };
+  const rect = el.getBoundingClientRect();
+  const popWidth = 296;
+  const popHeight = 340;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openAbove = spaceBelow < popHeight && rect.top > popHeight;
+
+  const top = openAbove
+    ? Math.max(8, rect.top - popHeight - 6)
+    : Math.min(window.innerHeight - popHeight - 8, rect.bottom + 6);
+
+  const left = Math.max(8, Math.min(rect.left, window.innerWidth - popWidth - 8));
+  return { top, left };
+}
 
 /**
  * Locale-independent ISO 8601 (YYYY-MM-DD) Date Input with a custom Portal Calendar Picker.
@@ -71,34 +87,8 @@ export default function IsoDateInput({
     return list;
   }, [minYear, maxYear]);
 
-  // Keep calendar view synced when opening or when a valid value changes externally
-  useEffect(() => {
-    const parsed = parseStrictIsoDate(value);
-    if (parsed) {
-      setViewYear(parsed.year);
-      setViewMonth(parsed.month);
-    }
-  }, [value]);
-
-  const updatePopoverPosition = () => {
-    if (!wrapRef.current) return;
-    const rect = wrapRef.current.getBoundingClientRect();
-    const popWidth = 296;
-    const popHeight = 340;
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const openAbove = spaceBelow < popHeight && rect.top > popHeight;
-
-    const top = openAbove
-      ? Math.max(8, rect.top - popHeight - 6)
-      : Math.min(window.innerHeight - popHeight - 8, rect.bottom + 6);
-
-    const left = Math.max(8, Math.min(rect.left, window.innerWidth - popWidth - 8));
-    setPopoverPos({ top, left });
-  };
-
   useEffect(() => {
     if (!isOpen) return;
-    updatePopoverPosition();
 
     const handleOutsideClick = (e) => {
       if (
@@ -113,7 +103,7 @@ export default function IsoDateInput({
 
     const handleWindowResizeOrScroll = (e) => {
       if (popoverRef.current && popoverRef.current.contains(e.target)) return;
-      updatePopoverPosition();
+      setPopoverPos(computePopoverPos(wrapRef.current));
     };
 
     const handleGlobalKey = (e) => {
@@ -137,6 +127,9 @@ export default function IsoDateInput({
 
   const handleOpenCalendar = () => {
     if (disabled) return;
+    if (!isOpen) {
+      setPopoverPos(computePopoverPos(wrapRef.current));
+    }
     const parsed = parseStrictIsoDate(value);
     if (parsed) {
       setViewYear(parsed.year);
