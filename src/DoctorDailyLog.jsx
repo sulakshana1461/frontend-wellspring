@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE } from './apiConfig';
 import { calculateAge, formatClearDate } from './doctorLogic';
+import { getSriLankaTodayString, parseStrictIsoDate, shiftIsoDate } from './dateUtils';
+import IsoDateInput from './IsoDateInput';
 import './DoctorPortal.css';
 import './AdminPortal.css';
 import './DoctorDailyLog.css';
@@ -26,9 +28,7 @@ export default function DoctorDailyLog() {
   const [activeTheme] = useState(() => localStorage.getItem('wellspring_doc_theme') || 'teal');
 
   // 3. Date Selection (Defaults to Today in Asia/Colombo)
-  const [selectedDate, setSelectedDate] = useState(() => {
-    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Colombo' }).format(new Date());
-  });
+  const [selectedDate, setSelectedDate] = useState(() => getSriLankaTodayString());
 
   // 4. Data States
   const [loading, setLoading] = useState(false);
@@ -47,11 +47,12 @@ export default function DoctorDailyLog() {
 
   // 5. Fetch Daily Log from Backend
   const fetchDailyLog = useCallback(async () => {
-    if (!doctorSession) return;
+    const validDate = parseStrictIsoDate(selectedDate);
+    if (!doctorSession || !validDate) return;
     setLoading(true);
     try {
       const res = await axios.get(`${API_BASE}/doctor/daily-log`, {
-        params: { date: selectedDate }
+        params: { date: validDate.iso }
       });
       setDailyData(res.data);
     } catch (err) {
@@ -68,15 +69,11 @@ export default function DoctorDailyLog() {
 
   // Date Shifters
   const handleShiftDate = (days) => {
-    const current = new Date(selectedDate);
-    current.setDate(current.getDate() + days);
-    const newDateStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Colombo' }).format(current);
-    setSelectedDate(newDateStr);
+    setSelectedDate(shiftIsoDate(selectedDate, days));
   };
 
   const handleSetToday = () => {
-    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Colombo' }).format(new Date());
-    setSelectedDate(today);
+    setSelectedDate(getSriLankaTodayString());
   };
 
   // Filtered Records
@@ -227,11 +224,13 @@ export default function DoctorDailyLog() {
             >
               ◀
             </button>
-            <input
-              type="date"
+            <IsoDateInput
+              theme="dark"
+              inline
               className="admin-date-input"
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
+              onChange={(val) => setSelectedDate(val)}
+              required
             />
             <button
               type="button"
