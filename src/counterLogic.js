@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { DOCTOR_THEMES, calculateAge, formatClearDate } from './doctorLogic';
-import { getSriLankaTodayString, validateIsoDateInput } from './dateUtils';
 import { API_BASE } from './apiConfig';
 
 // Format live Sri Lanka Clock (Asia/Colombo)
@@ -886,20 +885,11 @@ export function useCounterPortalLogic() {
       return showToast('Patient phone number is required.', 'error');
     }
 
-    const dobCheck = validateIsoDateInput(patientEditForm.birth_date, {
-      required: false,
-      minDate: '1900-01-01',
-      maxDate: getSriLankaTodayString()
-    });
-    if (!dobCheck.valid) {
-      return showToast(dobCheck.error, 'error');
-    }
-
     setSavingPatientDetails(true);
     try {
       const res = await axios.put(`${API_BASE}/patients/${selectedQueuePatient.id}/demographics`, {
         name: patientEditForm.name.trim(),
-        birth_date: dobCheck.iso || null,
+        birth_date: patientEditForm.birth_date || null,
         phone: patientEditForm.phone.trim(),
         id_number: patientEditForm.id_number ? patientEditForm.id_number.trim() : '',
         gender: Number(patientEditForm.gender),
@@ -909,7 +899,7 @@ export function useCounterPortalLogic() {
       const updated = res.data.patient || {
         ...selectedQueuePatient,
         name: patientEditForm.name.trim(),
-        birth_date: dobCheck.iso || null,
+        birth_date: patientEditForm.birth_date || null,
         phone: patientEditForm.phone.trim(),
         id_number: patientEditForm.id_number ? patientEditForm.id_number.trim() : '',
         gender: Number(patientEditForm.gender),
@@ -946,21 +936,9 @@ export function useCounterPortalLogic() {
       return showToast('Please select a gender.', 'error');
     }
 
-    const dobCheck = validateIsoDateInput(regForm.birth_date, {
-      required: false,
-      minDate: '1900-01-01',
-      maxDate: getSriLankaTodayString()
-    });
-    if (!dobCheck.valid) {
-      return showToast(dobCheck.error, 'error');
-    }
-
     setRegisteringPatient(true);
     try {
-      const res = await axios.post(`${API_BASE}/patients`, {
-        ...regForm,
-        birth_date: dobCheck.iso || null
-      });
+      const res = await axios.post(`${API_BASE}/patients`, regForm);
       const createdPatient = res.data;
 
       if (regForm.autoAddToQueue) {

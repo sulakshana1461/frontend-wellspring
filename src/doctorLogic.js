@@ -1,15 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { API_BASE } from './apiConfig';
-import {
-  calculateAge,
-  formatClearDate,
-  getAgeYears,
-  getSriLankaTodayString,
-  validateIsoDateInput
-} from './dateUtils';
-
-export { calculateAge, formatClearDate, getSriLankaTodayString };
 
 export const DOCTOR_THEMES = [
   { id: 'ocean', name: 'Ocean Medical Blue', swatch: '#0284c7' },
@@ -17,6 +8,45 @@ export const DOCTOR_THEMES = [
   { id: 'teal', name: 'Clinical Teal', swatch: '#0f766e' },
   { id: 'indigo', name: 'Modern Slate Indigo', swatch: '#3730a3' }
 ];
+
+export function calculateAge(birthDateString) {
+  if (!birthDateString) return 'Not Recorded';
+  const birth = new Date(birthDateString);
+  if (isNaN(birth.getTime())) return 'Not Recorded';
+  const today = new Date();
+  let years = today.getFullYear() - birth.getFullYear();
+  let months = today.getMonth() - birth.getMonth();
+  if (months < 0 || (months === 0 && today.getDate() < birth.getDate())) {
+    years--; months += 12;
+  }
+  if (years < 1) return `${Math.max(0, months)} Months`;
+  return `${years} Years`;
+}
+
+export function formatClearDate(dateString) {
+  if (!dateString) return 'Not Recorded';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return dateString;
+  
+  // Render in Sri Lanka Time
+  return new Intl.DateTimeFormat('en-GB', { 
+    timeZone: 'Asia/Colombo',
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  }).format(date);
+}
+
+export function getSriLankaTodayString() {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Colombo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  return formatter.format(now);
+}
 
 // -------------------------------------------------------------
 // DYNAMIC BMI & TARGET WEIGHT CALCULATION (WHO Asian Cutoff = 23.0)
@@ -575,9 +605,12 @@ export function useDoctorPortalLogic() {
     if (!patient) return;
 
     // 1. Age
-    const exactYears = getAgeYears(patient.birth_date);
-    if (exactYears !== null) {
-      setCvdAge(Math.min(85, Math.max(20, exactYears || 45)));
+    if (patient.birth_date) {
+      const bDate = new Date(patient.birth_date);
+      if (!isNaN(bDate.getTime())) {
+        const diffYears = new Date().getFullYear() - bDate.getFullYear();
+        setCvdAge(Math.min(85, Math.max(20, diffYears || 45)));
+      }
     }
 
     // 2. Gender
@@ -713,25 +746,11 @@ export function useDoctorPortalLogic() {
   const handleCreateWalkInPatient = async (e) => {
     e.preventDefault();
     if (!newPatientForm.name.trim()) { showToast('Patient name is required.', 'error'); return; }
-    if (!newPatientForm.gender) { showToast('Please select a gender.', 'error'); return; }
-
-    const dobCheck = validateIsoDateInput(newPatientForm.birth_date, {
-      required: false,
-      minDate: '1900-01-01',
-      maxDate: getSriLankaTodayString()
-    });
-    if (!dobCheck.valid) {
-      showToast(dobCheck.error, 'error');
-      return;
-    }
+    if (!newPatientForm.gender) { showToast('Please select a gender.', 'error'); return; } 
 
     setCreatingPatient(true);
     try {
-      const payload = {
-        ...newPatientForm,
-        birth_date: dobCheck.iso || null
-      };
-      const res = await axios.post(`${API_BASE}/patients`, payload);
+      const res = await axios.post(`${API_BASE}/patients`, newPatientForm);
       showToast(`Registered ${res.data.name}.`);
       setNewPatientForm({ name: '', birth_date: '', phone: '', id_number: '', gender: '', married: '0', weight: '', height: '', common: '' });
       await selectPatientForConsultation(res.data, null);
@@ -805,25 +824,12 @@ export function useDoctorPortalLogic() {
 
   const handleSaveBirthDate = async () => {
     if (!selectedPatient) return;
-    const dobCheck = validateIsoDateInput(birthDateValue, {
-      required: false,
-      minDate: '1900-01-01',
-      maxDate: getSriLankaTodayString()
-    });
-    if (!dobCheck.valid) {
-      return showToast(dobCheck.error, 'error');
-    }
-
     setSavingBirthDate(true);
     try {
-      const cleanDob = dobCheck.iso || null;
+      const cleanDob = birthDateValue ? birthDateValue.trim() : null;
       await axios.put(`${API_BASE}/patients/${selectedPatient.id}/demographics`, { birth_date: cleanDob });
       setSelectedPatient(prev => ({ ...prev, birth_date: cleanDob }));
       setQueueList(prev => prev.map(q => q.patient_id === selectedPatient.id ? { ...q, patient: { ...q.patient, birth_date: cleanDob } } : q));
-      const exactYears = getAgeYears(cleanDob);
-      if (exactYears !== null) {
-        setCvdAge(Math.min(85, Math.max(20, exactYears || 45)));
-      }
       setIsEditingBirthDate(false);
       showToast('Date of birth updated successfully.');
     } catch (err) {
@@ -913,26 +919,17 @@ export function useDoctorPortalLogic() {
     if (e) e.preventDefault();
     if (!selectedPatient) return showToast('Please select a patient first.', 'error');
 
-    const dateCheck = validateIsoDateInput(vitalsForm.record_date, {
-      required: true,
-      minDate: '1900-01-01'
-    });
-    if (!dateCheck.valid) {
-      return showToast(dateCheck.error, 'error');
-    }
-
     if (!vitalsForm.weight_kg && !vitalsForm.height_cm && !vitalsForm.systolic_bp && !vitalsForm.notes) {
       return showToast('Please enter at least Weight, Height, or Blood Pressure.', 'error');
     }
 
-    const payload = { ...vitalsForm, record_date: dateCheck.iso };
     setSavingVitals(true);
     try {
       if (editingVitalId) {
-        await axios.put(`${API_BASE}/doctor/vitals/${editingVitalId}`, payload);
+        await axios.put(`${API_BASE}/doctor/vitals/${editingVitalId}`, vitalsForm);
         showToast('Vitals record updated.');
       } else {
-        await axios.post(`${API_BASE}/doctor/patients/${selectedPatient.id}/vitals`, payload);
+        await axios.post(`${API_BASE}/doctor/patients/${selectedPatient.id}/vitals`, vitalsForm);
         showToast('Vitals recorded successfully.');
       }
 
@@ -1035,18 +1032,10 @@ export function useDoctorPortalLogic() {
       c => c.investigation?.toLowerCase() === (selectedCatalogTest || '').toLowerCase()
     );
 
-    const dateCheck = validateIsoDateInput(labForm.test_date || getSriLankaTodayString(), {
-      required: true,
-      minDate: '1900-01-01'
-    });
-    if (!dateCheck.valid) {
-      return showToast(dateCheck.error, 'error');
-    }
-
     const payload = {
       investigation_id: matchedCatalog ? matchedCatalog.id : null,
       test_name: selectedCatalogTest,
-      test_date: dateCheck.iso,
+      test_date: labForm.test_date || getSriLankaTodayString(),
       results: labForm.results,
       remarks: labForm.remarks
     };

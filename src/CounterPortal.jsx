@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom';
 import { useCounterPortalLogic, printReceiptDocument, formatDisplaySriLankaPhone } from './counterLogic';
-import IsoDateInput from './IsoDateInput';
-import { getSriLankaTodayString } from './dateUtils';
 import './DoctorPortal.css';
 import './CounterPortal.css';
 
@@ -1224,15 +1222,13 @@ export default function CounterPortal() {
 
                       <div className="walkin-form-group">
                         <label className="walkin-label">
-                          Date of Birth (YYYY-MM-DD) {patientEditForm.birth_date ? `• ${calculateAge(patientEditForm.birth_date)}` : ''}
+                          Date of Birth {patientEditForm.birth_date ? `(${calculateAge(patientEditForm.birth_date)})` : ''}
                         </label>
-                        <IsoDateInput
+                        <input
+                          type="date"
                           className="walkin-input"
-                          style={{ marginBottom: 0 }}
                           value={patientEditForm.birth_date}
-                          onChange={(val) => setPatientEditForm({ ...patientEditForm, birth_date: val })}
-                          maxDate={getSriLankaTodayString()}
-                          showPreview
+                          onChange={(e) => setPatientEditForm({ ...patientEditForm, birth_date: e.target.value })}
                         />
                       </div>
 
@@ -1416,13 +1412,11 @@ export default function CounterPortal() {
 
                 <div className="counter-reg-group">
                   <label className="counter-reg-label">Date of Birth (YYYY-MM-DD)</label>
-                  <IsoDateInput
+                  <input
+                    type="date"
                     className="counter-reg-input"
                     value={regForm.birth_date}
-                    onChange={(val) => setRegForm({ ...regForm, birth_date: val })}
-                    maxDate={getSriLankaTodayString()}
-                    showPreview
-                    showAge
+                    onChange={(e) => setRegForm({ ...regForm, birth_date: e.target.value })}
                   />
                 </div>
 
