@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdminPortalLogic } from './adminLogic';
 import IsoDateInput from './IsoDateInput';
@@ -6,6 +7,9 @@ import './DoctorPortal.css';
 import './AdminPortal.css';
 
 export default function AdminPortal() {
+  const [medFlowSearch, setMedFlowSearch] = useState('');
+  const [expandAllMeds, setExpandAllMeds] = useState(false);
+
   const {
     loggedInAdmin, loginUsername, setLoginUsername, loginPassword, setLoginPassword, loginError, loggingIn, handleAdminLogin, handleAdminLogout,
     activeTab, setActiveTab, statusBanner,
@@ -16,6 +20,27 @@ export default function AdminPortal() {
     systemUsers, loadingUsers, newUserForm, setNewUserForm, registeringUser, handleRegisterUser, handleDeleteUser,
     verifyCodeInput, setVerifyCodeInput, verifyingCode, verifyResult, verifySearched, handleVerifyAuthCode, handleClearVerify
   } = useAdminPortalLogic();
+
+  const sortedDispensedMedicines = useMemo(() => {
+    const list = Array.isArray(topMedicinesChart) ? [...topMedicinesChart] : [];
+    return list
+      .filter(item => Number(item?.total_sold || 0) > 0)
+      .sort((a, b) => Number(b.total_sold || 0) - Number(a.total_sold || 0));
+  }, [topMedicinesChart]);
+
+  const totalUnitsDispensed = useMemo(
+    () => sortedDispensedMedicines.reduce((sum, item) => sum + Number(item.total_sold || 0), 0),
+    [sortedDispensedMedicines]
+  );
+
+  const maxDispensedQty = sortedDispensedMedicines.length > 0 ? Number(sortedDispensedMedicines[0].total_sold || 1) : 1;
+
+  const filteredDispensedMedicines = useMemo(() => {
+    const q = medFlowSearch.trim().toLowerCase();
+    return sortedDispensedMedicines
+      .map((item, idx) => ({ ...item, rank: idx + 1 }))
+      .filter(item => !q || String(item.name || '').toLowerCase().includes(q));
+  }, [sortedDispensedMedicines, medFlowSearch]);
 
   if (!loggedInAdmin) {
     return (
@@ -134,31 +159,91 @@ export default function AdminPortal() {
                 </ResponsiveContainer>
               </div>
 
-              <div className="advanced-charts-grid">
-                <div className="secondary-chart-card">
-                  <div className="chart-header">Top 7 Most Dispensed Medicines</div>
-                  <ResponsiveContainer width="100%" height="85%">
-                    <BarChart layout="vertical" data={topMedicinesChart} margin={{ top: 5, right: 20, left: 60, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={true} vertical={false} />
-                      <XAxis type="number" stroke="#64748b" />
-                      <YAxis dataKey="name" type="category" stroke="#94a3b8" tick={{ fontSize: 11 }} width={90} />
-                      <Tooltip cursor={{ fill: '#1e293b' }} contentStyle={{ background: '#0f172a', border: '1px solid #334155', color: '#fff', borderRadius: '8px' }} />
-                      <Bar dataKey="total_sold" name="Units Sold" fill="#f59e0b" radius={[0, 4, 4, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+              <div className="secondary-chart-card" style={{ marginTop: '24px' }}>
+                <div className="chart-header">Clinic Busyness by Day of Week</div>
+                <ResponsiveContainer width="100%" height="85%">
+                  <BarChart data={weeklyTrafficChart} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                    <XAxis dataKey="day" stroke="#64748b" tick={{ fontSize: 11 }} />
+                    <YAxis stroke="#64748b" />
+                    <Tooltip cursor={{ fill: '#1e293b' }} contentStyle={{ background: '#0f172a', border: '1px solid #334155', color: '#fff', borderRadius: '8px' }} />
+                    <Bar dataKey="visits" name="Total Patient Visits" fill="#ec4899" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="dispensed-flow-card">
+                <div className="dispensed-flow-header">
+                  <div>
+                    <div className="chart-header" style={{ marginBottom: '4px' }}>
+                      All Dispensed Medicines Flow (Most → Least)
+                    </div>
+                    <div className="dispensed-flow-meta">
+                      <span>{sortedDispensedMedicines.length.toLocaleString()} Unique Medicines Dispensed</span>
+                      <span>•</span>
+                      <span>{totalUnitsDispensed.toLocaleString()} Total Units in Selected Period</span>
+                    </div>
+                  </div>
+                  <div className="dispensed-flow-controls">
+                    <input
+                      type="text"
+                      className="dispensed-flow-search"
+                      placeholder="Filter medicine name..."
+                      value={medFlowSearch}
+                      onChange={(e) => setMedFlowSearch(e.target.value)}
+                    />
+                    {sortedDispensedMedicines.length > 14 && (
+                      <button
+                        type="button"
+                        className="dispensed-flow-toggle-btn"
+                        onClick={() => setExpandAllMeds(prev => !prev)}
+                      >
+                        {expandAllMeds ? 'Compact Scroll View' : `Expand All (${sortedDispensedMedicines.length})`}
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="secondary-chart-card">
-                  <div className="chart-header">Clinic Busyness by Day of Week</div>
-                  <ResponsiveContainer width="100%" height="85%">
-                    <BarChart data={weeklyTrafficChart} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                      <XAxis dataKey="day" stroke="#64748b" tick={{ fontSize: 11 }} />
-                      <YAxis stroke="#64748b" />
-                      <Tooltip cursor={{ fill: '#1e293b' }} contentStyle={{ background: '#0f172a', border: '1px solid #334155', color: '#fff', borderRadius: '8px' }} />
-                      <Bar dataKey="visits" name="Total Patient Visits" fill="#ec4899" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+
+                {loadingFinance ? (
+                  <div className="dispensed-flow-empty">Loading medicine flow data...</div>
+                ) : filteredDispensedMedicines.length === 0 ? (
+                  <div className="dispensed-flow-empty">
+                    {medFlowSearch.trim()
+                      ? `No dispensed medicine matches "${medFlowSearch.trim()}".`
+                      : 'No medicines dispensed during the selected date range.'}
+                  </div>
+                ) : (
+                  <div className={`dispensed-flow-list ${expandAllMeds ? 'expanded' : ''}`}>
+                    {filteredDispensedMedicines.map((med) => {
+                      const sold = Number(med.total_sold || 0);
+                      const barPct = Math.max(2, (sold / maxDispensedQty) * 100);
+                      const sharePct = totalUnitsDispensed > 0 ? ((sold / totalUnitsDispensed) * 100).toFixed(1) : '0.0';
+                      const isTopThree = med.rank <= 3;
+
+                      return (
+                        <div key={`${med.rank}-${med.name}`} className="dispensed-flow-row">
+                          <div className={`dispensed-flow-rank ${isTopThree ? 'top-rank' : ''}`}>
+                            #{med.rank}
+                          </div>
+                          <div className="dispensed-flow-name" title={med.name}>
+                            {med.name}
+                          </div>
+                          <div className="dispensed-flow-bar-track">
+                            <div
+                              className={`dispensed-flow-bar-fill ${isTopThree ? 'top-bar' : ''}`}
+                              style={{ width: `${barPct}%` }}
+                            />
+                          </div>
+                          <div className="dispensed-flow-stats">
+                            <span className="dispensed-flow-qty">{sold.toLocaleString()}</span>
+                            <span className="dispensed-flow-unit">units</span>
+                            <span className="dispensed-flow-share">({sharePct}%)</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </>
           )}

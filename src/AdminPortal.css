@@ -241,6 +241,186 @@
   height: 360px; /* Slightly shorter than main area chart */
 }
 
+/* ALL DISPENSED MEDICINES FLOW BOARD */
+.dispensed-flow-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.dispensed-flow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.dispensed-flow-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.dispensed-flow-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dispensed-flow-search {
+  background: #020617;
+  border: 1px solid #1e293b;
+  color: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  width: 220px;
+  outline: none;
+}
+
+.dispensed-flow-search:focus {
+  border-color: #f59e0b;
+}
+
+.dispensed-flow-toggle-btn {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dispensed-flow-toggle-btn:hover {
+  background: #334155;
+  color: #ffffff;
+}
+
+.dispensed-flow-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.dispensed-flow-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 540px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.dispensed-flow-list.expanded {
+  max-height: none;
+  overflow-y: visible;
+  padding-right: 0;
+}
+
+.dispensed-flow-row {
+  display: grid;
+  grid-template-columns: 48px minmax(180px, 280px) 1fr 145px;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 12px;
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+}
+
+.dispensed-flow-row:hover {
+  border-color: #334155;
+}
+
+.dispensed-flow-rank {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #64748b;
+  text-align: center;
+  background: #0f172a;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.dispensed-flow-rank.top-rank {
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.14);
+}
+
+.dispensed-flow-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dispensed-flow-bar-track {
+  height: 12px;
+  background: #1e293b;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.dispensed-flow-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.dispensed-flow-bar-fill.top-bar {
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+}
+
+.dispensed-flow-stats {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dispensed-flow-qty {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.dispensed-flow-unit {
+  font-size: 0.76rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.dispensed-flow-share {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+@media (max-width: 820px) {
+  .dispensed-flow-row {
+    grid-template-columns: 42px 1fr auto;
+  }
+  .dispensed-flow-bar-track {
+    grid-column: 1 / -1;
+  }
+}
+
 /* ================= SPREADSHEET LOG UI ================= */
 .spreadsheet-card {
   background: #0f172a;
