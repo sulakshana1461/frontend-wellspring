@@ -164,15 +164,15 @@ export function validateIsoDateInput(str, { required = false, minDate = null, ma
 }
 
 /**
- * Timezone-safe integer age calculation from YYYY-MM-DD birth date against Sri Lanka today.
+ * Shared integer year & month diff from YYYY-MM-DD birth date against Sri Lanka today.
  */
-export function calculateAge(birthDateString) {
+function getAgeYearMonthParts(birthDateString) {
   const birth = parseStrictIsoDate(birthDateString);
-  if (!birth) return 'Not Recorded';
+  if (!birth) return { status: 'NOT_RECORDED', years: 0, months: 0 };
 
   const today = parseStrictIsoDate(getSriLankaTodayString());
-  if (!today) return 'Not Recorded';
-  if (birth.iso > today.iso) return 'Invalid Date';
+  if (!today) return { status: 'NOT_RECORDED', years: 0, months: 0 };
+  if (birth.iso > today.iso) return { status: 'INVALID', years: 0, months: 0 };
 
   let years = today.year - birth.year;
   let months = today.month - birth.month;
@@ -184,8 +184,36 @@ export function calculateAge(birthDateString) {
     months += 12;
   }
 
-  if (years < 1) return `${Math.max(0, months)} Months`;
-  return `${years} Years`;
+  return { status: 'OK', years: Math.max(0, years), months: Math.max(0, months) };
+}
+
+/**
+ * Timezone-safe integer age calculation from YYYY-MM-DD birth date against Sri Lanka today.
+ */
+export function calculateAge(birthDateString) {
+  const parts = getAgeYearMonthParts(birthDateString);
+  if (parts.status === 'NOT_RECORDED') return 'Not Recorded';
+  if (parts.status === 'INVALID') return 'Invalid Date';
+
+  if (parts.years < 1) return `${parts.months} Months`;
+  return `${parts.years} Years`;
+}
+
+/**
+ * Doctor clinical age display: includes months alongside years when patient age is under 5 years.
+ */
+export function calculateDoctorAge(birthDateString) {
+  const parts = getAgeYearMonthParts(birthDateString);
+  if (parts.status === 'NOT_RECORDED') return 'Not Recorded';
+  if (parts.status === 'INVALID') return 'Invalid Date';
+
+  if (parts.years < 1) return `${parts.months} Months`;
+  if (parts.years < 5) {
+    const yearLabel = parts.years === 1 ? 'Year' : 'Years';
+    const monthLabel = parts.months === 1 ? 'Month' : 'Months';
+    return `${parts.years} ${yearLabel} ${parts.months} ${monthLabel}`;
+  }
+  return `${parts.years} Years`;
 }
 
 /**

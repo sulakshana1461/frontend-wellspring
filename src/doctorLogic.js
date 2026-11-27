@@ -3,13 +3,14 @@ import axios from 'axios';
 import { API_BASE } from './apiConfig';
 import {
   calculateAge,
+  calculateDoctorAge,
   formatClearDate,
   getAgeYears,
   getSriLankaTodayString,
   validateIsoDateInput
 } from './dateUtils';
 
-export { calculateAge, formatClearDate, getSriLankaTodayString };
+export { calculateAge, calculateDoctorAge, formatClearDate, getSriLankaTodayString };
 
 export const DOCTOR_THEMES = [
   { id: 'ocean', name: 'Ocean Medical Blue', swatch: '#0284c7' },

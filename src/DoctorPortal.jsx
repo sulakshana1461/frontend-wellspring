@@ -5,7 +5,7 @@ import IsoDateInput from './IsoDateInput';
 import {
   useDoctorPortalLogic,
   DOCTOR_THEMES,
-  calculateAge,
+  calculateDoctorAge,
   formatClearDate,
   getSriLankaTodayString,
   calculateBmiAndTargetWeight,
@@ -310,7 +310,7 @@ export default function DoctorPortal() {
                       <div className="patient-item-info">
                         <div className="patient-item-name">{item.patient.name}</div>
                         <div className="patient-item-sub">
-                          {calculateAge(item.patient.birth_date)} • {item.patient.phone || 'No Phone'}
+                          {calculateDoctorAge(item.patient.birth_date)} • {item.patient.phone || 'No Phone'}
                         </div>
                       </div>
                       <span className="queue-order-badge" title="Arrival Queue Order">
@@ -392,7 +392,7 @@ export default function DoctorPortal() {
                     <div className="patient-item-info">
                       <div className="patient-item-name">{pat.name}</div>
                       <div className="patient-item-sub">
-                        DOB: {formatClearDate(pat.birth_date)} ({calculateAge(pat.birth_date)})
+                        DOB: {formatClearDate(pat.birth_date)} ({calculateDoctorAge(pat.birth_date)})
                       </div>
                       <div className="patient-item-sub">
                         Tel: {pat.phone || 'N/A'} {pat.id_number ? `• NIC: ${pat.id_number}` : ''}
@@ -706,7 +706,7 @@ export default function DoctorPortal() {
               <div className="stacked-field-block">
                 <span className="stacked-field-label">Age</span>
                 <div className="stacked-field-value">
-                  {calculateAge(selectedPatient.birth_date)}
+                  {calculateDoctorAge(selectedPatient.birth_date)}
                 </div>
               </div>
 
